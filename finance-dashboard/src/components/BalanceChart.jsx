@@ -2,6 +2,20 @@ import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useFinance } from '../context/FinanceContext';
 
+const CustomTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="glass p-3 border-white/10 shadow-2xl">
+        <p className="text-[10px] text-slate-400 uppercase tracking-widest font-black mb-1">{payload[0].payload.name}</p>
+        <p className="text-sm font-black text-brand-green">
+          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(payload[0].value)}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function BalanceChart() {
   const { transactions, balance: currentBalance } = useFinance();
 
@@ -33,32 +47,31 @@ export default function BalanceChart() {
           </defs>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
           <XAxis 
-            dataKey="date" 
+            dataKey="name" 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }}
+            tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 500 }}
             dy={10}
           />
           <YAxis 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }}
-            tickFormatter={(value) => `R$ ${value >= 1000 ? (value/1000).toFixed(1) + 'k' : value}`}
+            tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 500 }}
+            tickFormatter={(value) => `R$ ${value}`}
           />
-          <Tooltip 
-            contentStyle={{ 
-              backgroundColor: '#0F172A', 
-              borderRadius: '16px', 
-              border: '1px solid rgba(255,255,255,0.1)',
-              boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.5)'
-            }}
-            itemStyle={{ color: '#A3FF12', fontWeight: 900 }}
-            labelStyle={{ color: '#94a3b8', marginBottom: '4px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}
-            formatter={(value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
-          />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend 
+                verticalAlign="bottom" 
+                align="center"
+                wrapperStyle={{ paddingTop: '20px' }}
+                formatter={(value) => <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.1em]">{value}</span>}
+                iconType="circle"
+                iconSize={6}
+             />
           <Area 
             type="monotone" 
             dataKey="saldo" 
+            name="Saldo"
             stroke="#A3FF12" 
             strokeWidth={4} 
             fillOpacity={1} 

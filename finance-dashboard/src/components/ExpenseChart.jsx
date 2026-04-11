@@ -17,7 +17,15 @@ export default function ExpenseChart() {
       return acc;
     }, []);
 
-  const COLORS = ['#A3FF12', '#00C853', '#B2FF59', '#1E293B', '#64748B', '#FFFFFF'];
+  const COLORS = [
+  '#A3FF12', // Vynex Neon Green
+  '#3B82F6', // Electric Blue
+  '#8B5CF6', // Vivid Purple
+  '#06B6D4', // Cyan
+  '#F59E0B', // Amber
+  '#F43F5E', // Rose
+];
+
 
   return (
     <div className="w-full h-full min-h-[300px]">
@@ -54,10 +62,13 @@ export default function ExpenseChart() {
             />
             <Legend 
                verticalAlign="bottom" 
-               formatter={(value) => <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{value}</span>}
+               align="center"
+               wrapperStyle={{ paddingTop: '20px' }}
+               formatter={(value) => <span className="text-[10px] font-black text-slate-200 uppercase tracking-[0.1em]">{value}</span>}
                iconType="circle"
-               iconSize={8}
+               iconSize={6}
             />
+
           </PieChart>
         </ResponsiveContainer>
       ) : (
