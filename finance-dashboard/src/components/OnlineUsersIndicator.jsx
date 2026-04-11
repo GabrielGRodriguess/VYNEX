@@ -20,10 +20,10 @@ export default function OnlineUsersIndicator() {
   }, []);
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/60 border border-brand-green/20 backdrop-blur-md shadow-[0_0_15px_rgba(163,255,18,0.05)]">
+    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-green/[0.03] border border-brand-green/20 backdrop-blur-md shadow-[0_0_15px_rgba(163,255,18,0.05)]">
       <div className="relative flex h-2 w-2">
         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-green opacity-75"></span>
-        <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-green"></span>
+        <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-green shadow-[0_0_8px_#A3FF12]"></span>
       </div>
       
       <div className="flex items-center gap-1.5 overflow-hidden">
@@ -34,13 +34,13 @@ export default function OnlineUsersIndicator() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -10, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="text-[10px] font-black text-white"
+            className="text-[10px] font-black text-brand-green"
           >
             {count}
           </motion.span>
         </AnimatePresence>
         
-        <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest whitespace-nowrap">
+        <p className="text-[10px] font-black text-brand-green/80 uppercase tracking-widest whitespace-nowrap">
           {count === 1 ? 'pessoa' : 'pessoas'}{' '}
           <span className="hidden sm:inline">online</span>
           <span className="sm:hidden text-[10px]">on</span>
@@ -49,3 +49,4 @@ export default function OnlineUsersIndicator() {
     </div>
   );
 }
+
