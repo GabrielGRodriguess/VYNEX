@@ -79,8 +79,17 @@ export function FinanceProvider({ children }) {
     }
   };
 
-  const getIncome = () => transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + Number(t.amount), 0);
-  const getExpense = () => transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + Number(t.amount), 0);
+  const getIncome = () => {
+    const total = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + Number(t.amount), 0);
+    return total || 0;
+  };
+
+  const getExpense = () => {
+    const total = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + Number(t.amount), 0);
+    return total || 0;
+  };
+
+  const isBankConnected = isDemoMode || (transactions.some(t => t.fromBank));
 
   return (
     <FinanceContext.Provider value={{
@@ -92,13 +101,14 @@ export function FinanceProvider({ children }) {
       setBankData,
       getIncome,
       getExpense,
-      isDemoMode
-
+      isDemoMode,
+      isBankConnected
     }}>
       {children}
     </FinanceContext.Provider>
   );
 }
+
 
 export function useFinance() {
   return useContext(FinanceContext);

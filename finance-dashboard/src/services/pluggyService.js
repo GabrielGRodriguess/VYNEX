@@ -97,15 +97,15 @@ export function fetchMockData() {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
-        balance: 12450.60,
+        balance: 2000.00, // Total Saldo
         transactions: [
-          { id: 'm1', type: 'expense', amount: 450.00, category: 'Shopping', date: '2026-04-10', description: 'Amazon Digital', fromBank: true },
-          { id: 'm2', type: 'income', amount: 5000.00, category: 'Salary', date: '2026-04-05', description: 'Empresa X Salário', fromBank: true },
-          { id: 'm3', type: 'expense', amount: 120.50, category: 'Food', date: '2026-04-09', description: 'iFood Brasil', fromBank: true },
-          { id: 'm4', type: 'expense', amount: 80.00, category: 'Transport', date: '2026-04-08', description: 'Uber Trip', fromBank: true },
-          { id: 'm5', type: 'income', amount: 150.00, category: 'Other', date: '2026-04-07', description: 'Pix Recebido', fromBank: true },
+          { id: 'm1', type: 'income', amount: 4500.00, category: 'Salary', date: '2026-04-05', description: 'VYNEX Tecnologia Pagamento', fromBank: true },
+          { id: 'm2', type: 'expense', amount: 1200.00, category: 'Housing', date: '2026-04-10', description: 'Aluguel Mensal', fromBank: true },
+          { id: 'm3', type: 'expense', amount: 800.00, category: 'Food', date: '2026-04-09', description: 'Supermercado Premium', fromBank: true },
+          { id: 'm4', type: 'expense', amount: 1000.00, category: 'Utilities', date: '2026-04-08', description: 'Contas Fixas Consolidadas', fromBank: true },
         ]
       });
     }, 1200);
   });
 }
+

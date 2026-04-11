@@ -1,11 +1,11 @@
-// Vercel Serverless Function for Credit Analysis
+// Vercel Serverless Function: Unified Credit Analysis Engine
 // Location: /api/analise.js
 
 // Shared history cache (Volatile in serverless)
-// Note: This only persists during a single execution context's life
 let history = []; 
 
 function consultarScore(cpf) {
+  // CPF simulado: CPFs terminados em 0 ou 1 dão score baixo
   if (cpf.endsWith('0') || cpf.endsWith('1')) {
     return {
       score: Math.floor(Math.random() * (400 - 300 + 1)) + 300,
@@ -13,72 +13,68 @@ function consultarScore(cpf) {
     };
   }
   return {
-    score: Math.floor(Math.random() * (900 - 450 + 1)) + 450,
+    score: Math.floor(Math.random() * (900 - 550 + 1)) + 550,
     pendencias: false
   };
 }
 
 export default async function handler(req, res) {
-  // Add CORS headers for cross-origin local dev testing if needed
-  res.setHeader('Access-Control-Allow-Credentials', true)
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  )
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end()
-    return
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  const { tipo, cpf, renda, parcela, entrada } = req.body;
+  const { tipo, cpf, renda, parcela, entrada, bankData } = req.body;
   
   if (!tipo || !cpf || !renda || !parcela) {
-    return res.status(400).json({ error: 'Dados incompletos para análise.' });
+    return res.status(400).json({ error: 'Dados incompletos.' });
   }
 
   const { score, pendencias } = consultarScore(cpf);
-  const probabilidade = (score / 1000) * 100;
   
+  // Intelligent Probability Engine
+  let probabilidade = (score / 1000) * 100;
+  
+  // Apply Bank Data Impact (Pluggy Integration Phase 1)
+  if (bankData && bankData.connected) {
+    if (bankData.income > 4000) probabilidade += 5;
+    if (bankData.expense > bankData.income * 0.6) probabilidade -= 5;
+  }
+  
+  // Clamp probability between 0 and 100
+  probabilidade = Math.min(Math.max(probabilidade, 0), 100);
+
   let status = 'Aprovado';
-  let motivo = 'Seu perfil atende a todos os requisitos para este crédito.';
-  let sugestao = 'Você tem alta chance de aprovação. Prossiga para a contratação.';
-  let cor = 'green';
+  let motivo = 'Seu perfil atende aos requisitos de crédito automático.';
+  let sugestao = 'Alta chance de aprovação imediata. Prossiga para a formalização.';
 
   if (tipo === 'consignado') {
     if (parcela > renda * 0.35) {
       status = 'Negado';
-      motivo = 'Margem consignável insuficiente para o valor da parcela desejada.';
-      sugestao = 'Reduza o valor da parcela ou aumente o prazo para aumentar suas chances.';
-      cor = 'red';
+      motivo = 'Margem consignável insuficiente (máximo 35% da renda).';
+      sugestao = 'Tente um valor de parcela menor para se adequar à margem.';
     } else if (score < 400 || pendencias) {
       status = 'Análise Manual';
-      motivo = 'Pontuação de crédito (Score) abaixo da política automática ou pendências identificadas.';
-      sugestao = 'Nossa equipe entrará em contato para uma análise detalhada.';
-      cor = 'yellow';
+      motivo = 'Pontuação de crédito (Score) ou restrições exigem validação humana.';
+      sugestao = 'Nossa equipe entrará em contato em até 24h.';
     }
   } else if (tipo === 'imobiliario') {
     if (score < 600) {
       status = 'Negado';
-      motivo = 'Pontuação de crédito insuficiente para financiamento imobiliário.';
-      sugestao = 'Trabalhe na regularização de pendências para aumentar seu score.';
-      cor = 'red';
-    } else if (parcela > renda * 0.3) {
+      motivo = 'Pontuação de crédito insuficiente para esta modalidade (mínimo 600).';
+      sugestao = 'Regularize pendências para aumentar seu score VYNEX.';
+    } else if (parcela > renda * 0.30) {
       status = 'Negado';
-      motivo = 'Comprometimento de renda acima do limite de 30%.';
-      sugestao = 'Tente aumentar o valor da entrada para reduzir as parcelas.';
-      cor = 'red';
-    } else if (entrada < renda * 0.2 && entrada < (parcela * 120 * 0.2)) {
-       status = 'Análise Manual';
-       motivo = 'Valor de entrada inferior a 20%. Sujeito a condições especiais.';
-       sugestao = 'Aumentar a entrada pode ajudar significativamente na aprovação.';
-       cor = 'yellow';
+      motivo = 'Comprometimento de renda acima de 30%.';
+      sugestao = 'Considere um imóvel de menor valor ou aumente o aporte inicial.';
+    } else if (entrada < (parcela * 120 * 0.2) && entrada < renda * 0.2) { 
+      // Simplified: if entrance is low
+      status = 'Análise Manual';
+      motivo = 'Valor de entrada inferior ao recomendado (20%).';
+      sugestao = 'Aumentar o valor da entrada aumenta significativamente sua chance.';
     }
   }
 
@@ -91,12 +87,9 @@ export default async function handler(req, res) {
     probabilidade: probabilidade.toFixed(1),
     motivo,
     sugestao,
-    cor,
     data: { renda, parcela, entrada },
     date: new Date().toISOString()
   };
 
-  // Note: Local in-memory history won't survive across different Lambda invocations easily
-  // We return the result to the user. Frontend can manage local state for now.
   res.status(200).json(result);
 }
