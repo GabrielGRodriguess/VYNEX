@@ -1,0 +1,21 @@
+
+  "expo": {
+    "name": "SOS Serviços",
+    "slug": "sos-servicos",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#1565C0"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#1565C0"
+      },
+      "package": "com.sosservicos.app"
+    },
+    "ios": {
+      "bundleIdentifier": "com.sosservicos.app"
+    }
+  }
+}

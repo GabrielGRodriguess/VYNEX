@@ -4,11 +4,23 @@
 
 @layer utilities {
   .glass {
-    @apply bg-white shadow-sm rounded-2xl border border-gray-100 hover:shadow-md transition-shadow duration-300;
+    @apply bg-white/70 backdrop-blur-md shadow-sm rounded-2xl border border-white/40 hover:shadow-xl hover:bg-white/80 transition-all duration-300;
   }
 }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
-  background: #f8fafc;
+  font-family: 'Outfit', sans-serif;
+  background: radial-gradient(circle at top right, #f8fafc, #eff6ff);
+  min-height: 100vh;
 }
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { fetchBankData } from '../services/api';
+import { fetchAllData } from '../services/pluggyService';
 
 export const FinanceContext = createContext();
 
@@ -7,6 +8,7 @@ export function FinanceProvider({ children }) {
   const [balance, setBalance] = useState(0);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isDemoMode, setIsDemoMode] = useState(false);
 
   useEffect(() => {
     const storedTransactions = localStorage.getItem('finance_transactions');
@@ -36,16 +38,45 @@ export function FinanceProvider({ children }) {
 
   const addTransaction = (transaction) => {
     const newTx = { ...transaction, id: Date.now() };
-    const updatedTx = [newTx, ...transactions];
-    setTransactions(updatedTx);
+    setTransactions(prev => [newTx, ...prev]);
     
-    let newBalance = balance;
     if (transaction.type === 'income') {
-      newBalance = balance + Number(transaction.amount);
+      setBalance(prev => prev + Number(transaction.amount));
     } else {
-      newBalance = balance - Number(transaction.amount);
+      setBalance(prev => prev - Number(transaction.amount));
     }
-    setBalance(newBalance);
+  };
+
+  const deleteTransaction = (id) => {
+    const tx = transactions.find(t => t.id === id);
+    if (!tx) return;
+    
+    if (tx.type === 'income') {
+      setBalance(prev => prev - Number(tx.amount));
+    } else {
+      setBalance(prev => prev + Number(tx.amount));
+    }
+    setTransactions(prev => prev.filter(t => t.id !== id));
+  };
+
+  const setBankData = async (data) => {
+    if (data.item) {
+      setLoading(true);
+      try {
+        const bankData = await fetchAllData(data.item.id);
+        setBalance(bankData.balance);
+        setTransactions(prev => [...bankData.transactions, ...prev.filter(t => !t.fromBank)]);
+        if (data.item.id === 'mock-item') {
+          setIsDemoMode(true);
+        }
+
+      } catch (error) {
+        console.error("Erro ao sincronizar banco:", error);
+        alert("Erro ao sincronizar dados. Verifique suas credenciais.");
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   const getIncome = () => transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + Number(t.amount), 0);
@@ -57,8 +88,12 @@ export function FinanceProvider({ children }) {
       transactions,
       loading,
       addTransaction,
+      deleteTransaction,
+      setBankData,
       getIncome,
-      getExpense
+      getExpense,
+      isDemoMode
+
     }}>
       {children}
     </FinanceContext.Provider>
