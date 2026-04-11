@@ -27,9 +27,10 @@ export async function getConnectToken() {
     });
 
     if (!authResponse.ok) {
-      console.warn('Auth failed. Falling back to Mock Mode.');
-      return 'mock-access-token';
+      const errorData = await authResponse.json();
+      throw new Error(errorData.message || 'Falha na autenticação com Pluggy');
     }
+
 
     const { apiKey } = await authResponse.json();
     const tokenResponse = await fetch(`${BASE_URL}/connect_token`, {
@@ -41,10 +42,11 @@ export async function getConnectToken() {
     const { accessToken } = await tokenResponse.json();
     return accessToken;
   } catch (error) {
-    console.error('Erro na conexão real. Usando Mock Mode.', error);
-    return 'mock-access-token';
+    console.error('Erro na conexão real:', error);
+    throw error;
   }
 }
+
 
 export async function fetchAllData(itemId) {
   if (IS_MOCK_MODE || itemId === 'mock-item') {

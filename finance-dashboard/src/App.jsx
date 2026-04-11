@@ -6,6 +6,7 @@ import BalanceChart from './components/BalanceChart';
 import TransactionList from './components/TransactionList';
 import AddTransactionModal from './components/AddTransactionModal';
 import BankConnector from './components/BankConnector';
+import FinancialInsights from './components/FinancialInsights';
 import logo from './assets/vynex-logo.png';
 
 function DashboardContent() {
@@ -57,6 +58,8 @@ function DashboardContent() {
 
       <div className="grid grid-cols-1 gap-8">
         <SummaryCards />
+
+        <FinancialInsights />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="glass p-6 h-[350px]">

@@ -23,10 +23,10 @@ export default function BankConnector() {
       
       setConnectToken(token);
     } catch (error) {
-      alert('Erro ao iniciar conexão com o banco. Usando modo de simulação.');
-      handleSuccess({ item: { id: 'mock-item' } });
+      alert(`Erro na conexão: ${error.message}`);
       setIsConnecting(false);
     }
+
   };
 
   const handleSuccess = (itemData) => {
