@@ -7,9 +7,15 @@
     @apply bg-slate-900/40 backdrop-blur-3xl rounded-3xl border border-white/10 transition-all duration-500 shadow-2xl;
   }
 
-  
   .neon-glow {
-    box-shadow: 0 0 30px rgba(163, 255, 18, 0.3);
+    filter: drop-shadow(0 0 8px rgba(163, 255, 18, 0.4));
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
   
   .text-neon {

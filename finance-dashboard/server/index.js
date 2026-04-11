@@ -27,6 +27,12 @@ function consultarScore(cpf) {
   };
 }
 
+const history = [];
+
+app.get('/historico', (req, res) => {
+  res.json(history.sort((a, b) => new Date(b.date) - new Date(a.date)));
+});
+
 app.post('/analise', (req, res) => {
   const { tipo, cpf, renda, parcela, entrada } = req.body;
   
@@ -43,7 +49,6 @@ app.post('/analise', (req, res) => {
   let cor = 'green';
 
   if (tipo === 'consignado') {
-    // Regra: Margem máxima 35%
     if (parcela > renda * 0.35) {
       status = 'Negado';
       motivo = 'Margem consignável insuficiente para o valor da parcela desejada.';
@@ -56,7 +61,6 @@ app.post('/analise', (req, res) => {
       cor = 'yellow';
     }
   } else if (tipo === 'imobiliario') {
-    // Regra: Parcela máxima 30%, Score mínimo 600, Entrada mínima 20%
     if (score < 600) {
       status = 'Negado';
       motivo = 'Pontuação de crédito insuficiente para financiamento imobiliário.';
@@ -67,8 +71,7 @@ app.post('/analise', (req, res) => {
       motivo = 'Comprometimento de renda acima do limite de 30%.';
       sugestao = 'Tente aumentar o valor da entrada para reduzir as parcelas.';
       cor = 'red';
-    } else if (entrada < renda * 0.2 && entrada < (parcela * 120 * 0.2)) { // Mock de entrada mínima de 20% do valor total (simplificado)
-       // Se o usuário informar uma entrada menor que 20% da base sugerida
+    } else if (entrada < renda * 0.2 && entrada < (parcela * 120 * 0.2)) {
        status = 'Análise Manual';
        motivo = 'Valor de entrada inferior a 20%. Sujeito a condições especiais.';
        sugestao = 'Aumentar a entrada pode ajudar significativamente na aprovação.';
@@ -76,15 +79,24 @@ app.post('/analise', (req, res) => {
     }
   }
 
-  res.json({
+  const result = {
+    id: Math.random().toString(36).substr(2, 9),
+    tipo,
+    cpf: cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.***.***-$4"), // Mascarar CPF
     score,
     status,
     probabilidade: probabilidade.toFixed(1),
     motivo,
     sugestao,
-    cor
-  });
+    cor,
+    data: { renda, parcela, entrada },
+    date: new Date().toISOString()
+  };
+
+  history.push(result);
+  res.json(result);
 });
+
 
 app.listen(PORT, () => {
   console.log(`VYNEX Credit Engine running on port ${PORT}`);
