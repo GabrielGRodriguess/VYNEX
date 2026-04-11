@@ -1,106 +1,29 @@
-import React, { useMemo } from 'react';
-import { useFinance } from '../context/FinanceContext';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useInsights } from '../hooks/useInsights';
 
 export default function FinancialInsights() {
-  const { transactions } = useFinance();
+  const insights = useInsights();
 
-  const insights = useMemo(() => {
-    const list = [];
-    const expenses = transactions.filter(t => t.type === 'expense');
-    const totalExpense = expenses.reduce((sum, t) => sum + t.amount, 0);
-
-    // 1. DYNAMIC INSIGHT: Most Recent Activity
-    if (transactions.length > 0) {
-      const latest = transactions[0];
-      let dynamicText = '';
-      let dynamicIcon = '🔔';
-      let dynamicColor = 'text-blue-400';
-
-      if (latest.type === 'income') {
-        dynamicText = `Aporte identificado (${latest.category}). Sugerimos revisar sua estratégia de investimentos.`;
-        dynamicIcon = '💰';
-      } else {
-        switch (latest.category) {
-          case 'Food':
-            dynamicText = 'Sua última refeição foi registrada. Mantenha o foco no orçamento semanal.';
-            dynamicIcon = '🍽️';
-            break;
-          case 'Shopping':
-            dynamicText = 'Compra processada. Verifique se este volume está dentro do seu limite mensal.';
-            dynamicIcon = '🛍️';
-            break;
-          case 'Transport':
-            dynamicText = 'Gasto com mobilidade identificado. Considere otimizar rotas frequentes.';
-            dynamicIcon = '🚗';
-            break;
-          default:
-            dynamicText = `Operação em ${latest.category} registrada com sucesso na rede VYNEX.`;
-            dynamicIcon = '✅';
-        }
-      }
-
-      list.push({
-        id: `dynamic-${latest.id}`,
-        icon: dynamicIcon,
-        text: dynamicText,
-        color: dynamicColor,
-        isNew: true
-      });
-    }
-
-    // 2. GLOBAL INSIGHT: Food Spike Detection
-    const foodExpense = expenses
-      .filter(t => t.category === 'Food')
-      .reduce((sum, t) => sum + t.amount, 0);
-    
-    if (foodExpense > totalExpense * 0.4 && totalExpense > 0) {
-      list.push({
-        id: 'food',
-        icon: '🍎',
-        text: 'Gastos com alimentação acima da média este mês.',
-        color: 'text-amber-400'
-      });
-    }
-
-    // 3. GLOBAL INSIGHT: Stability Detection
-    const recent = transactions.slice(0, 3);
-    const isStable = recent.length >= 3 && recent.every(t => t.amount < 200);
-    if (isStable) {
-      list.push({
-        id: 'stable',
-        icon: '🛡️',
-        text: 'Seu saldo mantém estabilidade nos últimos dias.',
-        color: 'text-brand-green'
-      });
-    }
-
-    // 4. Default / Subscriptions
-    if (list.length < 3) {
-      list.push({
-        id: 'saving',
-        icon: '📉',
-        text: 'Possível economia identificada em assinaturas recorrentes.',
-        color: 'text-emerald-400'
-      });
-    }
-
-    return list.slice(0, 3);
-  }, [transactions]);
+  if (insights.length === 0) return null;
 
   return (
     <div className="glass p-8 relative overflow-hidden">
+      {/* Subtle Background pattern */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-brand-green/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
       
       <div className="relative z-10">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-8">
           <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-green/40 shadow-[0_0_10px_rgba(163,255,18,0.2)]"></span>
-            Insights Financeiros
+            Inteligência VYNEX
           </h3>
-          <span className="text-[8px] font-black text-brand-green/50 uppercase tracking-widest bg-brand-green/5 px-2 py-0.5 rounded-full border border-brand-green/10">
-            Real-Time Engine
-          </span>
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-1 rounded-full bg-brand-green animate-pulse"></div>
+            <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">
+              Análise Ativa
+            </span>
+          </div>
         </div>
 
         <div className="space-y-6">
@@ -111,22 +34,34 @@ export default function FinancialInsights() {
                 layout
                 initial={{ opacity: 0, y: 10, filter: 'blur(10px)' }}
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, scale: 0.95 }}
+                exit={{ opacity: 0, scale: 0.98 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                className={`flex items-center gap-5 group py-1 ${insight.isNew ? 'border-l-2 border-blue-500/30 pl-4 -ml-4' : ''}`}
+                className={`flex items-start gap-5 group py-2 px-4 rounded-2xl transition-all duration-500 ${
+                  insight.type === 'alert' 
+                    ? 'bg-amber-500/[0.03] border border-amber-500/10' 
+                    : 'hover:bg-white/[0.02]'
+                }`}
               >
-                <div className={`w-10 h-10 rounded-xl bg-slate-900/50 border border-white/5 flex items-center justify-center text-lg transition-all duration-500 ${insight.isNew ? 'grayscale-0 opacity-100 shadow-[0_0_15px_rgba(59,130,246,0.2)]' : 'grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100'}`}>
+                <div className={`mt-1 flex-shrink-0 w-10 h-10 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-center text-lg transition-all duration-500 ${
+                  insight.type === 'alert' 
+                    ? 'grayscale-0 opacity-100 shadow-[0_0_15px_rgba(245,158,11,0.15)] border-amber-500/20' 
+                    : 'grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100'
+                }`}>
                   {insight.icon}
                 </div>
-                <div className="flex-1">
-                  {insight.isNew && (
-                    <span className="text-[8px] font-black text-blue-400 uppercase tracking-tighter mb-1 block">Feedback Instantâneo</span>
-                  )}
-                  <p className="text-sm font-medium text-slate-300 leading-tight">
+                
+                <div className="flex-1 space-y-1">
+                  <span className={`text-[8px] font-black uppercase tracking-tighter block ${
+                    insight.type === 'alert' ? 'text-amber-500' : 'text-slate-500'
+                  }`}>
+                    {insight.label}
+                  </span>
+                  <p className="text-sm font-medium text-slate-300 leading-snug">
                     {insight.text}
                   </p>
                 </div>
-                <div className={`w-1 h-1 rounded-full ${insight.color} opacity-40 shadow-[0_0_8px_currentColor]`}></div>
+
+                <div className={`mt-2 w-1.5 h-1.5 rounded-full ${insight.color} opacity-30 shadow-[0_0_8px_currentColor]`}></div>
               </motion.div>
             ))}
           </AnimatePresence>
