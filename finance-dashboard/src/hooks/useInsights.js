@@ -11,98 +11,103 @@ export function useInsights() {
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
 
-    const currentMonthTxs = transactions.filter(t => {
+    const expenses = transactions.filter(t => t.type === 'expense');
+    const currentMonthTxs = expenses.filter(t => {
       const d = new Date(t.date);
-      return d.getMonth() === currentMonth && d.getFullYear() === currentYear && t.type === 'expense';
+      return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
     });
 
     const latest = transactions[0];
     const generatedInsights = [];
 
-    // 1. INTELLIGENT ALERTS (Priority)
-    // Group totals by category for the current month
+    // 1. BEHAVIORAL ANALYSIS (High Precision)
     const categoryTotals = currentMonthTxs.reduce((acc, t) => {
       acc[t.category] = (acc[t.category] || 0) + Number(t.amount);
       return acc;
     }, {});
 
-    // Check if latest transaction triggers an alert based on category total
+    const totalMonthExpense = currentMonthTxs.reduce((acc, t) => acc + Number(t.amount), 0);
+
     if (latest && latest.type === 'expense') {
       const totalInCat = categoryTotals[latest.category] || 0;
-      
-      // Rule: Month Total > 3000 AND Latest > 300
-      if (totalInCat > 3000 && Number(latest.amount) > 300) {
+      const latestAmount = Number(latest.amount);
+
+      // RULE 1: HIGH VOLUME ALERT (Threshold 5000 + 300)
+      if (totalInCat > 5000 && latestAmount > 300) {
         generatedInsights.push({
-          id: `alert-cat-${latest.id}`,
+          id: `alert-vol-${latest.id}`,
           type: 'alert',
-          label: 'Alerta Inteligente',
-          icon: '⚠️',
-          text: `Possível excesso de gastos em "${latest.category}". Este tipo de gasto já representa uma parcela relevante do mês.`,
+          label: 'Alerta de Volume',
+          icon: '📊',
+          text: `"${latest.category}" concentra uma parcela elevada dos seus gastos este mês.`,
           color: 'text-amber-500'
         });
-      }
-      
-      // Rule: Specific Establishment (Description) Alert
-      const establishmentTxs = currentMonthTxs.filter(t => t.description === latest.description);
-      const totalEst = establishmentTxs.reduce((acc, t) => acc + Number(t.amount), 0);
-      
-      if (totalEst > 2000 && Number(latest.amount) > 200 && generatedInsights.length < 1) {
+      } 
+      // RULE 2: RECURRING ACCUMULATION (If not high volume, but still relevant)
+      else if (totalInCat > 1000) {
         generatedInsights.push({
-          id: `alert-est-${latest.id}`,
+          id: `alert-acc-${latest.id}`,
           type: 'alert',
-          label: 'Padrão de Consumo',
-          icon: '📊',
-          text: `Gastos com "${latest.description}" acima do padrão habitual neste mês.`,
-          color: 'text-rose-400'
+          label: 'Acúmulo Mensal',
+          icon: '📈',
+          text: `Você já acumulou um volume relevante em "${latest.category}" neste período.`,
+          color: 'text-blue-400'
+        });
+      }
+      // RULE 3: SPECIFIC FREQUENCY (If few transactions but same store)
+      const establishmentTxs = currentMonthTxs.filter(t => t.description === latest.description);
+      if (establishmentTxs.length >= 3) {
+        generatedInsights.push({
+          id: `alert-freq-${latest.id}`,
+          type: 'pattern',
+          label: 'Frequência Recorrente',
+          icon: '🔄',
+          text: `Esta é sua ${establishmentTxs.length}ª operação em "${latest.description}" este mês.`,
+          color: 'text-emerald-400'
         });
       }
     }
 
-    // 2. CONTEXTUAL FEEDBACK (Secondary)
-    if (latest && generatedInsights.length < 2) {
-      let contextualText = '';
-      let contextualIcon = '💡';
-      
-      if (latest.type === 'income') {
-        contextualText = `Aporte em "${latest.category}" identificado. Sugerimos revisar sua estratégia de capital.`;
-      } else {
-        contextualText = `Operação em "${latest.category}" processada. Nova despesa em uma categoria já recorrente.`;
+    // 2. DATA-DRIVEN PATTERNS (Replacing Generics)
+    if (generatedInsights.length < 2) {
+      // Comparison: Food vs Total
+      const foodTotal = categoryTotals['Food'] || 0;
+      if (foodTotal > 0) {
+        const foodPerc = ((foodTotal / totalMonthExpense) * 100).toFixed(0);
+        if (foodPerc > 20) {
+          generatedInsights.push({
+            id: 'pattern-food',
+            type: 'pattern',
+            label: 'Visão de Gastos',
+            icon: '🍎',
+            text: `Alimentação representa ${foodPerc}% do seu total de despesas neste mês.`,
+            color: 'text-slate-400'
+          });
+        }
       }
+    }
 
+    // 3. INCOME CONTEXT
+    if (latest && latest.type === 'income' && generatedInsights.length < 3) {
       generatedInsights.push({
-        id: `context-${latest.id}`,
+        id: `income-ctx-${latest.id}`,
         type: 'feedback',
-        label: 'Feedback Instantâneo',
-        icon: contextualIcon,
-        text: contextualText,
-        color: 'text-blue-400'
-      });
-    }
-
-    // 3. GLOBAL PATTERNS (Tertiary)
-    const foodTotal = categoryTotals['Food'] || 0;
-    const totalMonthExpense = currentMonthTxs.reduce((acc, t) => acc + Number(t.amount), 0);
-    
-    if (foodTotal > totalMonthExpense * 0.4 && totalMonthExpense > 0) {
-      generatedInsights.push({
-        id: 'global-food',
-        type: 'pattern',
-        label: 'Análise Mensal',
-        icon: '🍎',
-        text: 'Gastos com alimentação representam uma parcela elevada do seu orçamento este mês.',
-        color: 'text-slate-400'
-      });
-    }
-
-    const isStable = currentMonthTxs.length >= 3 && currentMonthTxs.slice(0, 3).every(t => t.amount < 150);
-    if (isStable && generatedInsights.length < 3) {
-      generatedInsights.push({
-        id: 'global-stable',
-        type: 'pattern',
-        label: 'Estabilidade',
-        icon: '🛡️',
-        text: 'Seu saldo mantém estabilidade e consistência nos últimos registros.',
+        label: 'Aporte Identificado',
+        icon: '💰',
+        text: `Recebimento em "${latest.category}" fortalece sua liquidez para este período.`,
         color: 'text-brand-green'
+      });
+    }
+
+    // Final Fallback (only if absolutely empty and very specific)
+    if (generatedInsights.length === 0 && latest) {
+      generatedInsights.push({
+        id: 'fallback-spec',
+        type: 'pattern',
+        label: 'Detecção de Contexto',
+        icon: '🎯',
+        text: `Sua despesa em "${latest.category}" foi classificada com sucesso.`,
+        color: 'text-slate-500'
       });
     }
 
