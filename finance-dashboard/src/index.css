@@ -4,8 +4,13 @@
 
 @layer utilities {
   .glass {
-    @apply bg-slate-900/20 backdrop-blur-2xl rounded-2xl border border-white/5 hover:border-brand-green/20 transition-all duration-700;
+    @apply bg-slate-900/20 backdrop-blur-2xl rounded-2xl border border-white/5 transition-all duration-700;
   }
+  
+  .glass:hover {
+    border-color: rgba(163, 255, 18, 0.2);
+  }
+
   
   .neon-glow {
     box-shadow: 0 0 15px rgba(163, 255, 18, 0.1);
