@@ -4,20 +4,16 @@
 
 @layer utilities {
   .glass {
-    @apply bg-slate-900/20 backdrop-blur-2xl rounded-2xl border border-white/5 transition-all duration-700;
+    @apply bg-slate-900/40 backdrop-blur-3xl rounded-3xl border border-white/10 hover:border-brand-green/40 transition-all duration-500 shadow-2xl;
   }
-  
-  .glass:hover {
-    border-color: rgba(163, 255, 18, 0.2);
-  }
-
   
   .neon-glow {
-    box-shadow: 0 0 15px rgba(163, 255, 18, 0.1);
+    box-shadow: 0 0 30px rgba(163, 255, 18, 0.3);
   }
   
   .text-neon {
     color: #A3FF12;
+    text-shadow: 0 0 15px rgba(163, 255, 18, 0.6);
   }
 
   .bg-neon-gradient {
@@ -27,15 +23,18 @@
 
 :root {
   --brand-green: #A3FF12;
-  --bg-dark: #0A0B0D;
+  --bg-dark: #050608;
 }
 
 body {
   font-family: 'Outfit', sans-serif;
   background-color: var(--bg-dark);
   background-image: 
-    radial-gradient(circle at 10% 20%, rgba(163, 255, 18, 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(0, 200, 83, 0.05) 0%, transparent 40%);
+    linear-gradient(rgba(163, 255, 18, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(163, 255, 18, 0.03) 1px, transparent 1px),
+    radial-gradient(circle at 10% 20%, rgba(163, 255, 18, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(0, 200, 83, 0.08) 0%, transparent 40%);
+  background-size: 40px 40px, 40px 40px, 100%, 100%;
   color: white;
   min-height: 100vh;
 }
@@ -52,15 +51,21 @@ body {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #0A0B0D;
+  background: #050608;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1E293B;
+  background: #1e293b;
+  border: 2px solid #050608;
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #A3FF12;
+}
+
+.glass:hover {
+  border-color: rgba(163, 255, 18, 0.4);
+  box-shadow: 0 0 40px rgba(163, 255, 18, 0.1);
 }

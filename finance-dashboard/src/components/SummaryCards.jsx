@@ -38,15 +38,15 @@ export default function SummaryCards() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
           whileHover={{ y: -8, transition: { duration: 0.2 } }}
-          className={`glass p-8 relative overflow-hidden group shadow-2xl ${card.glow}`}
+          className={`glass p-8 relative overflow-hidden group shadow-[0_20px_50px_rgba(0,0,0,0.5)] ${card.glow}`}
         >
           {/* Background Glow */}
           <div className={`absolute top-0 right-0 w-32 h-32 blur-[80px] opacity-10 transition-opacity group-hover:opacity-20 ${index === 0 ? 'bg-brand-green' : index === 1 ? 'bg-emerald-500' : 'bg-rose-500'}`}></div>
           
           <div className="flex justify-between items-start relative z-10">
             <div>
-              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">{card.title}</p>
-              <p className={`text-3xl font-black ${card.color} tracking-tight`}>
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-2">{card.title}</p>
+              <p className={`text-3xl font-black ${card.color} tracking-tight text-neon`}>
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(card.value)}
               </p>
             </div>

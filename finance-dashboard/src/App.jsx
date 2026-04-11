@@ -22,9 +22,10 @@ function DashboardContent() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <header className="flex justify-between items-center mb-12">
-        <div className="flex flex-col gap-1">
-          <img src={logo} alt="VYNEX Logo" className="h-10 w-auto mb-2" />
+      <header className="flex justify-between items-center mb-16">
+        <div className="flex flex-col gap-2">
+          <img src={logo} alt="VYNEX Logo" className="h-16 w-auto mb-2" />
+
           <div className="flex items-center gap-2">
             <p className="text-slate-400 font-medium text-sm">Controle financeiro de alta performance.</p>
             {isDemoMode && (
