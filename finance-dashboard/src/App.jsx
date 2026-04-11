@@ -7,6 +7,7 @@ import TransactionList from './components/TransactionList';
 import AddTransactionModal from './components/AddTransactionModal';
 import BankConnector from './components/BankConnector';
 import FinancialInsights from './components/FinancialInsights';
+import OnlineUsersIndicator from './components/OnlineUsersIndicator';
 import logo from './assets/vynex-logo.png';
 
 function DashboardContent() {
@@ -45,7 +46,10 @@ function DashboardContent() {
         </div>
 
 
-        <div className="flex gap-2 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="hidden xs:block">
+            <OnlineUsersIndicator />
+          </div>
           <BankConnector />
           <button
             onClick={() => setIsModalOpen(true)}
