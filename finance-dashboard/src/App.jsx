@@ -5,9 +5,12 @@ import ExpenseChart from './components/ExpenseChart';
 import BalanceChart from './components/BalanceChart';
 import TransactionList from './components/TransactionList';
 import AddTransactionModal from './components/AddTransactionModal';
+import AddTransactionModal from './components/AddTransactionModal';
 import BankConnector from './components/BankConnector';
 import FinancialInsights from './components/FinancialInsights';
 import OnlineUsersIndicator from './components/OnlineUsersIndicator';
+import CreditScoreCard from './components/CreditScoreCard';
+
 import logo from './assets/vynex-logo.png';
 
 function DashboardContent() {
@@ -64,30 +67,41 @@ function DashboardContent() {
 
         <FinancialInsights />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="glass p-6 h-[350px]">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 glass p-6 h-[400px]">
             <h3 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-brand-green neon-glow"></span>
               Fluxo de Caixa
             </h3>
-            <div className="h-[260px]">
+            <div className="h-[310px]">
               <BalanceChart />
             </div>
           </div>
-          <div className="glass p-6 h-[350px]">
+          
+          <div className="lg:col-span-1 h-[400px]">
+            <CreditScoreCard />
+          </div>
+
+          <div className="lg:col-span-1 glass p-6 h-[350px]">
             <h3 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-brand-green neon-glow"></span>
-              Distribuição de Gastos
+              Distribuição
             </h3>
             <div className="h-[260px]">
               <ExpenseChart />
             </div>
           </div>
+
+          <div className="lg:col-span-2">
+            <TransactionList />
+          </div>
         </div>
 
 
-        <TransactionList />
+
+        {/* TransactionList is now inside the grid above */}
       </div>
+
 
       <AddTransactionModal 
         isOpen={isModalOpen} 
