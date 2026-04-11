@@ -22,12 +22,11 @@ function DashboardContent() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <header className="flex justify-between items-center mb-16">
-        <div className="flex flex-col gap-2">
-          <img src={logo} alt="VYNEX Logo" className="h-16 w-auto mb-2" />
-
+      <header className="flex justify-between items-center mb-10">
+        <div className="flex flex-col gap-1">
+          <img src={logo} alt="VYNEX Logo" className="h-8 w-auto mb-1" />
           <div className="flex items-center gap-2">
-            <p className="text-slate-400 font-medium text-sm">Controle financeiro de alta performance.</p>
+            <p className="text-slate-500 font-medium text-xs">Controle financeiro de alta performance.</p>
             {isDemoMode && (
               <span className="px-2 py-0.5 bg-amber-500/10 text-amber-500 text-[10px] font-black uppercase tracking-tighter rounded-full border border-amber-500/20">
                 Modo de Demonstração
@@ -51,21 +50,26 @@ function DashboardContent() {
         <SummaryCards />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="glass p-6 min-h-[400px]">
-            <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-brand-green neon-glow"></span>
+          <div className="glass p-6 h-[350px]">
+            <h3 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-green neon-glow"></span>
               Fluxo de Caixa
             </h3>
-            <BalanceChart />
+            <div className="h-[260px]">
+              <BalanceChart />
+            </div>
           </div>
-          <div className="glass p-6 min-h-[400px]">
-            <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-brand-green neon-glow"></span>
+          <div className="glass p-6 h-[350px]">
+            <h3 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-green neon-glow"></span>
               Distribuição de Gastos
             </h3>
-            <ExpenseChart />
+            <div className="h-[260px]">
+              <ExpenseChart />
+            </div>
           </div>
         </div>
+
 
         <TransactionList />
       </div>
