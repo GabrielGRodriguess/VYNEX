@@ -5,17 +5,47 @@ import ExpenseChart from './components/ExpenseChart';
 import BalanceChart from './components/BalanceChart';
 import TransactionList from './components/TransactionList';
 import AddTransactionModal from './components/AddTransactionModal';
-import AddTransactionModal from './components/AddTransactionModal';
 import BankConnector from './components/BankConnector';
 import FinancialInsights from './components/FinancialInsights';
 import OnlineUsersIndicator from './components/OnlineUsersIndicator';
-import CreditScoreCard from './components/CreditScoreCard';
-
+import CreditAnalysis from './components/CreditAnalysis';
 import logo from './assets/vynex-logo.png';
+import { LayoutDashboard, TrendingUp } from 'lucide-react';
 
-function DashboardContent() {
+function DashboardContent({ onAddTransaction }) {
+  return (
+    <div className="grid grid-cols-1 gap-8">
+      <SummaryCards />
+      <FinancialInsights />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="glass p-6 h-[350px]">
+          <h3 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-green neon-glow"></span>
+            Fluxo de Caixa
+          </h3>
+          <div className="h-[260px]">
+            <BalanceChart />
+          </div>
+        </div>
+        <div className="glass p-6 h-[350px]">
+          <h3 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-green neon-glow"></span>
+            Distribuição de Gastos
+          </h3>
+          <div className="h-[260px]">
+            <ExpenseChart />
+          </div>
+        </div>
+      </div>
+      <TransactionList />
+    </div>
+  );
+}
+
+function MainApp() {
   const { loading, isDemoMode } = useFinance();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('dashboard');
 
   if (loading) {
     return (
@@ -27,7 +57,7 @@ function DashboardContent() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <header className="flex items-center justify-between mb-12 gap-4">
+      <header className="flex items-center justify-between mb-8 gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
           <div className="flex items-center">
             <img 
@@ -48,7 +78,6 @@ function DashboardContent() {
           </div>
         </div>
 
-
         <div className="flex items-center gap-2 sm:gap-4">
           <OnlineUsersIndicator />
           <BankConnector />
@@ -59,49 +88,42 @@ function DashboardContent() {
             <span className="text-xl">+</span> <span className="hidden sm:inline">Nova Transação</span>
           </button>
         </div>
-
       </header>
 
-      <div className="grid grid-cols-1 gap-8">
-        <SummaryCards />
+      {/* Navigation Tabs */}
+      <nav className="flex items-center gap-2 mb-12 p-1.5 bg-slate-900/50 rounded-2xl w-fit border border-white/5">
+        <button
+          onClick={() => setActiveSection('dashboard')}
+          className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+            activeSection === 'dashboard' 
+            ? 'bg-slate-800 text-brand-green shadow-xl border border-white/5' 
+            : 'text-slate-500 hover:text-slate-300'
+          }`}
+        >
+          <LayoutDashboard size={14} />
+          Visão Geral
+        </button>
+        <button
+          onClick={() => setActiveSection('credit')}
+          className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+            activeSection === 'credit' 
+            ? 'bg-slate-800 text-brand-green shadow-xl border border-white/5' 
+            : 'text-slate-500 hover:text-slate-300'
+          }`}
+        >
+          <TrendingUp size={14} />
+          Análise de Crédito
+        </button>
+      </nav>
 
-        <FinancialInsights />
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 glass p-6 h-[400px]">
-            <h3 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-green neon-glow"></span>
-              Fluxo de Caixa
-            </h3>
-            <div className="h-[310px]">
-              <BalanceChart />
-            </div>
-          </div>
-          
-          <div className="lg:col-span-1 h-[400px]">
-            <CreditScoreCard />
-          </div>
-
-          <div className="lg:col-span-1 glass p-6 h-[350px]">
-            <h3 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-green neon-glow"></span>
-              Distribuição
-            </h3>
-            <div className="h-[260px]">
-              <ExpenseChart />
-            </div>
-          </div>
-
-          <div className="lg:col-span-2">
-            <TransactionList />
-          </div>
-        </div>
-
-
-
-        {/* TransactionList is now inside the grid above */}
-      </div>
-
+      {/* Content Area */}
+      <main>
+        {activeSection === 'dashboard' ? (
+          <DashboardContent />
+        ) : (
+          <CreditAnalysis />
+        )}
+      </main>
 
       <AddTransactionModal 
         isOpen={isModalOpen} 
@@ -114,11 +136,12 @@ function DashboardContent() {
 function App() {
   return (
     <FinanceProvider>
-      <div className="min-h-screen">
-        <DashboardContent />
+      <div className="min-h-screen bg-slate-950 text-slate-200">
+        <MainApp />
       </div>
     </FinanceProvider>
   );
 }
 
 export default App;
+
