@@ -8,44 +8,24 @@ export async function getConnectToken() {
     return 'mock-access-token';
   }
 
-  const clientId = import.meta.env.VITE_PLUGGY_CLIENT_ID;
-  const clientSecret = import.meta.env.VITE_PLUGGY_CLIENT_SECRET;
-
-  if (!clientId || !clientSecret) {
-    console.error('Pluggy Client ID ou Secret NÃO ENCONTRADOS no .env!');
-    console.log('Verifique se as chaves no .env começam com VITE_');
-    throw new Error('Configuração ausente');
-  }
-
-  console.log(`Tentando conectar com Client ID: ${clientId.substring(0, 8)}...`);
-
   try {
-    const authResponse = await fetch(`${BASE_URL}/auth`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ clientId, clientSecret }),
-    });
-
-    if (!authResponse.ok) {
-      const errorData = await authResponse.json();
-      throw new Error(errorData.message || 'Falha na autenticação com Pluggy');
+    // Calling our brand new serverless function instead of exposing secrets here
+    const response = await fetch('/api/connect-token');
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Falha ao buscar Connect Token do Vercel');
     }
 
-
-    const { apiKey } = await authResponse.json();
-    const tokenResponse = await fetch(`${BASE_URL}/connect_token`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-API-KEY': apiKey },
-      body: JSON.stringify({}),
-    });
-
-    const { accessToken } = await tokenResponse.json();
+    const { accessToken } = await response.json();
     return accessToken;
   } catch (error) {
-    console.error('Erro na conexão real:', error);
+    console.error('Erro ao buscar token via Serverless:', error);
+    // Fallback to old behavior ONLY if env vars exist (for local testing without Vercel)
     throw error;
   }
 }
+
 
 
 export async function fetchAllData(itemId) {
