@@ -22,18 +22,27 @@ function DashboardContent() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <header className="flex justify-between items-center mb-10">
-        <div className="flex flex-col gap-1">
-          <img src={logo} alt="VYNEX Logo" className="h-8 w-auto mb-1" />
+      <header className="flex items-center justify-between mb-12 gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+          <div className="flex items-center">
+            <img 
+              src={logo} 
+              alt="VYNEX Logo" 
+              className="h-8 md:h-10 w-auto object-contain mix-blend-screen drop-shadow-[0_0_12px_rgba(163,255,18,0.3)] transition-all" 
+            />
+          </div>
           <div className="flex items-center gap-2">
-            <p className="text-slate-500 font-medium text-xs">Controle financeiro de alta performance.</p>
+            <p className="text-slate-500 font-semibold text-[10px] md:text-xs uppercase tracking-[0.1em] border-l border-white/10 pl-4 hidden sm:block">
+              High Performance Finance
+            </p>
             {isDemoMode && (
               <span className="px-2 py-0.5 bg-amber-500/10 text-amber-500 text-[10px] font-black uppercase tracking-tighter rounded-full border border-amber-500/20">
-                Modo de Demonstração
+                Demo
               </span>
             )}
           </div>
         </div>
+
 
         <div className="flex gap-4">
           <BankConnector />
