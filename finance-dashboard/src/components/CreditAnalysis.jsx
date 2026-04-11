@@ -221,12 +221,12 @@ export default function CreditAnalysis() {
                   <input 
                     type="number" 
                     value={formData.renda}
-                    disabled={isBankConnected}
                     onChange={(e) => setFormData({...formData, renda: e.target.value})}
-                    className={`input-style pl-16 ${isBankConnected ? 'opacity-50 cursor-not-allowed bg-slate-950/20' : ''}`}
+                    className="input-style pl-16"
                     placeholder="0.00"
                   />
                 </div>
+
               </div>
               <div>
                 <label className="label-style">Parcela Desejada</label>
