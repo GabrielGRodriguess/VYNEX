@@ -6,6 +6,7 @@ import BalanceChart from './components/BalanceChart';
 import TransactionList from './components/TransactionList';
 import AddTransactionModal from './components/AddTransactionModal';
 import BankConnector from './components/BankConnector';
+import logo from './assets/vynex-logo.png';
 
 function DashboardContent() {
   const { loading, isDemoMode } = useFinance();
@@ -13,21 +14,21 @@ function DashboardContent() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="flex items-center justify-center min-h-screen bg-slate-950">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-green"></div>
       </div>
     );
   }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <header className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Meu Dashboard</h1>
+      <header className="flex justify-between items-center mb-12">
+        <div className="flex flex-col gap-1">
+          <img src={logo} alt="VYNEX Logo" className="h-10 w-auto mb-2" />
           <div className="flex items-center gap-2">
-            <p className="text-gray-500 font-medium">Bem-vindo de volta ao seu controle financeiro.</p>
+            <p className="text-slate-400 font-medium text-sm">Controle financeiro de alta performance.</p>
             {isDemoMode && (
-              <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-black uppercase tracking-tighter rounded-full border border-amber-200">
+              <span className="px-2 py-0.5 bg-amber-500/10 text-amber-500 text-[10px] font-black uppercase tracking-tighter rounded-full border border-amber-500/20">
                 Modo de Demonstração
               </span>
             )}
@@ -38,21 +39,35 @@ function DashboardContent() {
           <BankConnector />
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all flex items-center gap-2 shadow-lg shadow-blue-100"
+            className="bg-neon-gradient text-slate-950 px-6 py-3 rounded-xl font-black hover:scale-105 transition-all flex items-center gap-2 shadow-lg shadow-brand-green/20"
           >
             <span className="text-xl">+</span> Nova Transação
           </button>
         </div>
       </header>
 
-      <SummaryCards />
+      <div className="grid grid-cols-1 gap-8">
+        <SummaryCards />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <BalanceChart />
-        <ExpenseChart />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="glass p-6 min-h-[400px]">
+            <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-brand-green neon-glow"></span>
+              Fluxo de Caixa
+            </h3>
+            <BalanceChart />
+          </div>
+          <div className="glass p-6 min-h-[400px]">
+            <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-brand-green neon-glow"></span>
+              Distribuição de Gastos
+            </h3>
+            <ExpenseChart />
+          </div>
+        </div>
+
+        <TransactionList />
       </div>
-
-      <TransactionList />
 
       <AddTransactionModal 
         isOpen={isModalOpen} 
@@ -65,7 +80,7 @@ function DashboardContent() {
 function App() {
   return (
     <FinanceProvider>
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen">
         <DashboardContent />
       </div>
     </FinanceProvider>

@@ -17,36 +17,52 @@ export default function ExpenseChart() {
       return acc;
     }, []);
 
-  const COLORS = ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#f43f5e'];
+  const COLORS = ['#A3FF12', '#00C853', '#B2FF59', '#1E293B', '#64748B', '#FFFFFF'];
 
   return (
-    <div className="glass p-6 h-[400px]">
-      <h3 className="text-lg font-semibold mb-4">Gastos por Categoria</h3>
+    <div className="w-full h-full min-h-[300px]">
       {data.length > 0 ? (
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={data}
               cx="50%"
-              cy="45%"
-              innerRadius={60}
-              outerRadius={80}
-              paddingAngle={5}
+              cy="50%"
+              innerRadius={70}
+              outerRadius={90}
+              paddingAngle={8}
               dataKey="value"
+              stroke="none"
+              animationDuration={1500}
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell 
+                   key={`cell-${index}`} 
+                   fill={COLORS[index % COLORS.length]} 
+                   className="hover:opacity-80 transition-opacity cursor-pointer"
+                />
               ))}
             </Pie>
             <Tooltip 
+              contentStyle={{ 
+                backgroundColor: '#0F172A', 
+                borderRadius: '16px', 
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: 'white'
+              }}
               formatter={(value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
             />
-            <Legend verticalAlign="bottom" />
+            <Legend 
+               verticalAlign="bottom" 
+               formatter={(value) => <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{value}</span>}
+               iconType="circle"
+               iconSize={8}
+            />
           </PieChart>
         </ResponsiveContainer>
       ) : (
-        <div className="flex items-center justify-center h-full text-gray-400">
-          Nenhuma despesa registrada
+        <div className="flex items-center justify-center h-full text-slate-500 font-medium italic">
+          Aguardando registros...
         </div>
       )}
     </div>

@@ -31,7 +31,6 @@ export default function BankConnector() {
 
   const handleSuccess = (itemData) => {
     console.log('Conectado com sucesso!', itemData);
-    // Aqui avisamos o nosso "cérebro" que agora temos dados reais
     setBankData(itemData);
     setConnectToken(null);
     setIsConnecting(false);
@@ -63,11 +62,12 @@ export default function BankConnector() {
     }
   };
 
-
-
   if (connectToken) {
     return (
-      <div className="fixed inset-0 z-[100] bg-white">
+      <div className="fixed inset-0 z-[100] bg-slate-950">
+        <div className="absolute top-4 right-4 z-[101]">
+           <button onClick={() => setConnectToken(null)} className="text-white bg-slate-800 p-2 rounded-lg">&times; Fechar</button>
+        </div>
         <PluggyConnect
           connectToken={connectToken}
           onSuccess={handleSuccess}
@@ -82,14 +82,19 @@ export default function BankConnector() {
     <button
       onClick={handleStartConnection}
       disabled={isConnecting}
-      className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg 
-        ${isConnecting ? 'bg-gray-300' : 'bg-purple-600 text-white hover:bg-purple-700 shadow-purple-100'}`}
+      className={`px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all flex items-center gap-2 border shadow-lg 
+        ${isConnecting 
+          ? 'bg-slate-900 border-white/5 text-slate-600 cursor-not-allowed' 
+          : 'bg-slate-900 text-white border-white/10 hover:border-brand-green/50 hover:bg-slate-800 shadow-black/50'}`}
     >
       {isConnecting ? (
-        <span className="animate-pulse">Conectando...</span>
+        <div className="flex items-center gap-2">
+           <div className="w-3 h-3 border-2 border-brand-green border-t-transparent rounded-full animate-spin"></div>
+           <span>Sincronizando...</span>
+        </div>
       ) : (
         <>
-          <span className="text-xl">🏦</span> Conectar Nubank
+          <span className="text-xl">🔌</span> Sincronizar Banco
         </>
       )}
     </button>

@@ -1,32 +1,16 @@
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useFinance } from '../context/FinanceContext';
 
 export default function BalanceChart() {
   const { transactions, balance: currentBalance } = useFinance();
-
-  // Calcula a evolução do saldo de trás para frente
-  const data = transactions
-    .slice()
-    .reverse()
-    .reduce((acc, t) => {
-      const lastBalance = acc.length > 0 ? acc[acc.length - 1].saldo : currentBalance - transactions.reduce((sum, tx) => {
-          // This logic is a bit flawed for a simple mock, let's simplify
-          return sum + (tx.type === 'income' ? tx.amount : -tx.amount);
-      }, 0);
-      
-      const prevSaldo = acc.length > 0 ? acc[acc.length - 1].saldo : (currentBalance - transactions.reduce((total, curr) => total + (curr.type === 'income' ? curr.amount : -curr.amount) , 0));
-      
-      // Let's just use a simpler approach for the mock:
-      return acc;
-    }, []);
 
   // Simplified for the demo purpose: historical balance points
   const getHistoricalData = () => {
     let runningBalance = currentBalance;
     const history = [{ date: 'Hoje', saldo: runningBalance }];
     
-    transactions.slice(0, 10).forEach(t => {
+    transactions.slice(0, 8).forEach(t => {
       if (t.type === 'income') runningBalance -= t.amount;
       else runningBalance += t.amount;
       history.unshift({ date: t.date, saldo: runningBalance });
@@ -38,36 +22,50 @@ export default function BalanceChart() {
   const chartData = getHistoricalData();
 
   return (
-    <div className="glass p-6 h-[400px]">
-      <h3 className="text-lg font-semibold mb-4">Evolução do Saldo</h3>
+    <div className="w-full h-full min-h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+        <AreaChart data={chartData}>
+          <defs>
+            <linearGradient id="colorSaldo" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#A3FF12" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#A3FF12" stopOpacity={0}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
           <XAxis 
             dataKey="date" 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#94a3b8', fontSize: 12 }}
+            tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }}
+            dy={10}
           />
           <YAxis 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#94a3b8', fontSize: 12 }}
-            tickFormatter={(value) => `R$ ${value}`}
+            tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }}
+            tickFormatter={(value) => `R$ ${value >= 1000 ? (value/1000).toFixed(1) + 'k' : value}`}
           />
           <Tooltip 
+            contentStyle={{ 
+              backgroundColor: '#0F172A', 
+              borderRadius: '16px', 
+              border: '1px solid rgba(255,255,255,0.1)',
+              boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.5)'
+            }}
+            itemStyle={{ color: '#A3FF12', fontWeight: 900 }}
+            labelStyle={{ color: '#94a3b8', marginBottom: '4px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}
             formatter={(value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
-            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
           />
-          <Line 
+          <Area 
             type="monotone" 
             dataKey="saldo" 
-            stroke="#3b82f6" 
-            strokeWidth={3} 
-            dot={{ r: 4, fill: '#3b82f6' }}
-            activeDot={{ r: 6 }}
+            stroke="#A3FF12" 
+            strokeWidth={4} 
+            fillOpacity={1} 
+            fill="url(#colorSaldo)" 
+            animationDuration={2000}
           />
-        </LineChart>
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );
