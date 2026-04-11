@@ -12,8 +12,10 @@ export default function BankConnector() {
     setIsConnecting(true);
     try {
       const token = await getConnectToken();
+      console.log('VYNEX: Secure Connect Token recebido da API:', token);
       
       if (token === 'mock-access-token') {
+
         // Simulate a short delay and then success
         setTimeout(() => {
           handleSuccess({ item: { id: 'mock-item' }, metadata: { institution: { name: 'Nubank (Demo)' } } });
@@ -94,8 +96,9 @@ export default function BankConnector() {
         </div>
       ) : (
         <>
-          <span className="text-xl">🔌</span> <span className="hidden sm:inline">Sincronizar Banco</span>
+          <span className="text-xl">🔌</span> <span className="hidden sm:inline">Conectar Banco</span>
         </>
+
       )}
     </button>
   );

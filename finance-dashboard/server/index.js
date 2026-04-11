@@ -97,7 +97,59 @@ app.post('/analise', (req, res) => {
   res.json(result);
 });
 
+app.post('/connect-token', async (req, res) => {
+  const clientId = process.env.PLUGGY_CLIENT_ID;
+  const clientSecret = process.env.PLUGGY_CLIENT_SECRET;
+
+  if (!clientId || !clientSecret) {
+    return res.status(500).json({ error: 'Faltam credenciais da Pluggy no .env' });
+  }
+
+  try {
+    const authResponse = await fetch('https://api.pluggy.ai/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientId, clientSecret }),
+    });
+    const { apiKey } = await authResponse.json();
+
+    const tokenResponse = await fetch('https://api.pluggy.ai/connect_token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-API-KEY': apiKey },
+      body: JSON.stringify({}),
+    });
+    const data = await tokenResponse.json();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao gerar token', details: error.message });
+  }
+});
+
+// Alias para suportar GET (opcional para testes rápidos)
+app.get('/connect-token', async (req, res) => {
+  // Reutiliza a lógica do POST
+  const clientId = process.env.PLUGGY_CLIENT_ID;
+  const clientSecret = process.env.PLUGGY_CLIENT_SECRET;
+  try {
+    const authResponse = await fetch('https://api.pluggy.ai/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientId, clientSecret }),
+    });
+    const { apiKey } = await authResponse.json();
+    const tokenResponse = await fetch('https://api.pluggy.ai/connect_token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-API-KEY': apiKey },
+      body: JSON.stringify({}),
+    });
+    const data = await tokenResponse.json();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao gerar token', details: error.message });
+  }
+});
 
 app.listen(PORT, () => {
+
   console.log(`VYNEX Credit Engine running on port ${PORT}`);
 });
