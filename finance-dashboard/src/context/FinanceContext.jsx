@@ -59,25 +59,43 @@ export function FinanceProvider({ children }) {
     setTransactions(prev => prev.filter(t => t.id !== id));
   };
 
+  useEffect(() => {
+    const savedItemId = localStorage.getItem('vynex_bank_item_id');
+    if (savedItemId && transactions.length === 0) {
+      setBankData({ item: { id: savedItemId } });
+    }
+  }, []);
+
   const setBankData = async (data) => {
     if (data.item) {
       setLoading(true);
       try {
         const bankData = await fetchAllData(data.item.id);
+        
+        // Update balance and transactions
         setBalance(bankData.balance);
-        setTransactions(prev => [...bankData.transactions, ...prev.filter(t => !t.fromBank)]);
+        setTransactions(prev => {
+          const fromBank = bankData.transactions;
+          const manuals = prev.filter(t => !t.fromBank);
+          return [...fromBank, ...manuals];
+        });
+
+        // Set persistent metadata
         if (data.item.id === 'mock-item') {
           setIsDemoMode(true);
+        } else {
+          localStorage.setItem('vynex_bank_item_id', data.item.id);
+          setIsDemoMode(false);
         }
 
       } catch (error) {
         console.error("Erro ao sincronizar banco:", error);
-        alert("Erro ao sincronizar dados. Verifique suas credenciais.");
       } finally {
         setLoading(false);
       }
     }
   };
+
 
   const getIncome = () => {
     const total = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + Number(t.amount), 0);
