@@ -90,11 +90,11 @@ export default function BankConnector() {
       {isConnecting ? (
         <div className="flex items-center gap-2">
            <div className="w-3 h-3 border-2 border-brand-green border-t-transparent rounded-full animate-spin"></div>
-           <span>Sincronizando...</span>
+           <span className="hidden sm:inline">Sincronizando...</span>
         </div>
       ) : (
         <>
-          <span className="text-xl">🔌</span> Sincronizar Banco
+          <span className="text-xl">🔌</span> <span className="hidden sm:inline">Sincronizar Banco</span>
         </>
       )}
     </button>

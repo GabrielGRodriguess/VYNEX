@@ -1,12 +1,13 @@
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
 import { useFinance } from '../context/FinanceContext';
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
       <div className="glass p-3 border-white/10 shadow-2xl">
-        <p className="text-[10px] text-slate-400 uppercase tracking-widest font-black mb-1">{payload[0].payload.name}</p>
+        <p className="text-[10px] text-slate-400 uppercase tracking-widest font-black mb-1">{payload[0].payload.date}</p>
         <p className="text-sm font-black text-brand-green">
           {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(payload[0].value)}
         </p>
@@ -47,7 +48,7 @@ export default function BalanceChart() {
           </defs>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
           <XAxis 
-            dataKey="name" 
+            dataKey="date" 
             axisLine={false} 
             tickLine={false} 
             tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 500 }}

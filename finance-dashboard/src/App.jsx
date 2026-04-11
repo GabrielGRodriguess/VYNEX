@@ -24,16 +24,16 @@ function DashboardContent() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <header className="flex items-center justify-between mb-12 gap-4">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
           <div className="flex items-center">
             <img 
               src={logo} 
               alt="VYNEX Logo" 
-              className="h-8 md:h-10 w-auto object-contain mix-blend-screen drop-shadow-[0_0_12px_rgba(163,255,18,0.3)] transition-all" 
+              className="h-8 md:h-10 w-auto object-contain flex-shrink-0 mix-blend-screen drop-shadow-[0_0_12px_rgba(163,255,18,0.3)] transition-all" 
             />
           </div>
           <div className="flex items-center gap-2">
-            <p className="text-slate-500 font-semibold text-[10px] md:text-xs uppercase tracking-[0.1em] border-l border-white/10 pl-4 hidden sm:block">
+            <p className="text-slate-500 font-semibold text-[10px] md:text-xs uppercase tracking-[0.1em] border-l border-white/10 pl-4 hidden md:block">
               High Performance Finance
             </p>
             {isDemoMode && (
@@ -45,15 +45,16 @@ function DashboardContent() {
         </div>
 
 
-        <div className="flex gap-4">
+        <div className="flex gap-2 sm:gap-4">
           <BankConnector />
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-neon-gradient text-slate-950 px-6 py-3 rounded-xl font-black hover:scale-105 transition-all flex items-center gap-2 shadow-lg shadow-brand-green/20"
+            className="bg-neon-gradient text-slate-950 p-3 sm:px-6 sm:py-3 rounded-xl font-black hover:scale-105 transition-all flex items-center gap-2 shadow-lg shadow-brand-green/20"
           >
-            <span className="text-xl">+</span> Nova Transação
+            <span className="text-xl">+</span> <span className="hidden sm:inline">Nova Transação</span>
           </button>
         </div>
+
       </header>
 
       <div className="grid grid-cols-1 gap-8">
