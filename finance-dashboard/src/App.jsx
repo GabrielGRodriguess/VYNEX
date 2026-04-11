@@ -47,9 +47,7 @@ function DashboardContent() {
 
 
         <div className="flex items-center gap-2 sm:gap-4">
-          <div className="hidden xs:block">
-            <OnlineUsersIndicator />
-          </div>
+          <OnlineUsersIndicator />
           <BankConnector />
           <button
             onClick={() => setIsModalOpen(true)}

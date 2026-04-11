@@ -20,7 +20,7 @@ export default function OnlineUsersIndicator() {
   }, []);
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/40 border border-white/5 backdrop-blur-md">
+    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/60 border border-brand-green/20 backdrop-blur-md shadow-[0_0_15px_rgba(163,255,18,0.05)]">
       <div className="relative flex h-2 w-2">
         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-green opacity-75"></span>
         <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-green"></span>
