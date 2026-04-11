@@ -216,26 +216,28 @@ export default function CreditAnalysis() {
                   Renda Mensal
                   {isBankConnected && <span className="text-brand-green flex items-center gap-1"><ShieldCheck size={10} /> Validada</span>}
                 </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-4 text-slate-600 font-bold text-sm">R$</span>
+                <div className="relative flex items-center h-14">
+                  <span className="absolute left-5 text-slate-500 font-black text-sm pointer-events-none z-10">R$</span>
                   <input 
                     type="number" 
                     value={formData.renda}
                     disabled={isBankConnected}
                     onChange={(e) => setFormData({...formData, renda: e.target.value})}
-                    className={`input-style pl-10 ${isBankConnected ? 'opacity-80 bg-slate-900/50' : ''}`}
+                    className={`input-style pl-16 ${isBankConnected ? 'opacity-50 cursor-not-allowed bg-slate-950/20' : ''}`}
+                    placeholder="0.00"
                   />
                 </div>
               </div>
               <div>
                 <label className="label-style">Parcela Desejada</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-4 text-slate-600 font-bold text-sm">R$</span>
+                <div className="relative flex items-center h-14">
+                  <span className="absolute left-5 text-slate-500 font-black text-sm pointer-events-none z-10">R$</span>
                   <input 
                     type="number" 
                     value={formData.parcela}
                     onChange={(e) => setFormData({...formData, parcela: e.target.value})}
-                    className="input-style pl-10"
+                    className="input-style pl-16"
+                    placeholder="0.00"
                   />
                 </div>
               </div>
@@ -244,28 +246,32 @@ export default function CreditAnalysis() {
             {formData.tipo === 'imobiliario' && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
                 <label className="label-style">Entrada / Aporte (Imobiliário)</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-4 text-slate-600 font-bold text-sm">R$</span>
+                <div className="relative flex items-center h-14">
+                  <span className="absolute left-5 text-slate-500 font-black text-sm pointer-events-none z-10">R$</span>
                   <input 
                     type="number" 
                     value={formData.entrada}
                     onChange={(e) => setFormData({...formData, entrada: e.target.value})}
-                    className="input-style pl-10"
+                    className="input-style pl-16"
+                    placeholder="0.00"
                   />
                 </div>
               </motion.div>
             )}
 
+
+
+
             <div className="pt-2 border-t border-white/5">
-              <div className="flex items-start gap-4">
+              <div className="flex items-center gap-4">
                 <input 
                   type="checkbox" 
                   id="lgpd"
                   checked={formData.autorizado}
                   onChange={(e) => setFormData({...formData, autorizado: e.target.checked})}
-                  className="w-5 h-5 accent-brand-green mt-1"
+                  className="vynex-checkbox"
                 />
-                <label htmlFor="lgpd" className="text-[11px] text-slate-400 leading-relaxed cursor-pointer select-none">
+                <label htmlFor="lgpd" className="text-[11px] text-slate-400 leading-tight cursor-pointer select-none">
                   Declaro que as informações são verdadeiras e **autorizo a VYNEX** a consultar meu score e histórico de crédito para fins de análise automatizada (LGPD).
                 </label>
               </div>
@@ -273,12 +279,12 @@ export default function CreditAnalysis() {
             </div>
 
             <motion.button
-              whileHover={formData.autorizado && !loading ? { scale: 1.02, y: -2 } : {}}
-              whileTap={formData.autorizado && !loading ? { scale: 0.98 } : {}}
+              whileHover={formData.autorizado && !loading ? { scale: 1.01 } : {}}
+              whileTap={formData.autorizado && !loading ? { scale: 0.99 } : {}}
               disabled={loading || !formData.autorizado}
-              className={`w-full py-5 rounded-2xl font-black text-sm tracking-[0.2em] uppercase transition-all shadow-xl flex items-center justify-center gap-3 relative overflow-hidden ${
+              className={`w-full h-16 rounded-2xl font-black text-xs sm:text-sm tracking-[0.2em] uppercase transition-all shadow-xl flex items-center justify-center gap-3 relative overflow-hidden ${
                 loading ? 'bg-slate-800 text-slate-500 cursor-wait' : 
-                formData.autorizado ? 'bg-brand-green text-slate-950' : 'bg-slate-900 text-slate-700 cursor-not-allowed grayscale'
+                formData.autorizado ? 'bg-brand-green text-slate-950' : 'bg-slate-900/50 text-slate-700 cursor-not-allowed grayscale'
               }`}
             >
               {loading ? (
@@ -289,7 +295,7 @@ export default function CreditAnalysis() {
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
-                    className="text-white normal-case tracking-normal"
+                    className="text-white normal-case tracking-normal text-xs"
                   >
                     {loadingMessages[loadingStep]}
                   </motion.span>
@@ -303,6 +309,7 @@ export default function CreditAnalysis() {
             </motion.button>
           </form>
         </section>
+
 
         {/* RESULT SIDE */}
         <section className="glass min-h-[500px] flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
@@ -394,11 +401,7 @@ export default function CreditAnalysis() {
         </section>
       </div>
 
-      <style jsx>{`
-        .label-style { @apply text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block; }
-        .input-style { @apply w-full bg-slate-900 border border-white/5 rounded-2xl px-5 py-4 text-sm text-white focus:border-brand-green outline-none transition-all; }
-        .error-text { @apply text-[10px] font-black text-rose-500 uppercase tracking-tighter; }
-      `}</style>
     </div>
   );
 }
+
