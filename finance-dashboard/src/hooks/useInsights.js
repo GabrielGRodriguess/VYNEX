@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useFinance } from '../context/FinanceContext';
 
 export function useInsights() {
-  const { transactions } = useFinance();
+  const { transactions, balance } = useFinance();
 
   const insights = useMemo(() => {
     if (!transactions.length) return [];
@@ -12,107 +12,79 @@ export function useInsights() {
     const currentYear = now.getFullYear();
 
     const expenses = transactions.filter(t => t.type === 'expense');
+    const income = transactions.filter(t => t.type === 'income');
+    
     const currentMonthTxs = expenses.filter(t => {
       const d = new Date(t.date);
       return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
     });
 
-    const latest = transactions[0];
-    const generatedInsights = [];
-
-    // 1. BEHAVIORAL ANALYSIS (High Precision)
     const categoryTotals = currentMonthTxs.reduce((acc, t) => {
       acc[t.category] = (acc[t.category] || 0) + Number(t.amount);
       return acc;
     }, {});
 
-    const totalMonthExpense = currentMonthTxs.reduce((acc, t) => acc + Number(t.amount), 0);
+    const latest = transactions[0];
+    const generatedInsights = [];
 
-    if (latest && latest.type === 'expense') {
-      const totalInCat = categoryTotals[latest.category] || 0;
-      const latestAmount = Number(latest.amount);
-
-      // RULE 1: HIGH VOLUME ALERT (Threshold 5000 + 300)
-      if (totalInCat > 5000 && latestAmount > 300) {
-        generatedInsights.push({
-          id: `alert-vol-${latest.id}`,
-          type: 'alert',
-          label: 'Alerta de Volume',
-          icon: '📊',
-          text: `"${latest.category}" concentra uma parcela elevada dos seus gastos este mês.`,
-          color: 'text-amber-500'
-        });
-      } 
-      // RULE 2: RECURRING ACCUMULATION (If not high volume, but still relevant)
-      else if (totalInCat > 1000) {
-        generatedInsights.push({
-          id: `alert-acc-${latest.id}`,
-          type: 'alert',
-          label: 'Acúmulo Mensal',
-          icon: '📈',
-          text: `Você já acumulou um volume relevante em "${latest.category}" neste período.`,
-          color: 'text-blue-400'
-        });
-      }
-      // RULE 3: SPECIFIC FREQUENCY (If few transactions but same store)
-      const establishmentTxs = currentMonthTxs.filter(t => t.description === latest.description);
-      if (establishmentTxs.length >= 3) {
-        generatedInsights.push({
-          id: `alert-freq-${latest.id}`,
-          type: 'pattern',
-          label: 'Frequência Recorrente',
-          icon: '🔄',
-          text: `Esta é sua ${establishmentTxs.length}ª operação em "${latest.description}" este mês.`,
-          color: 'text-emerald-400'
-        });
-      }
-    }
-
-    // 2. DATA-DRIVEN PATTERNS (Replacing Generics)
-    if (generatedInsights.length < 2) {
-      // Comparison: Food vs Total
-      const foodTotal = categoryTotals['Food'] || 0;
-      if (foodTotal > 0) {
-        const foodPerc = ((foodTotal / totalMonthExpense) * 100).toFixed(0);
-        if (foodPerc > 20) {
-          generatedInsights.push({
-            id: 'pattern-food',
-            type: 'pattern',
-            label: 'Visão de Gastos',
-            icon: '🍎',
-            text: `Alimentação representa ${foodPerc}% do seu total de despesas neste mês.`,
-            color: 'text-slate-400'
-          });
-        }
-      }
-    }
-
-    // 3. INCOME CONTEXT
-    if (latest && latest.type === 'income' && generatedInsights.length < 3) {
+    // 1. ANÁLISE DE COMPORTAMENTO (Humanized AI - 4 Steps)
+    
+    // REGRA DE GASTO ELEVADO
+    const topCategory = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0];
+    if (topCategory && topCategory[1] > 1000) {
+      const [catName, total] = topCategory;
       generatedInsights.push({
-        id: `income-ctx-${latest.id}`,
+        id: 'ia-insight-expense',
+        type: 'alert',
+        label: 'Análise de Fluxo',
+        icon: '🧠',
+        text: `Percebi que seus gastos com "${catName}" somam ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(total)} este mês. Isso indica que uma parte considerável da sua renda está concentrada aqui, o que pode apertar seu orçamento. Tente revisar o que é essencial nessa categoria. Se precisar de mais fôlego, posso verificar se você consegue reduzir suas parcelas atuais com uma nova simulação de crédito.`,
+        color: 'text-amber-500',
+        action: 'credit'
+      });
+    }
+
+    // REGRA DE RENDA ESTÁVEL (Sutileza e Confiança)
+    const totalIncome = income.reduce((acc, t) => acc + Number(t.amount), 0);
+    if (totalIncome > 3000 && generatedInsights.length < 2) {
+      generatedInsights.push({
+        id: 'ia-insight-income',
         type: 'feedback',
-        label: 'Aporte Identificado',
-        icon: '💰',
-        text: `Recebimento em "${latest.category}" fortalece sua liquidez para este período.`,
+        label: 'Perfil de Crédito',
+        icon: '⭐️',
+        text: "Vi que seus recebimentos estão estáveis e acima da média. Isso é um excelente sinal de saúde financeira e aumenta muito sua confiabilidade para o mercado. Com esse perfil, você consegue as melhores taxas do mercado agora mesmo. Vale a pena ver quanto de limite você tem liberado.",
+        color: 'text-brand-green',
+        action: 'credit'
+      });
+    }
+
+    // REGRA DE SALDO BAIXO / APERTO
+    if (balance < 1000 && balance > 0 && generatedInsights.length < 3) {
+      generatedInsights.push({
+        id: 'ia-insight-balance',
+        type: 'alert',
+        label: 'Saúde Financeira',
+        icon: '📉',
+        text: `Seu saldo está em ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(balance)}, um valor que pode te deixar exposto a imprevistos. Me parece que as contas do mês estão pesando mais do que o esperado. Recomendo acompanhar seus gastos diários de perto nos próximos dias. Se a situação apertar, podemos ver se existe alguma alternativa de crédito para reorganizar suas dívidas e aliviar seu caixa.`,
+        color: 'text-rose-500',
+        action: 'credit'
+      });
+    }
+
+    // FALLBACK HUMANIZADO
+    if (generatedInsights.length === 0) {
+      generatedInsights.push({
+        id: 'ia-insight-fallback',
+        type: 'feedback',
+        label: 'Inteligência VYNEX',
+        icon: '✨',
+        text: "Ainda estou aprendendo sobre seu ritmo financeiro, mas já vi que você é organizado. Continue registrando suas movimentações para que eu possa te dar conselhos mais precisos. Em breve, terei uma visão clara do seu potencial de crédito.",
         color: 'text-brand-green'
       });
     }
 
-    // Final Fallback (only if absolutely empty and very specific)
-    if (generatedInsights.length === 0 && latest) {
-      generatedInsights.push({
-        id: 'fallback-spec',
-        type: 'pattern',
-        label: 'Detecção de Contexto',
-        icon: '🎯',
-        text: `Sua despesa em "${latest.category}" foi classificada com sucesso.`,
-        color: 'text-slate-500'
-      });
-    }
-
     return generatedInsights.slice(0, 3);
-  }, [transactions]);
+  }, [transactions, balance]);
 
   return insights;
 }

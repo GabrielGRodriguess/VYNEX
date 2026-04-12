@@ -108,7 +108,7 @@ export default function Login({ onLogin, initialView = 'login' }) {
           </h1>
           <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-2 mt-2">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-green neon-glow"></span>
-            Financial Intelligence
+            Inteligência Financeira
           </p>
         </div>
 
@@ -128,13 +128,13 @@ export default function Login({ onLogin, initialView = 'login' }) {
                 {/* Email Field (Always visible except in reset) */}
                 {view !== 'reset' && (
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">E-mail corporativo</label>
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Seu E-mail</label>
                     <div className="relative flex items-center">
                       <Mail className="absolute left-4 text-slate-500" size={18} />
                       <input 
                         type="email" 
                         required
-                        placeholder="exemplo@vynex.com"
+                        placeholder="seu@email.com"
                         className="input-style pl-12 h-14"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -148,7 +148,7 @@ export default function Login({ onLogin, initialView = 'login' }) {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center px-1">
                       <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                        {view === 'reset' ? 'Nova Senha' : 'Sua senha'}
+                        {view === 'reset' ? 'Nova Senha' : 'Senha de Acesso'}
                       </label>
                       {view === 'login' && (
                         <button 
@@ -156,7 +156,7 @@ export default function Login({ onLogin, initialView = 'login' }) {
                           onClick={() => setView('forgot')}
                           className="text-[9px] font-black text-brand-green uppercase tracking-widest hover:underline"
                         >
-                          Esqueceu?
+                          Esqueceu a senha?
                         </button>
                       )}
                     </div>
@@ -227,7 +227,7 @@ export default function Login({ onLogin, initialView = 'login' }) {
           <div className="mt-8 flex flex-col items-center gap-4">
             {view === 'login' ? (
               <button onClick={() => setView('signup')} className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-white flex items-center gap-2">
-                <UserPlus size={14} /> Não tem conta? Cadastre-se
+                <UserPlus size={14} /> Criar conta agora
               </button>
             ) : (
               <button onClick={() => setView('login')} className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-white flex items-center gap-2">

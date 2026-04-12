@@ -18,18 +18,43 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Login from './components/Login';
 
 
-function DashboardContent({ onAddTransaction }) {
-// ... (omitted for brevity in replacement but kept in file)
+function DashboardContent({ onSimulateCredit }) {
+  const { transactions } = useFinance();
 
   return (
     <div className="grid grid-cols-1 gap-8">
       <SummaryCards />
+      
+      {/* Strategic Credit CTA Card */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass p-8 bg-brand-green/10 border-brand-green/20 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden group hover:border-brand-green/40 transition-all cursor-pointer"
+        onClick={onSimulateCredit}
+      >
+        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-green/5 rounded-full blur-3xl -mr-32 -mt-32 group-hover:bg-brand-green/10 transition-colors"></div>
+        <div className="relative z-10 flex items-center gap-6">
+          <div className="w-16 h-16 rounded-2xl bg-brand-green/20 flex items-center justify-center text-brand-green shadow-[0_0_20px_rgba(163,255,18,0.2)]">
+            <TrendingUp size={32} />
+          </div>
+          <div>
+            <h3 className="text-xl font-black text-white uppercase tracking-tight">Limite pré-aprovado</h3>
+            <p className="text-slate-400 text-sm max-w-md">Com base na sua movimentação, você tem grandes chances de liberar crédito com taxas menores hoje.</p>
+          </div>
+        </div>
+        <button 
+          className="relative z-10 bg-brand-green text-slate-950 px-8 py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand-green/20"
+        >
+          Simular meu crédito
+        </button>
+      </motion.div>
+
       <FinancialInsights />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="glass p-6 h-[350px]">
           <h3 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-green neon-glow"></span>
-            Fluxo de Caixa
+            Minha Evolução
           </h3>
           <div className="h-[260px]">
             <BalanceChart />
@@ -72,14 +97,14 @@ function MainApp({ user, onLogout }) {
             alt="VYNEX Logo" 
             className="h-6 sm:h-9 md:h-12 w-auto object-contain flex-shrink-0 mix-blend-screen drop-shadow-[0_0_12px_rgba(163,255,18,0.3)]" 
           />
-          <div className="hidden sm:flex flex-col border-l border-white/10 pl-3 sm:pl-4">
+          <div className="hidden sm:flex flex-col border-l border-white/10 pl-4 sm:pl-6">
             <p className="text-slate-500 font-black text-[8px] sm:text-[10px] uppercase tracking-widest leading-none">
-              Financial Intelligence
+              Inteligência Financeira
             </p>
           </div>
           <div className="hidden lg:flex items-center gap-2 bg-brand-green/5 border border-brand-green/10 px-4 py-1.5 rounded-full ml-4">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse" />
-            <span className="text-[9px] font-black text-brand-green uppercase tracking-widest">Plataforma de Crédito Inteligente</span>
+            <span className="text-[9px] font-black text-brand-green uppercase tracking-widest leading-none">Assistente de Decisões</span>
           </div>
           <DemoControls />
         </div>
@@ -88,7 +113,7 @@ function MainApp({ user, onLogout }) {
           <div className="hidden lg:flex items-center gap-4 mr-2">
              <div className="text-right">
                 <p className="text-[9px] font-black text-white uppercase tracking-tighter leading-none">{user?.email?.split('@')[0]}</p>
-                <p className="text-[7px] font-bold text-slate-500 uppercase tracking-widest">Colaborador</p>
+                <p className="text-[7px] font-bold text-slate-500 uppercase tracking-widest">Conta VYNEX</p>
              </div>
              <button onClick={onLogout} className="p-2 text-slate-500 hover:text-red-500 transition-colors">
                 <LogOut size={16} />
@@ -122,7 +147,7 @@ function MainApp({ user, onLogout }) {
             }`}
           >
             <LayoutDashboard size={12} className="hidden xs:block" />
-            Geral
+            Minha Visão Financeira
           </button>
           <button
             onClick={() => setActiveSection('credit')}
@@ -133,7 +158,7 @@ function MainApp({ user, onLogout }) {
             }`}
           >
             <TrendingUp size={12} className="hidden xs:block" />
-            Crédito
+            Simular Crédito
           </button>
           <button
             onClick={() => setActiveSection('history')}
@@ -171,7 +196,7 @@ function MainApp({ user, onLogout }) {
             transition={{ duration: 0.2 }}
           >
             {activeSection === 'dashboard' ? (
-              <DashboardContent />
+              <DashboardContent onSimulateCredit={() => setActiveSection('credit')} />
             ) : activeSection === 'credit' ? (
               <CreditAnalysis user={user} />
             ) : (

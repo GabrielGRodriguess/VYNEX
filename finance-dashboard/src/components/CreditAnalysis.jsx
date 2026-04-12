@@ -127,8 +127,8 @@ export default function CreditAnalysis({ user }) {
   const renderStep1 = () => (
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-black text-white uppercase tracking-tight">Identificação</h2>
-        <p className="text-slate-400 text-sm">Precisamos de dados básicos para iniciar sua consulta inteligente.</p>
+        <h2 className="text-2xl font-black text-white uppercase tracking-tight">Quem é você?</h2>
+        <p className="text-slate-400 text-sm">Só precisamos de alguns dados básicos para começar sua simulação personalizada.</p>
       </div>
       <div className="space-y-4">
         <div>
@@ -163,8 +163,8 @@ export default function CreditAnalysis({ user }) {
   const renderStep2 = () => (
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-black text-white uppercase tracking-tight">Perfil Profissional</h2>
-        <p className="text-slate-400 text-sm">Suas condições de crédito dependem da sua estabilidade financeira.</p>
+        <h2 className="text-2xl font-black text-white uppercase tracking-tight">Como é sua renda?</h2>
+        <p className="text-slate-400 text-sm">Isso nos ajuda a encontrar as melhores taxas e prazos para o seu perfil.</p>
       </div>
       <div className="space-y-4">
         <div>
@@ -205,8 +205,8 @@ export default function CreditAnalysis({ user }) {
   const renderStep3 = () => (
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-black text-white uppercase tracking-tight">Status de Margem</h2>
-        <p className="text-slate-400 text-sm">Quase lá! Precisamos entender seu espaço para novo crédito.</p>
+        <h2 className="text-2xl font-black text-white uppercase tracking-tight">Seu momento atual</h2>
+        <p className="text-slate-400 text-sm">Quase lá! Vamos checar sua margem para liberar o melhor valor possível.</p>
       </div>
       <div className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -253,9 +253,18 @@ export default function CreditAnalysis({ user }) {
           {errors.autorizado && <p className="error-text">{errors.autorizado}</p>}
         </div>
       </div>
-      <button onClick={startAnalysis} className="bg-brand-green text-slate-950 w-full py-4 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-brand-green/20">
-        Analisar Oportunidade <Award size={18} />
-      </button>
+        <button 
+          onClick={startAnalysis}
+          className="w-full relative z-10 bg-brand-green text-slate-950 px-8 py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-brand-green/20"
+        >
+          Simular meu crédito
+        </button>
+        <button 
+          onClick={handleWhatsApp}
+          className="w-full relative z-10 bg-white/10 text-white border border-white/10 px-8 py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-white/20 active:scale-95 transition-all"
+        >
+          Falar com especialista
+        </button>
     </motion.div>
   );
 
@@ -269,12 +278,12 @@ export default function CreditAnalysis({ user }) {
         </div>
       </div>
       <div className="text-center space-y-2">
-        <h3 className="text-white font-black uppercase tracking-widest">Processando Inteligência</h3>
-        <p className="text-slate-500 text-xs px-10">Cruzando seu perfil com Santander, Facta, CCSafe e outros parceiros...</p>
+        <h3 className="text-white font-black uppercase tracking-widest">Calculando suas condições</h3>
+        <p className="text-slate-500 text-xs px-10">Nossa inteligência está consultando as melhores taxas para o seu perfil em tempo real...</p>
       </div>
       <div className="flex items-center gap-2 bg-slate-900/50 px-4 py-2 rounded-full border border-white/5">
         <div className="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse" />
-        <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">{activeUsers} pessoas analisando agora</span>
+        <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">{activeUsers} pessoas consultando limite agora</span>
       </div>
     </div>
   );
@@ -300,14 +309,14 @@ export default function CreditAnalysis({ user }) {
         </div>
         <div className="glass p-5 space-y-1">
           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Destaque</p>
-          <p className="text-[11px] font-black text-white leading-tight pt-2 uppercase tracking-tighter">{result.status_analise}</p>
+          <p className="text-[11px] font-black text-brand-green leading-tight pt-2 uppercase tracking-tighter">Oportunidade Identificada</p>
         </div>
       </div>
 
       <div className="p-6 bg-brand-green/10 rounded-3xl border border-brand-green/20 space-y-4">
         <div className="flex items-center gap-2 text-brand-green">
           <Zap size={18} />
-          <span className="text-[10px] font-black uppercase tracking-widest">Rota Recomendada: {result.produto_recomendado}</span>
+          <span className="text-[10px] font-black uppercase tracking-widest">Produto Sugerido: {result.produto_recomendado}</span>
         </div>
         <p className="text-sm text-slate-200 font-bold leading-relaxed">
           {result.mensagem_front}
@@ -318,13 +327,17 @@ export default function CreditAnalysis({ user }) {
         </div>
       </div>
 
-      <div className="space-y-3">
-        <button onClick={handleWhatsApp} className="w-full h-16 bg-brand-green text-slate-950 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:scale-[1.02] shadow-2xl shadow-brand-green/30 transition-all">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <button onClick={handleWhatsApp} className="h-16 bg-brand-green text-slate-950 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:scale-[1.02] shadow-2xl shadow-brand-green/30 transition-all">
           <MessageSquare size={22} />
-          {result.cta_secundaria}
+          Finalizar Agora
         </button>
-        <p className="text-[9px] text-slate-500 text-center uppercase tracking-widest animate-pulse">Atendimento especializado conectado • Consultando parceiros</p>
+        <button onClick={handleWhatsApp} className="h-16 bg-white/5 text-white border border-white/10 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-white/10 active:scale-95 transition-all">
+          <UserCheck size={22} />
+          Falar com especialista
+        </button>
       </div>
+      <p className="text-[9px] text-slate-500 text-center uppercase tracking-widest animate-pulse mt-4">Atendimento especializado conectado • Consultando parceiros</p>
     </motion.div>
   );
 
@@ -332,8 +345,8 @@ export default function CreditAnalysis({ user }) {
     <div className="max-w-xl mx-auto px-4 pb-20 pt-4">
       <div className="mb-8 flex items-center justify-between border-b border-white/5 pb-4">
         <div>
-          <h4 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Decision Engine 2.0</h4>
-          <p className="text-white font-black text-lg">Funil Inteligente de Crédito</p>
+          <h4 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Assistente VYNEX</h4>
+          <p className="text-white font-black text-lg">Veja quanto você pode liberar</p>
         </div>
         <div className="text-right">
           <span className="text-[9px] font-black text-brand-green uppercase tracking-widest bg-brand-green/10 px-3 py-1 rounded-full border border-brand-green/20">Step {step}/5</span>

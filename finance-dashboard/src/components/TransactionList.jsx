@@ -10,7 +10,7 @@ export default function TransactionList() {
       <div className="flex items-center justify-between mb-8">
         <h3 className="text-xl font-bold flex items-center gap-3">
           <span className="w-2 h-8 bg-brand-green rounded-full shadow-[0_0_15px_rgba(163,255,18,0.5)]"></span>
-          Transações Recentes
+          Histórico de Movimentações
         </h3>
         <span className="text-xs font-black text-slate-500 uppercase tracking-widest bg-slate-800/50 px-3 py-1 rounded-full border border-white/5">
           {transactions.length} Registros
@@ -64,7 +64,7 @@ export default function TransactionList() {
             {transactions.length === 0 && (
               <tr>
                 <td colSpan="4" className="py-16 text-center text-slate-500 font-medium italic">
-                  Nenhuma transação encontrada na rede VYNEX.
+                  Nenhuma movimentação encontrada ainda.
                 </td>
               </tr>
             )}

@@ -36,30 +36,35 @@ export default function FinancialInsights() {
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 exit={{ opacity: 0, scale: 0.98 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                className={`flex items-start gap-5 group py-2 px-4 rounded-2xl transition-all duration-500 ${
-                  insight.type === 'alert' 
-                    ? 'bg-amber-500/[0.03] border border-amber-500/10' 
-                    : 'hover:bg-white/[0.02]'
-                }`}
-              >
-                <div className={`mt-1 flex-shrink-0 w-10 h-10 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-center text-lg transition-all duration-500 ${
-                  insight.type === 'alert' 
-                    ? 'grayscale-0 opacity-100 shadow-[0_0_15px_rgba(245,158,11,0.15)] border-amber-500/20' 
-                    : 'grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100'
-                }`}>
-                  {insight.icon}
-                </div>
-                
-                <div className="flex-1 space-y-1">
-                  <span className={`text-[8px] font-black uppercase tracking-tighter block ${
-                    insight.type === 'alert' ? 'text-amber-500' : 'text-slate-500'
-                  }`}>
-                    {insight.label}
-                  </span>
-                  <p className="text-sm font-medium text-slate-300 leading-snug">
-                    {insight.text}
-                  </p>
-                </div>
+                  <div className={`p-5 rounded-3xl transition-all duration-500 flex items-start gap-4 ${
+                    insight.type === 'alert' 
+                      ? 'bg-amber-500/[0.04] border border-amber-500/10' 
+                      : 'bg-white/[0.02] border border-white/5'
+                  } border-l-4 ${insight.type === 'alert' ? 'border-l-amber-500' : 'border-l-brand-green'}`}>
+                    <div className={`mt-1 flex-shrink-0 w-12 h-12 rounded-2xl bg-slate-950 border border-white/5 flex items-center justify-center text-xl shadow-2xl ${
+                      insight.type === 'alert' ? 'shadow-amber-500/10' : 'shadow-brand-green/10'
+                    }`}>
+                      {insight.icon}
+                    </div>
+                    
+                    <div className="flex-1 space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className={`text-[9px] font-black uppercase tracking-widest ${
+                          insight.type === 'alert' ? 'text-amber-500' : 'text-brand-green'
+                        }`}>
+                          {insight.label}
+                        </span>
+                        {insight.action === 'credit' && (
+                          <span className="text-[8px] font-black text-brand-green uppercase tracking-tighter bg-brand-green/10 px-2 py-0.5 rounded-full border border-brand-green/20 animate-pulse">
+                            Oportunidade
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[13px] font-medium text-slate-200 leading-relaxed italic opacity-90">
+                        "{insight.text}"
+                      </p>
+                    </div>
+                  </div>
 
                 <div className={`mt-2 w-1.5 h-1.5 rounded-full ${insight.color} opacity-30 shadow-[0_0_8px_currentColor]`}></div>
               </motion.div>

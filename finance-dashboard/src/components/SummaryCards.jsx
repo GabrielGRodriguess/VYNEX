@@ -9,25 +9,26 @@ export default function SummaryCards() {
 
   const cards = [
     {
-      title: 'Saldo VYNEX',
+      title: 'Patrimônio sob gestão',
       value: balance,
-      color: isNegative ? 'text-rose-500' : 'text-neon',
-      glow: isNegative ? 'shadow-rose-500/20' : 'shadow-brand-green/10',
-      icon: isNegative ? '⚠️' : '💎'
+      color: isNegative ? 'text-rose-500' : 'text-brand-green',
+      glow: isNegative ? 'shadow-rose-500/20' : 'shadow-brand-green/20',
+      icon: isNegative ? '⚠️' : '🛡️',
+      subtext: isNegative ? 'Ação recomendada' : 'Excelente liquidez'
     },
     {
-      title: 'Entradas',
+      title: 'Entradas (mês)',
       value: getIncome(),
       color: 'text-emerald-400',
       glow: 'shadow-emerald-500/10',
-      icon: '↗️'
+      icon: '📈'
     },
     {
-      title: 'Saídas',
+      title: 'Saídas (mês)',
       value: getExpense(),
       color: 'text-rose-500',
       glow: 'shadow-rose-500/10',
-      icon: '↘️'
+      icon: '📉'
     },
   ];
 
@@ -53,6 +54,11 @@ export default function SummaryCards() {
               <p className={`text-2xl font-black ${card.color} tracking-tight`}>
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(card.value)}
               </p>
+              {card.subtext && (
+                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1.5 opacity-60">
+                  • {card.subtext}
+                </p>
+              )}
             </div>
             <div className="p-3 bg-slate-800/50 rounded-xl border border-white/5 grayscale group-hover:grayscale-0 transition-all duration-300 transform group-hover:scale-110">
               <span className="text-xl">{card.icon}</span>

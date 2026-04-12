@@ -44,7 +44,7 @@ export default function AddTransactionModal({ isOpen, onClose }) {
               <div className="flex justify-between items-center mb-10">
                 <h2 className="text-2xl font-black text-white flex items-center gap-3">
                   <span className="w-2 h-6 bg-brand-green rounded-full"></span>
-                  Nova Operação
+                  Novo Registro
                 </h2>
                 <button 
                   onClick={onClose} 
@@ -61,19 +61,19 @@ export default function AddTransactionModal({ isOpen, onClose }) {
                     className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${formData.type === 'income' ? 'bg-brand-green text-slate-950 shadow-[0_0_15px_rgba(163,255,18,0.3)]' : 'text-slate-500 hover:text-slate-300'}`}
                     onClick={() => setFormData({ ...formData, type: 'income' })}
                   >
-                    Entrada
+                    Recebimento
                   </button>
                   <button
                     type="button"
                     className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${formData.type === 'expense' ? 'bg-rose-500 text-white shadow-[0_0_15px_rgba(244,63,94,0.3)]' : 'text-slate-500 hover:text-slate-300'}`}
                     onClick={() => setFormData({ ...formData, type: 'expense' })}
                   >
-                    Saída
+                    Gasto / Despesa
                   </button>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Volume Financeiro</label>
+                  <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Valor do Lançamento</label>
                   <div className="relative group">
                     <span className="absolute left-6 top-1/2 -translate-y-1/2 text-brand-green font-black">R$</span>
                     <input
@@ -91,7 +91,7 @@ export default function AddTransactionModal({ isOpen, onClose }) {
 
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Segmento</label>
+                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Categoria</label>
                     <div className="relative">
                       <select
                         className="w-full px-6 py-4 rounded-2xl border-2 border-white/5 bg-slate-950 text-white focus:border-brand-green/50 outline-none transition-all font-bold text-sm appearance-none cursor-pointer"
@@ -128,7 +128,7 @@ export default function AddTransactionModal({ isOpen, onClose }) {
                   type="submit"
                   className="w-full bg-neon-gradient text-slate-950 py-5 rounded-2xl font-black text-sm uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-brand-green/10 mt-6"
                 >
-                  Confirmar na Rede
+                  Salvar Registro
                 </button>
               </form>
             </div>

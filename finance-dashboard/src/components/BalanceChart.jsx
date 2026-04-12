@@ -1,14 +1,13 @@
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-
 import { useFinance } from '../context/FinanceContext';
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length > 0) {
     const isPositive = payload[0].value >= 0;
     return (
-      <div className="glass p-3 border-white/10 shadow-2xl">
-        <p className="text-[10px] text-slate-400 uppercase tracking-widest font-black mb-1">{payload[0].payload.date}</p>
+      <div className="glass p-4 border-white/10 shadow-2xl">
+        <p className="text-[10px] text-slate-500 uppercase tracking-widest font-black mb-1">{payload[0].payload.date}</p>
         <p className={`text-sm font-black ${isPositive ? 'text-brand-green' : 'text-rose-500'}`}>
           {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(payload[0].value)}
         </p>
@@ -21,67 +20,81 @@ const CustomTooltip = ({ active, payload }) => {
 export default function BalanceChart() {
   const { transactions, balance: currentBalance } = useFinance();
 
-  // Simplified for the demo purpose: historical balance points
-  const getHistoricalData = () => {
+  const chartData = React.useMemo(() => {
     let runningBalance = currentBalance;
     const history = [{ date: 'Hoje', saldo: runningBalance }];
     
-    transactions.slice(0, 8).forEach(t => {
+    // Mostramos apenas os últimos 6 lances para maior clareza
+    transactions.slice(0, 6).forEach(t => {
       if (t.type === 'income') runningBalance -= t.amount;
       else runningBalance += t.amount;
-      history.unshift({ date: t.date, saldo: runningBalance });
+      history.unshift({ 
+        date: new Date(t.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }), 
+        saldo: runningBalance 
+      });
     });
     
-    return history;
-  };
-
-  const chartData = getHistoricalData();
+  const trend = React.useMemo(() => {
+    if (chartData.length < 2) return 'stable';
+    const first = chartData[0].saldo;
+    const last = chartData[chartData.length - 1].saldo;
+    if (last > first * 1.05) return 'up';
+    if (last < first * 0.95) return 'down';
+    return 'stable';
+  }, [chartData]);
 
   return (
-    <div className="w-full h-full min-h-[300px]">
-      <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={chartData}>
-          <defs>
-            <linearGradient id="colorSaldo" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
-          <XAxis 
-            dataKey="date" 
-            axisLine={false} 
-            tickLine={false} 
-            tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 500 }}
-            dy={10}
-          />
-          <YAxis 
-            axisLine={false} 
-            tickLine={false} 
-            tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 500 }}
-            tickFormatter={(value) => `R$ ${value}`}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend 
-                verticalAlign="bottom" 
-                align="center"
-                wrapperStyle={{ paddingTop: '20px' }}
-                formatter={(value) => <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.1em]">{value}</span>}
-                iconType="circle"
-                iconSize={6}
-             />
-          <Area 
-            type="monotone" 
-            dataKey="saldo" 
-            name="Saldo"
-            stroke="#3B82F6" 
-            strokeWidth={4} 
-            fillOpacity={1} 
-            fill="url(#colorSaldo)" 
-            animationDuration={2000}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+    <div className="w-full h-full min-h-[300px] flex flex-col">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+           <div className={`w-2 h-2 rounded-full ${trend === 'up' ? 'bg-brand-green' : trend === 'down' ? 'bg-rose-500' : 'bg-slate-500'} animate-pulse`}></div>
+           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+             Tendência: {trend === 'up' ? 'Crescimento' : trend === 'down' ? 'Atenção' : 'Estável'}
+           </span>
+        </div>
+        {trend === 'down' && (
+          <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest bg-rose-500/10 px-2 py-1 rounded-lg border border-rose-500/20">
+            Ação Sugerida
+          </span>
+        )}
+      </div>
+      <div className="flex-1">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <defs>
+              <linearGradient id="colorSaldo" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={trend === 'down' ? '#F43F5E' : '#A3FF12'} stopOpacity={0.2}/>
+                <stop offset="95%" stopColor={trend === 'down' ? '#F43F5E' : '#A3FF12'} stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
+            <XAxis 
+              dataKey="date" 
+              axisLine={false} 
+              tickLine={false} 
+              tick={{ fill: '#64748b', fontSize: 10, fontWeight: 900 }}
+              dy={10}
+            />
+            <YAxis 
+              axisLine={false} 
+              tickLine={false} 
+              tick={{ fill: '#64748b', fontSize: 10, fontWeight: 900 }}
+              tickFormatter={(value) => `R$ ${value}`}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Area 
+              type="monotone" 
+              dataKey="saldo" 
+              stroke={trend === 'down' ? '#F43F5E' : '#A3FF12'} 
+              strokeWidth={3} 
+              fillOpacity={1} 
+              fill="url(#colorSaldo)" 
+              animationDuration={1500}
+              activeDot={{ r: 6, fill: trend === 'down' ? '#F43F5E' : '#A3FF12', stroke: '#0F172A', strokeWidth: 2 }}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

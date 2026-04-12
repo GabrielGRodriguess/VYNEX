@@ -1,23 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function OnlineUsersIndicator() {
-  const [count, setCount] = useState(5);
+  const [count, setCount] = useState(7);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    let timeoutId;
+    
+    const updateCount = () => {
       setCount(prev => {
-        const change = Math.random() > 0.5 ? 1 : -1;
+        const change = Math.random() > 0.6 ? 1 : -1;
         const next = prev + change;
-        // Keep between 3 and 12
-        if (next < 3) return 3;
-        if (next > 12) return 12;
+        if (next < 3) return 4;
+        if (next > 12) return 11;
         return next;
-       });
-    }, 7000); // Update every 7 seconds
+      });
 
-    return () => clearInterval(interval);
+      // Random interval between 8s and 25s
+      const nextInterval = Math.floor(Math.random() * (25000 - 8000 + 1)) + 8000;
+      timeoutId = setTimeout(updateCount, nextInterval);
+    };
+
+    timeoutId = setTimeout(updateCount, 10000);
+
+    return () => clearTimeout(timeoutId);
   }, []);
+
+  const getCopy = (n) => {
+    const copies = [
+      'analisando crédito agora',
+      'consultando limite neste momento',
+      'simulando taxas agora',
+      'verificando margem livre'
+    ];
+    // Keep it stable for a bit by using count as seed
+    return copies[n % copies.length];
+  };
 
   return (
     <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-green/[0.03] border border-brand-green/20 backdrop-blur-md shadow-[0_0_15px_rgba(163,255,18,0.05)]">
@@ -30,10 +48,10 @@ export default function OnlineUsersIndicator() {
         <AnimatePresence mode="wait">
           <motion.span
             key={count}
-            initial={{ y: 10, opacity: 0 }}
+            initial={{ y: 5, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            exit={{ y: -5, opacity: 0 }}
+            transition={{ duration: 0.4 }}
             className="text-[10px] font-black text-brand-green"
           >
             {count}
@@ -41,9 +59,7 @@ export default function OnlineUsersIndicator() {
         </AnimatePresence>
         
         <p className="text-[10px] font-black text-brand-green/80 uppercase tracking-widest whitespace-nowrap">
-          {count === 1 ? 'pessoa' : 'pessoas'}{' '}
-          <span className="hidden sm:inline">online</span>
-          <span className="sm:hidden text-[10px]">on</span>
+          {getCopy(count)}
         </p>
       </div>
     </div>
