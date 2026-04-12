@@ -4,11 +4,12 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { useFinance } from '../context/FinanceContext';
 
 const CustomTooltip = ({ active, payload }) => {
-  if (active && payload && payload.length) {
+  if (active && payload && payload.length > 0) {
+    const isPositive = payload[0].value >= 0;
     return (
       <div className="glass p-3 border-white/10 shadow-2xl">
         <p className="text-[10px] text-slate-400 uppercase tracking-widest font-black mb-1">{payload[0].payload.date}</p>
-        <p className="text-sm font-black text-brand-green">
+        <p className={`text-sm font-black ${isPositive ? 'text-brand-green' : 'text-rose-500'}`}>
           {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(payload[0].value)}
         </p>
       </div>
@@ -42,8 +43,8 @@ export default function BalanceChart() {
         <AreaChart data={chartData}>
           <defs>
             <linearGradient id="colorSaldo" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#A3FF12" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#A3FF12" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
@@ -73,7 +74,7 @@ export default function BalanceChart() {
             type="monotone" 
             dataKey="saldo" 
             name="Saldo"
-            stroke="#A3FF12" 
+            stroke="#3B82F6" 
             strokeWidth={4} 
             fillOpacity={1} 
             fill="url(#colorSaldo)" 

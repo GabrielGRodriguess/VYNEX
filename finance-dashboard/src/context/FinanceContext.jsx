@@ -1,90 +1,138 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { fetchBankData } from '../services/api';
+import { supabase } from '../services/supabaseClient';
 import { fetchAllData } from '../services/pluggyService';
 
 export const FinanceContext = createContext();
 
-export function FinanceProvider({ children }) {
+export function FinanceProvider({ user, children }) {
   const [balance, setBalance] = useState(0);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isDemoMode, setIsDemoMode] = useState(false);
 
+  // LOAD REAL DATA FROM SUPABASE
   useEffect(() => {
-    const storedTransactions = localStorage.getItem('finance_transactions');
-    const storedBalance = localStorage.getItem('finance_balance');
-
-    if (storedTransactions && storedBalance) {
-      setTransactions(JSON.parse(storedTransactions));
-      setBalance(JSON.parse(storedBalance));
-      setLoading(false);
-    } else {
-      fetchBankData().then(data => {
-        setBalance(data.balance);
-        setTransactions(data.transactions);
+    async function loadData() {
+      if (!user) {
+        setBalance(0);
+        setTransactions([]);
         setLoading(false);
-        localStorage.setItem('finance_balance', JSON.stringify(data.balance));
-        localStorage.setItem('finance_transactions', JSON.stringify(data.transactions));
-      });
-    }
-  }, []);
+        return;
+      }
 
-  useEffect(() => {
-    if (!loading) {
-      localStorage.setItem('finance_balance', JSON.stringify(balance));
-      localStorage.setItem('finance_transactions', JSON.stringify(transactions));
-    }
-  }, [balance, transactions, loading]);
+      setLoading(true);
+      
+      const { data, error } = await supabase
+        .from('finance_transactions')
+        .select('*')
+        .order('date', { ascending: false });
 
-  const addTransaction = (transaction) => {
-    const newTx = { ...transaction, id: Date.now() };
-    setTransactions(prev => [newTx, ...prev]);
-    
-    if (transaction.type === 'income') {
-      setBalance(prev => prev + Number(transaction.amount));
+      if (!error && data) {
+        setTransactions(data);
+        // Calculate balance from transaction history
+        const total = data.reduce((acc, t) => {
+          return t.type === 'income' ? acc + Number(t.amount) : acc - Number(t.amount);
+        }, 0);
+        setBalance(total);
+      } else {
+        console.error("Erro ao carregar transações:", error);
+        setBalance(0);
+        setTransactions([]);
+      }
+      setLoading(false);
+    }
+
+    if (!isDemoMode) {
+      loadData();
+    }
+  }, [user, isDemoMode]);
+
+  const addTransaction = async (transaction) => {
+    if (isDemoMode) {
+       const newTx = { ...transaction, id: Date.now() };
+       setTransactions(prev => [newTx, ...prev]);
+       if (transaction.type === 'income') setBalance(prev => prev + Number(transaction.amount));
+       else setBalance(prev => prev - Number(transaction.amount));
+       return;
+    }
+
+    if (!user) return;
+
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('finance_transactions')
+      .insert([{
+        user_id: user.id,
+        type: transaction.type,
+        amount: Number(transaction.amount),
+        category: transaction.category,
+        date: transaction.date || new Date().toISOString().split('T')[0],
+        description: transaction.description || '',
+        from_bank: transaction.fromBank || false
+      }])
+      .select();
+
+    if (!error && data) {
+      setTransactions(prev => [data[0], ...prev]);
+      if (transaction.type === 'income') setBalance(prev => prev + Number(transaction.amount));
+      else setBalance(prev => prev - Number(transaction.amount));
     } else {
-      setBalance(prev => prev - Number(transaction.amount));
+      console.error("Erro ao salvar transação:", error);
+    }
+    setLoading(false);
+  };
+
+  const deleteTransaction = async (id) => {
+    if (isDemoMode) {
+      const tx = transactions.find(t => t.id === id);
+      if (tx) {
+        if (tx.type === 'income') setBalance(prev => prev - Number(tx.amount));
+        else setBalance(prev => prev + Number(tx.amount));
+        setTransactions(prev => prev.filter(t => t.id !== id));
+      }
+      return;
+    }
+
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('finance_transactions')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      const tx = transactions.find(t => t.id === id);
+      if (tx.type === 'income') setBalance(prev => prev - Number(tx.amount));
+      else setBalance(prev => prev + Number(tx.amount));
+      setTransactions(prev => prev.filter(t => t.id !== id));
     }
   };
 
-  const deleteTransaction = (id) => {
-    const tx = transactions.find(t => t.id === id);
-    if (!tx) return;
-    
-    if (tx.type === 'income') {
-      setBalance(prev => prev - Number(tx.amount));
-    } else {
-      setBalance(prev => prev + Number(tx.amount));
-    }
-    setTransactions(prev => prev.filter(t => t.id !== id));
+  const loadDemoData = () => {
+    setIsDemoMode(true);
+    const demoTransactions = [
+      { id: 'd1', type: 'income', amount: 5000, category: 'Salário', date: '2026-04-10' },
+      { id: 'd2', type: 'expense', amount: 1200, category: 'Aluguel', date: '2026-04-11' },
+      { id: 'd3', type: 'expense', amount: 150, category: 'Transporte', date: '2026-04-12' },
+      { id: 'd4', type: 'income', amount: 1200, category: 'Comissão', date: '2026-04-12' },
+    ];
+    setTransactions(demoTransactions);
+    setBalance(4850);
   };
-
-  useEffect(() => {
-    const savedItemId = localStorage.getItem('vynex_bank_item_id');
-    if (savedItemId && transactions.length === 0) {
-      setBankData({ item: { id: savedItemId } });
-    }
-  }, []);
 
   const setBankData = async (data) => {
-    if (data.item) {
+    if (data.item && user) {
       setLoading(true);
       try {
         const bankData = await fetchAllData(data.item.id);
         
-        // Update balance and transactions
         setBalance(bankData.balance);
-        setTransactions(prev => {
-          const fromBank = bankData.transactions;
-          const manuals = prev.filter(t => !t.fromBank);
-          return [...fromBank, ...manuals];
-        });
+        setTransactions(bankData.transactions);
 
-        // Set persistent metadata
         if (data.item.id === 'mock-item') {
           setIsDemoMode(true);
         } else {
-          localStorage.setItem('vynex_bank_item_id', data.item.id);
+          localStorage.setItem(`vynex_u_${user.email}_bank_item_id`, data.item.id);
           setIsDemoMode(false);
         }
 
@@ -96,15 +144,12 @@ export function FinanceProvider({ children }) {
     }
   };
 
-
   const getIncome = () => {
-    const total = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + Number(t.amount), 0);
-    return total || 0;
+    return transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + Number(t.amount), 0);
   };
 
   const getExpense = () => {
-    const total = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + Number(t.amount), 0);
-    return total || 0;
+    return transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + Number(t.amount), 0);
   };
 
   const isBankConnected = isDemoMode || (transactions.some(t => t.fromBank));
@@ -120,13 +165,13 @@ export function FinanceProvider({ children }) {
       getIncome,
       getExpense,
       isDemoMode,
+      loadDemoData,
       isBankConnected
     }}>
       {children}
     </FinanceContext.Provider>
   );
 }
-
 
 export function useFinance() {
   return useContext(FinanceContext);

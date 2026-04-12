@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from './services/supabaseClient';
 import { FinanceProvider, useFinance } from './context/FinanceContext';
 import SummaryCards from './components/SummaryCards';
 import ExpenseChart from './components/ExpenseChart';
@@ -10,9 +11,11 @@ import FinancialInsights from './components/FinancialInsights';
 import OnlineUsersIndicator from './components/OnlineUsersIndicator';
 import CreditAnalysis from './components/CreditAnalysis';
 import CreditHistory from './components/CreditHistory';
+import DemoControls from './components/DemoControls';
 import logo from './assets/vynex-logo.png';
-import { LayoutDashboard, TrendingUp, History } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, History, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Login from './components/Login';
 
 
 function DashboardContent({ onAddTransaction }) {
@@ -47,8 +50,8 @@ function DashboardContent({ onAddTransaction }) {
   );
 }
 
-function MainApp() {
-  const { loading, isDemoMode } = useFinance();
+function MainApp({ user, onLogout }) {
+  const { loading } = useFinance();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
 
@@ -78,15 +81,19 @@ function MainApp() {
             <span className="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse" />
             <span className="text-[9px] font-black text-brand-green uppercase tracking-widest">Plataforma de Crédito Inteligente</span>
           </div>
-
-          {isDemoMode && (
-            <span className="px-2 py-0.5 bg-amber-500/10 text-amber-500 text-[8px] sm:text-[10px] font-black uppercase tracking-tighter rounded-full border border-amber-500/20 whitespace-nowrap">
-              Demo
-            </span>
-          )}
+          <DemoControls />
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+          <div className="hidden lg:flex items-center gap-4 mr-2">
+             <div className="text-right">
+                <p className="text-[9px] font-black text-white uppercase tracking-tighter leading-none">{user?.email?.split('@')[0]}</p>
+                <p className="text-[7px] font-bold text-slate-500 uppercase tracking-widest">Colaborador</p>
+             </div>
+             <button onClick={onLogout} className="p-2 text-slate-500 hover:text-red-500 transition-colors">
+                <LogOut size={16} />
+             </button>
+          </div>
           <div className="hidden lg:block">
             <OnlineUsersIndicator />
           </div>
@@ -166,7 +173,7 @@ function MainApp() {
             {activeSection === 'dashboard' ? (
               <DashboardContent />
             ) : activeSection === 'credit' ? (
-              <CreditAnalysis />
+              <CreditAnalysis user={user} />
             ) : (
               <CreditHistory />
             )}
@@ -183,10 +190,49 @@ function MainApp() {
 }
 
 function App() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [recoveryMode, setRecoveryMode] = useState(false);
+
+  useEffect(() => {
+    // Check active sessions and sets the user
+    setLoading(true);
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    // Listen for changes on auth state (logged in, signed out, etc.)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+      if (event === 'PASSWORD_RECOVERY') {
+        setRecoveryMode(true);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-brand-green border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
-    <FinanceProvider>
+    <FinanceProvider user={user}>
       <div className="min-h-screen bg-slate-950 text-slate-200">
-        <MainApp />
+        {!user ? (
+          <Login 
+            onLogin={(u) => setUser(u)} 
+            initialView={recoveryMode ? 'reset' : 'login'} 
+          />
+        ) : (
+          <MainApp user={user} onLogout={() => supabase.auth.signOut()} />
+        )}
       </div>
     </FinanceProvider>
   );

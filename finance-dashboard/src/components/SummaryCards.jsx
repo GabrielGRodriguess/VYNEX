@@ -5,13 +5,15 @@ import { motion } from 'framer-motion';
 export default function SummaryCards() {
   const { balance, getIncome, getExpense } = useFinance();
 
+  const isNegative = balance < 0;
+
   const cards = [
     {
       title: 'Saldo VYNEX',
       value: balance,
-      color: 'text-neon',
-      glow: 'shadow-brand-green/10',
-      icon: '💎'
+      color: isNegative ? 'text-rose-500' : 'text-neon',
+      glow: isNegative ? 'shadow-rose-500/20' : 'shadow-brand-green/10',
+      icon: isNegative ? '⚠️' : '💎'
     },
     {
       title: 'Entradas',
@@ -41,12 +43,14 @@ export default function SummaryCards() {
           className={`glass p-6 relative overflow-hidden group shadow-[0_20px_50px_rgba(0,0,0,0.5)] ${card.glow}`}
         >
           {/* Background Glow */}
-          <div className={`absolute top-0 right-0 w-32 h-32 blur-[80px] opacity-10 transition-opacity group-hover:opacity-20 ${index === 0 ? 'bg-brand-green' : index === 1 ? 'bg-emerald-500' : 'bg-rose-500'}`}></div>
+          <div className={`absolute top-0 right-0 w-32 h-32 blur-[80px] opacity-10 transition-opacity group-hover:opacity-20 ${
+            index === 0 ? (isNegative ? 'bg-rose-500' : 'bg-brand-green') : index === 1 ? 'bg-emerald-500' : 'bg-rose-500'
+          }`}></div>
           
           <div className="flex justify-between items-start relative z-10">
             <div>
               <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">{card.title}</p>
-              <p className={`text-2xl font-black ${card.color} tracking-tight text-neon`}>
+              <p className={`text-2xl font-black ${card.color} tracking-tight`}>
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(card.value)}
               </p>
             </div>
@@ -61,7 +65,9 @@ export default function SummaryCards() {
                initial={{ width: 0 }}
                animate={{ width: '100%' }}
                transition={{ duration: 1, delay: 0.5 + (index * 0.1) }}
-               className={`h-full ${index === 0 ? 'bg-neon-gradient' : index === 1 ? 'bg-emerald-500' : 'bg-rose-500'}`}
+               className={`h-full ${
+                 index === 0 ? (isNegative ? 'bg-rose-600' : 'bg-neon-gradient') : index === 1 ? 'bg-emerald-500' : 'bg-rose-500'
+               }`}
              />
           </div>
         </motion.div>

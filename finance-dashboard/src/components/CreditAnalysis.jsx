@@ -32,7 +32,7 @@ const AnimatedNumber = ({ value }) => {
   return <span>{displayValue}</span>;
 };
 
-export default function CreditAnalysis() {
+export default function CreditAnalysis({ user }) {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -104,7 +104,8 @@ export default function CreditAnalysis() {
           score_vynex: decision.score_vynex, 
           tipo_lead: decision.tipo_lead, 
           produto_recomendado: decision.produto_recomendado,
-          valor_estimado: decision.faixa_credito
+          valor_estimado: decision.faixa_credito,
+          operador_email: user?.email || 'anonimo'
         })
       });
     } catch (e) { console.error("Lead capture failed (silent fallback)"); }
@@ -208,7 +209,7 @@ export default function CreditAnalysis() {
         <p className="text-slate-400 text-sm">Quase lá! Precisamos entender seu espaço para novo crédito.</p>
       </div>
       <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="label-style">Possui Empréstimo?</label>
             <select className="input-style" value={formData.possui_consignado} onChange={e => setFormData({...formData, possui_consignado: e.target.value})}>
@@ -225,7 +226,7 @@ export default function CreditAnalysis() {
             </select>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
            <div>
             <label className="label-style">Já fez portabilidade?</label>
             <select className="input-style" value={formData.fez_portabilidade} onChange={e => setFormData({...formData, fez_portabilidade: e.target.value})}>

@@ -18,13 +18,13 @@ export default function ExpenseChart() {
     }, []);
 
   const COLORS = [
-  '#A3FF12', // Vynex Neon Green
-  '#3B82F6', // Electric Blue
-  '#8B5CF6', // Vivid Purple
-  '#06B6D4', // Cyan
-  '#F59E0B', // Amber
-  '#F43F5E', // Rose
-];
+    '#F43F5E', // Rose (Principal for expenses)
+    '#8B5CF6', // Vivid Purple
+    '#3B82F6', // Electric Blue
+    '#F59E0B', // Amber
+    '#06B6D4', // Cyan
+    '#64748b', // Slate
+  ];
 
 
   return (
