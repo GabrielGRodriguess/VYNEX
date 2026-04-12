@@ -1,407 +1,371 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, animate } from 'framer-motion';
-import { CheckCircle, AlertCircle, XCircle, Info, TrendingUp, DollarSign, UserCheck, WifiOff, Loader2, ShieldCheck, Zap } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  CheckCircle, AlertCircle, XCircle, Info, TrendingUp, 
+  UserCheck, Loader2, ShieldCheck, Zap, ArrowRight,
+  Database, MessageSquare, Award, Clock
+} from 'lucide-react';
 import { API_BASE_URL } from '../constants';
-import { useFinance } from '../context/FinanceContext';
-
-// Sub-component: Floating Toast for Global Errors
-const Toast = ({ message, type = 'error', onClose }) => {
-  useEffect(() => {
-    const timer = setTimeout(onClose, 5000);
-    return () => clearTimeout(timer);
-  }, [onClose]);
-
-  return (
-    <motion.div
-      initial={{ y: -100, x: '-50%', opacity: 0 }}
-      animate={{ y: 20, x: '-50%', opacity: 1 }}
-      exit={{ y: -100, x: '-50%', opacity: 0 }}
-      className={`fixed top-0 left-1/2 z-[100] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border backdrop-blur-xl min-w-[320px] ${
-        type === 'error' ? 'bg-rose-500/20 border-rose-500/30 text-rose-500' : 'bg-brand-green/20 border-brand-green/30 text-brand-green'
-      }`}
-    >
-      <WifiOff size={20} />
-      <span className="text-sm font-black uppercase tracking-widest">{message}</span>
-    </motion.div>
-  );
-};
+import { getDecisionResult } from '../services/creditDecisionEngine';
 
 // Sub-component: Animated Number Counter
 const AnimatedNumber = ({ value }) => {
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
-    const controls = animate(0, value, {
-      duration: 1,
-      ease: 'easeOut',
-      onUpdate: (latest) => setDisplayValue(Math.floor(latest))
-    });
-    return () => controls.stop();
+    let start = 0;
+    const end = parseInt(value);
+    if (start === end) return;
+
+    let totalMiliseconds = 1500;
+    let incrementTime = (totalMiliseconds / end) ;
+
+    let timer = setInterval(() => {
+      start += 1;
+      setDisplayValue(start);
+      if (start === end) clearInterval(timer);
+    }, incrementTime);
+
+    return () => clearInterval(timer);
   }, [value]);
 
   return <span>{displayValue}</span>;
 };
 
 export default function CreditAnalysis() {
-  const { isBankConnected, getIncome, getExpense } = useFinance();
-  
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [activeUsers, setActiveUsers] = useState(12);
+  const [result, setResult] = useState(null);
+
   const [formData, setFormData] = useState({
-    tipo: 'consignado',
-    cpf: '',
+    nome: '',
+    telefone: '',
     renda: '',
-    parcela: '',
-    entrada: '',
-    vínculo: 'CLT',
+    tipo_vinculo: 'CLT',
+    possui_consignado: 'Não',
+    status_margem: 'Livre',
+    fez_portabilidade: 'Não',
+    interesse_produto: 'Não sei',
     autorizado: false
   });
 
-  // Intelligent Override: Use bank data as priority
-  useEffect(() => {
-    if (isBankConnected) {
-      const bankIncome = getIncome();
-      setFormData(prev => ({ ...prev, renda: bankIncome.toString() }));
+  const [errors, setErrors] = useState({});
+
+  const nextStep = () => {
+    const newErrors = {};
+    if (step === 1) {
+      if (!formData.nome) newErrors.nome = 'Nome obrigatório';
+      if (!formData.telefone) newErrors.telefone = 'WhatsApp obrigatório';
     }
-  }, [isBankConnected]);
+    if (step === 2) {
+      if (!formData.renda) newErrors.renda = 'Renda obrigatória';
+    }
 
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [loadingStep, setLoadingStep] = useState(0);
-  const [validationErrors, setValidationErrors] = useState({});
-  const [toast, setToast] = useState(null);
-
-  const loadingMessages = [
-    "Validando CPF e histórico...",
-    "Consultando motor VYNEX...",
-    "Cruzando dados Open Finance...",
-    "Gerando recomendação personalizada..."
-  ];
-
-  const validateForm = () => {
-    const errors = {};
-    if (!formData.cpf || formData.cpf.length < 11) errors.cpf = 'CPF é obrigatório.';
-    if (!formData.renda || Number(formData.renda) <= 0) errors.renda = 'Informe a renda bruta.';
-    if (!formData.parcela || Number(formData.parcela) <= 0) errors.parcela = 'Informe a parcela.';
-    if (!formData.autorizado) errors.autorizado = 'Aceite os termos LGPD para continuar.';
-    
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    setErrors({});
+    setStep(prev => prev + 1);
   };
 
-  const handleAnalyze = async (e) => {
-    e.preventDefault();
-    setResult(null);
-    if (!validateForm()) return;
+  const startAnalysis = async () => {
+    if (!formData.autorizado) {
+      setErrors({ autorizado: 'Aceite os termos para continuar' });
+      return;
+    }
 
     setLoading(true);
-    setLoadingStep(0);
+    setStep(4);
 
-    const stepInterval = setInterval(() => {
-      setLoadingStep(prev => (prev < loadingMessages.length - 1 ? prev + 1 : prev));
-    }, 400);
+    // Simulate analysis intelligence
+    const interval = setInterval(() => {
+      setLoadingProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 2;
+      });
+    }, 40);
 
-    const startTime = Date.now();
-
+    // Get Decision from Engine
+    const decision = getDecisionResult(formData);
+    
+    // Send to backend (Supabase)
     try {
-      const bankDataPayload = isBankConnected ? {
-        connected: true,
-        income: getIncome(),
-        expense: getExpense()
-      } : null;
-
-      const response = await fetch(`${API_BASE_URL}/analise`, {
+      await fetch(`${API_BASE_URL}/leads`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          bankData: bankDataPayload,
-          renda: Number(formData.renda),
-          parcela: Number(formData.parcela),
-          entrada: Number(formData.entrada || 0)
+        body: JSON.stringify({ 
+          ...formData, 
+          score_vynex: decision.score_vynex, 
+          tipo_lead: decision.tipo_lead, 
+          produto_recomendado: decision.produto_recomendado,
+          valor_estimado: decision.faixa_credito
         })
       });
+    } catch (e) { console.error("Lead capture failed (silent fallback)"); }
 
-      if (!response.ok) throw new Error('ERR_CONN');
-
-      const data = await response.json();
-      
-      const waitTime = Math.max(1500 - (Date.now() - startTime), 0);
-      setTimeout(() => {
-        clearInterval(stepInterval);
-        setResult(data);
-        setLoading(false);
-      }, waitTime);
-
-    } catch (err) {
-      clearInterval(stepInterval);
+    setTimeout(() => {
+      setResult(decision);
       setLoading(false);
-      setToast('Falha na comunicação com o motor. Tente novamente.');
-    }
+      setStep(5);
+    }, 2500);
   };
 
-  return (
-    <div className="space-y-8 max-w-5xl mx-auto px-4 pb-20">
-      <AnimatePresence>
-        {toast && <Toast message={toast} onClose={() => setToast(null)} />}
-      </AnimatePresence>
+  // WhatsApp Redirect: Direct Conversion
+  const handleWhatsApp = () => {
+    const msg = `Olá, sou ${formData.nome}. Fiz minha análise no Vynex e quero receber minha simulação de ${result.produto_recomendado}.`;
+    window.open(`https://wa.me/5511999999999?text=${encodeURIComponent(msg)}`, '_blank');
+  };
 
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/5 pb-6">
+  // Step Renders
+  const renderStep1 = () => (
+    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+      <div className="space-y-2">
+        <h2 className="text-2xl font-black text-white uppercase tracking-tight">Identificação</h2>
+        <p className="text-slate-400 text-sm">Precisamos de dados básicos para iniciar sua consulta inteligente.</p>
+      </div>
+      <div className="space-y-4">
         <div>
-          <h2 className="text-2xl font-black text-white flex items-center gap-3">
-            <TrendingUp className="text-brand-green" />
-            Análise de Crédito VYNEX
-          </h2>
-          <p className="text-slate-500 text-sm mt-1">Simulação avançada com suporte a Open Finance e scoring em tempo real.</p>
+          <label className="label-style">Nome Completo</label>
+          <input 
+            type="text" 
+            placeholder="Seu nome"
+            className="input-style"
+            value={formData.nome}
+            onChange={e => setFormData({...formData, nome: e.target.value})}
+          />
+          {errors.nome && <p className="error-text">{errors.nome}</p>}
         </div>
-        
-        {isBankConnected && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="flex items-center gap-2 bg-brand-green/10 border border-brand-green/30 px-4 py-2 rounded-full text-brand-green text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brand-green/5"
+        <div>
+          <label className="label-style">WhatsApp (DDD + Número)</label>
+          <input 
+            type="tel" 
+            placeholder="(00) 00000-0000"
+            className="input-style"
+            value={formData.telefone}
+            onChange={e => setFormData({...formData, telefone: e.target.value})}
+          />
+          {errors.telefone && <p className="error-text">{errors.telefone}</p>}
+        </div>
+      </div>
+      <button onClick={nextStep} className="bg-brand-green text-slate-950 w-full py-4 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:scale-[1.02] transition-all">
+        Próximo Passo <ArrowRight size={18} />
+      </button>
+    </motion.div>
+  );
+
+  const renderStep2 = () => (
+    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+      <div className="space-y-2">
+        <h2 className="text-2xl font-black text-white uppercase tracking-tight">Perfil Profissional</h2>
+        <p className="text-slate-400 text-sm">Suas condições de crédito dependem da sua estabilidade financeira.</p>
+      </div>
+      <div className="space-y-4">
+        <div>
+          <label className="label-style">Tipo de Vínculo</label>
+          <select 
+            className="input-style"
+            value={formData.tipo_vinculo}
+            onChange={e => setFormData({...formData, tipo_vinculo: e.target.value})}
           >
-            <Zap size={14} className="animate-pulse" />
-            Dados Bancários Priorizados
-          </motion.div>
-        )}
+            <option value="CLT">CLT / Privado</option>
+            <option value="Servidor Público">Servidor Público (Federal/Estadual)</option>
+            <option value="Aposentado / Pensionista">Aposentado ou Pensionista INSS</option>
+            <option value="Autônomo">Autônomo / Empresário</option>
+          </select>
+        </div>
+        <div>
+          <label className="label-style">Renda Mensal Bruta</label>
+          <div className="relative flex items-center">
+            <span className="absolute left-5 text-slate-500 font-bold text-sm">R$</span>
+            <input 
+              type="number" 
+              placeholder="0.00"
+              className="input-style pl-14"
+              value={formData.renda}
+              onChange={e => setFormData({...formData, renda: e.target.value})}
+            />
+          </div>
+          {errors.renda && <p className="error-text">{errors.renda}</p>}
+        </div>
+      </div>
+      <div className="flex gap-4">
+        <button onClick={() => setStep(1)} className="border border-white/10 text-white w-1/3 py-4 rounded-2xl font-black uppercase tracking-widest">Voltar</button>
+        <button onClick={nextStep} className="bg-brand-green text-slate-950 flex-1 py-4 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2">Continuar</button>
+      </div>
+    </motion.div>
+  );
+
+  const renderStep3 = () => (
+    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+      <div className="space-y-2">
+        <h2 className="text-2xl font-black text-white uppercase tracking-tight">Status de Margem</h2>
+        <p className="text-slate-400 text-sm">Quase lá! Precisamos entender seu espaço para novo crédito.</p>
+      </div>
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="label-style">Possui Empréstimo?</label>
+            <select className="input-style" value={formData.possui_consignado} onChange={e => setFormData({...formData, possui_consignado: e.target.value})}>
+              <option value="Não">Não</option>
+              <option value="Sim">Sim</option>
+            </select>
+          </div>
+          <div>
+            <label className="label-style">Sua Margem está:</label>
+            <select className="input-style" value={formData.status_margem} onChange={e => setFormData({...formData, status_margem: e.target.value})}>
+              <option value="Livre">Livre / Disponível</option>
+              <option value="Parcialmente usada">Parcialmente usada</option>
+              <option value="Totalmente usada">Totalmente usada</option>
+            </select>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+           <div>
+            <label className="label-style">Já fez portabilidade?</label>
+            <select className="input-style" value={formData.fez_portabilidade} onChange={e => setFormData({...formData, fez_portabilidade: e.target.value})}>
+              <option value="Não">Não</option>
+              <option value="Sim">Sim</option>
+            </select>
+          </div>
+          <div>
+            <label className="label-style">Tem interesse em:</label>
+            <select className="input-style" value={formData.interesse_produto} onChange={e => setFormData({...formData, interesse_produto: e.target.value})}>
+              <option value="Não sei">Não sei / Quero descobrir</option>
+              <option value="Empréstimo consignado">Empréstimo Consignado Novo</option>
+              <option value="Portabilidade">Portabilidade (Reduzir Parcela)</option>
+              <option value="Refinanciamento">Refinanciamento</option>
+              <option value="Cartão consignado">Cartão de Crédito Consignado</option>
+            </select>
+          </div>
+        </div>
+        <div className="pt-2">
+          <div className="flex items-center gap-3">
+            <input type="checkbox" id="lgpd" className="vynex-checkbox" checked={formData.autorizado} onChange={e => setFormData({...formData, autorizado: e.target.checked})} />
+            <label htmlFor="lgpd" className="text-[10px] text-slate-500 leading-tight cursor-pointer">Autorizo a consulta e análise automatizada para simulação de crédito (LGPD).</label>
+          </div>
+          {errors.autorizado && <p className="error-text">{errors.autorizado}</p>}
+        </div>
+      </div>
+      <button onClick={startAnalysis} className="bg-brand-green text-slate-950 w-full py-4 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-brand-green/20">
+        Analisar Oportunidade <Award size={18} />
+      </button>
+    </motion.div>
+  );
+
+  const renderStep4 = () => (
+    <div className="flex flex-col items-center justify-center py-10 space-y-8 min-h-[400px]">
+      <div className="relative">
+        <div className="w-48 h-48 rounded-full border-4 border-white/5 border-t-brand-green animate-spin" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-3xl font-black text-white">{loadingProgress}%</span>
+          <span className="text-[8px] font-black text-brand-green uppercase tracking-[0.3em]">IA Decision</span>
+        </div>
+      </div>
+      <div className="text-center space-y-2">
+        <h3 className="text-white font-black uppercase tracking-widest">Processando Inteligência</h3>
+        <p className="text-slate-500 text-xs px-10">Cruzando seu perfil com Santander, Facta, CCSafe e outros parceiros...</p>
+      </div>
+      <div className="flex items-center gap-2 bg-slate-900/50 px-4 py-2 rounded-full border border-white/5">
+        <div className="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse" />
+        <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">{activeUsers} pessoas analisando agora</span>
+      </div>
+    </div>
+  );
+
+  const renderStep5 = () => (
+    <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-8">
+      <div className="flex flex-col items-center gap-4 text-center">
+        <div className="w-16 h-16 bg-brand-green/10 rounded-2xl flex items-center justify-center border border-brand-green/20">
+          <ShieldCheck className="text-brand-green" size={32} />
+        </div>
+        <div className="space-y-1">
+          <h2 className="text-3xl font-black text-white uppercase tracking-tighter">Análise Concluída</h2>
+          <p className="text-slate-500 text-sm">Detectamos uma excelente oportunidade de {result.produto_recomendado}.</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-        {/* FORM SIDE */}
-        <section className="glass p-6 sm:p-10 space-y-6">
-          <form onSubmit={handleAnalyze} className="space-y-5">
-            <div>
-              <label className="label-style">Tipo de Crédito</label>
-              <select 
-                value={formData.tipo}
-                onChange={(e) => setFormData({...formData, tipo: e.target.value})}
-                className="input-style"
-              >
-                <option value="consignado">Crédito Consignado (Taxas Reduzidas)</option>
-                <option value="imobiliario">Financiamento Imobiliário</option>
-              </select>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="label-style">CPF para Consulta</label>
-                <input 
-                  type="text" 
-                  placeholder="000.000.000-00"
-                  value={formData.cpf}
-                  onChange={(e) => {
-                    setFormData({...formData, cpf: e.target.value});
-                    if (validationErrors.cpf) setValidationErrors({...validationErrors, cpf: null});
-                  }}
-                  className={`input-style ${validationErrors.cpf ? 'border-rose-500' : ''}`}
-                />
-                {validationErrors.cpf && <p className="error-text">{validationErrors.cpf}</p>}
-              </div>
-              <div>
-                <label className="label-style">Vínculo</label>
-                <select 
-                  value={formData.vínculo}
-                  onChange={(e) => setFormData({...formData, vínculo: e.target.value})}
-                  className="input-style"
-                >
-                  <option value="CLT">CLT / Privado</option>
-                  <option value="INSS">Aposentado ou Pensionista</option>
-                  <option value="Autônomo">Autônomo / Empresário</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="label-style flex items-center justify-between">
-                  Renda Mensal
-                  {isBankConnected && <span className="text-brand-green flex items-center gap-1"><ShieldCheck size={10} /> Validada</span>}
-                </label>
-                <div className="relative flex items-center h-14">
-                  <span className="absolute left-5 text-slate-500 font-black text-sm pointer-events-none z-10">R$</span>
-                  <input 
-                    type="number" 
-                    value={formData.renda}
-                    onChange={(e) => setFormData({...formData, renda: e.target.value})}
-                    className="input-style pl-16"
-                    placeholder="0.00"
-                  />
-                </div>
-
-              </div>
-              <div>
-                <label className="label-style">Parcela Desejada</label>
-                <div className="relative flex items-center h-14">
-                  <span className="absolute left-5 text-slate-500 font-black text-sm pointer-events-none z-10">R$</span>
-                  <input 
-                    type="number" 
-                    value={formData.parcela}
-                    onChange={(e) => setFormData({...formData, parcela: e.target.value})}
-                    className="input-style pl-16"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {formData.tipo === 'imobiliario' && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
-                <label className="label-style">Entrada / Aporte (Imobiliário)</label>
-                <div className="relative flex items-center h-14">
-                  <span className="absolute left-5 text-slate-500 font-black text-sm pointer-events-none z-10">R$</span>
-                  <input 
-                    type="number" 
-                    value={formData.entrada}
-                    onChange={(e) => setFormData({...formData, entrada: e.target.value})}
-                    className="input-style pl-16"
-                    placeholder="0.00"
-                  />
-                </div>
-              </motion.div>
-            )}
-
-
-
-
-            <div className="pt-2 border-t border-white/5">
-              <div className="flex items-center gap-4">
-                <input 
-                  type="checkbox" 
-                  id="lgpd"
-                  checked={formData.autorizado}
-                  onChange={(e) => setFormData({...formData, autorizado: e.target.checked})}
-                  className="vynex-checkbox"
-                />
-                <label htmlFor="lgpd" className="text-[11px] text-slate-400 leading-tight cursor-pointer select-none">
-                  Declaro que as informações são verdadeiras e **autorizo a VYNEX** a consultar meu score e histórico de crédito para fins de análise automatizada (LGPD).
-                </label>
-              </div>
-              {validationErrors.autorizado && <p className="error-text mt-2">{validationErrors.autorizado}</p>}
-            </div>
-
-            <motion.button
-              whileHover={formData.autorizado && !loading ? { scale: 1.01 } : {}}
-              whileTap={formData.autorizado && !loading ? { scale: 0.99 } : {}}
-              disabled={loading || !formData.autorizado}
-              className={`w-full h-16 rounded-2xl font-black text-xs sm:text-sm tracking-[0.2em] uppercase transition-all shadow-xl flex items-center justify-center gap-3 relative overflow-hidden ${
-                loading ? 'bg-slate-800 text-slate-500 cursor-wait' : 
-                formData.autorizado ? 'bg-brand-green text-slate-950' : 'bg-slate-900/50 text-slate-700 cursor-not-allowed grayscale'
-              }`}
-            >
-              {loading ? (
-                <div className="flex items-center gap-4">
-                  <Loader2 className="animate-spin text-brand-green" size={22} />
-                  <motion.span 
-                    key={loadingStep}
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -5 }}
-                    className="text-white normal-case tracking-normal text-xs"
-                  >
-                    {loadingMessages[loadingStep]}
-                  </motion.span>
-                </div>
-              ) : (
-                <>
-                  <UserCheck size={20} />
-                  Analisar Crédito Instantâneo
-                </>
-              )}
-            </motion.button>
-          </form>
-        </section>
-
-
-        {/* RESULT SIDE */}
-        <section className="glass min-h-[500px] flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
-          <AnimatePresence mode="wait">
-            {!result && !loading && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                <div className="w-20 h-20 bg-slate-900 rounded-3xl flex items-center justify-center mx-auto border border-white/5 text-slate-700">
-                  <TrendingUp size={40} />
-                </div>
-                <div className="space-y-2">
-                  <h4 className="text-white font-black uppercase tracking-widest">Inicie sua Análise</h4>
-                  <p className="text-slate-500 text-xs max-w-[200px] mx-auto leading-relaxed">Cruzamos seus dados com nossa base de crédito global para uma resposta em segundos.</p>
-                </div>
-              </motion.div>
-            )}
-
-            {loading && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-8">
-                <div className="relative">
-                  <div className="w-44 h-44 rounded-full border-4 border-white/5 border-t-brand-green animate-spin" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[10px] font-black text-brand-green uppercase tracking-[0.5em] animate-pulse">Processing</span>
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-white font-black text-lg uppercase">Analisando Perfil</p>
-                  <p className="text-brand-green text-[10px] font-black uppercase tracking-widest bg-brand-green/10 px-4 py-1.5 rounded-full border border-brand-green/20">Criptografado ponta-a-ponta</p>
-                </div>
-              </motion.div>
-            )}
-
-            {result && !loading && (
-              <motion.div 
-                initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                className="w-full space-y-8"
-              >
-                <div className="flex flex-col items-center gap-4">
-                  {result.status === 'Aprovado' ? <CheckCircle className="text-brand-green" size={60} /> : 
-                   result.status === 'Negado' ? <XCircle className="text-rose-500" size={60} /> : 
-                   <AlertCircle className="text-amber-500" size={60} />}
-                  
-                  <div className="space-y-1">
-                    <h3 className={`text-3xl font-black uppercase tracking-widest ${
-                      result.status === 'Aprovado' ? 'text-brand-green' : 
-                      result.status === 'Negado' ? 'text-rose-500' : 'text-amber-400'
-                    }`}>
-                      {result.status}
-                    </h3>
-                    <p className="text-slate-400 text-xs sm:text-sm px-6 leading-relaxed line-clamp-2">{result.motivo}</p>
-                  </div>
-                </div>
-
-                <div className="bg-slate-900/50 p-6 sm:p-10 rounded-[40px] border border-white/5 space-y-8">
-                  <div className="flex justify-between items-end gap-2">
-                    <div className="text-left">
-                      <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Score VYNEX</p>
-                      <p className="text-4xl sm:text-5xl font-black text-white"><AnimatedNumber value={result.score} /></p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Chance</p>
-                      <p className="text-2xl sm:text-3xl font-black text-brand-green"><AnimatedNumber value={parseFloat(result.probabilidade)} />%</p>
-                    </div>
-                  </div>
-                  
-                  <div className="h-5 w-full bg-slate-950 rounded-full overflow-hidden border border-white/5 p-1">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${(result.score / 1000) * 100}%` }}
-                      transition={{ duration: 1.5, delay: 0.3 }}
-                      className={`h-full neon-glow rounded-full ${
-                        result.status === 'Aprovado' ? 'bg-brand-green' : 
-                        result.status === 'Negado' ? 'bg-rose-500' : 'bg-amber-500'
-                      }`}
-                    />
-                  </div>
-                </div>
-
-                <div className="p-5 bg-white/[0.03] rounded-3xl border-l-4 border-brand-green text-left shadow-2xl flex gap-4">
-                  <Info className="text-brand-green flex-shrink-0 mt-1" size={20} />
-                  <div className="space-y-0.5">
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Conselho Estratégico</p>
-                    <p className="text-sm text-slate-200 font-bold leading-relaxed">{result.sugestao}</p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </section>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="glass p-5 space-y-1">
+          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Score VYNEX</p>
+          <div className="flex items-end gap-2 text-brand-green">
+             <p className="text-4xl font-black"><AnimatedNumber value={result.score_vynex} /></p>
+          </div>
+        </div>
+        <div className="glass p-5 space-y-1">
+          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Destaque</p>
+          <p className="text-[11px] font-black text-white leading-tight pt-2 uppercase tracking-tighter">{result.status_analise}</p>
+        </div>
       </div>
 
+      <div className="p-6 bg-brand-green/10 rounded-3xl border border-brand-green/20 space-y-4">
+        <div className="flex items-center gap-2 text-brand-green">
+          <Zap size={18} />
+          <span className="text-[10px] font-black uppercase tracking-widest">Rota Recomendada: {result.produto_recomendado}</span>
+        </div>
+        <p className="text-sm text-slate-200 font-bold leading-relaxed">
+          {result.mensagem_front}
+        </p>
+        <div className="flex items-center justify-between border-t border-brand-green/20 pt-3">
+           <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Estimativa Comercial</span>
+           <span className="text-sm font-black text-white">{result.faixa_credito}</span>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <button onClick={handleWhatsApp} className="w-full h-16 bg-brand-green text-slate-950 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:scale-[1.02] shadow-2xl shadow-brand-green/30 transition-all">
+          <MessageSquare size={22} />
+          {result.cta_secundaria}
+        </button>
+        <p className="text-[9px] text-slate-500 text-center uppercase tracking-widest animate-pulse">Atendimento especializado conectado • Consultando parceiros</p>
+      </div>
+    </motion.div>
+  );
+
+  return (
+    <div className="max-w-xl mx-auto px-4 pb-20 pt-4">
+      <div className="mb-8 flex items-center justify-between border-b border-white/5 pb-4">
+        <div>
+          <h4 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Decision Engine 2.0</h4>
+          <p className="text-white font-black text-lg">Funil Inteligente de Crédito</p>
+        </div>
+        <div className="text-right">
+          <span className="text-[9px] font-black text-brand-green uppercase tracking-widest bg-brand-green/10 px-3 py-1 rounded-full border border-brand-green/20">Step {step}/5</span>
+        </div>
+      </div>
+
+      <div className="glass p-8 min-h-[450px]">
+        <AnimatePresence mode="wait">
+          {step === 1 && renderStep1()}
+          {step === 2 && renderStep2()}
+          {step === 3 && renderStep3()}
+          {step === 4 && renderStep4()}
+          {step === 5 && renderStep5()}
+        </AnimatePresence>
+      </div>
+
+      {/* Trust Signals */}
+      {step < 4 && (
+        <div className="mt-8 grid grid-cols-3 gap-4">
+          <div className="flex flex-col items-center gap-1 opacity-40">
+            <ShieldCheck size={16} />
+            <span className="text-[7px] font-black uppercase text-center">IA <br/> Segura</span>
+          </div>
+          <div className="flex flex-col items-center gap-1 opacity-40">
+            <Database size={16} />
+            <span className="text-[7px] font-black uppercase text-center">Multi <br/> Bancos</span>
+          </div>
+          <div className="flex flex-col items-center gap-1 opacity-40">
+            <Clock size={16} />
+            <span className="text-[7px] font-black uppercase text-center">Fast <br/> Response</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-

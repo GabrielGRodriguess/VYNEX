@@ -71,9 +71,14 @@ function MainApp() {
           />
           <div className="hidden sm:flex flex-col border-l border-white/10 pl-3 sm:pl-4">
             <p className="text-slate-500 font-black text-[8px] sm:text-[10px] uppercase tracking-widest leading-none">
-              High Performance
+              Financial Intelligence
             </p>
           </div>
+          <div className="hidden lg:flex items-center gap-2 bg-brand-green/5 border border-brand-green/10 px-4 py-1.5 rounded-full ml-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse" />
+            <span className="text-[9px] font-black text-brand-green uppercase tracking-widest">Plataforma de Crédito Inteligente</span>
+          </div>
+
           {isDemoMode && (
             <span className="px-2 py-0.5 bg-amber-500/10 text-amber-500 text-[8px] sm:text-[10px] font-black uppercase tracking-tighter rounded-full border border-amber-500/20 whitespace-nowrap">
               Demo
