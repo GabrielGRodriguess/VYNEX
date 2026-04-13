@@ -36,7 +36,8 @@ export default function FinancialInsights() {
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 exit={{ opacity: 0, scale: 0.98 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                  <div className={`p-5 rounded-3xl transition-all duration-500 flex items-start gap-4 ${
+              >
+                <div className={`p-5 rounded-3xl transition-all duration-500 flex items-start gap-4 ${
                     insight.type === 'alert' 
                       ? 'bg-amber-500/[0.04] border border-amber-500/10' 
                       : 'bg-white/[0.02] border border-white/5'

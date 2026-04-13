@@ -33,7 +33,9 @@ export default function BalanceChart() {
         saldo: runningBalance 
       });
     });
-    
+    return history;
+  }, [transactions, currentBalance]);
+
   const trend = React.useMemo(() => {
     if (chartData.length < 2) return 'stable';
     const first = chartData[0].saldo;
