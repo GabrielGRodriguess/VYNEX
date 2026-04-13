@@ -60,6 +60,38 @@ export function UserProvider({ user, children }) {
     }
   };
 
+  const toggleAgent = async (agentId) => {
+    if (!user) return;
+    
+    const currentPrefs = profile?.preferences?.activeAgents || {};
+    const newPrefs = {
+      ...currentPrefs,
+      [agentId]: !currentPrefs[agentId]
+    };
+
+    const { error } = await supabase
+      .from('user_profiles')
+      .update({ 
+        preferences: { 
+          ...profile?.preferences,
+          activeAgents: newPrefs 
+        } 
+      })
+      .eq('user_id', user.id);
+
+    if (!error) {
+      setProfile(prev => ({
+        ...prev,
+        preferences: {
+          ...prev?.preferences,
+          activeAgents: newPrefs
+        }
+      }));
+    }
+    
+    return !error;
+  };
+
   const completeOnboarding = async () => {
     if (!user) return;
     const { error } = await supabase
@@ -77,8 +109,10 @@ export function UserProvider({ user, children }) {
       profile,
       loading,
       updatePlan,
+      toggleAgent,
       completeOnboarding,
-      currentPlan: planService.getPlanById(profile?.plan_id || 'free')
+      currentPlan: planService.getPlanById(profile?.plan_id || 'free'),
+      activeAgents: profile?.preferences?.activeAgents || {}
     }}>
       {children}
     </UserContext.Provider>

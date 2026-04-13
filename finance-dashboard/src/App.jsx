@@ -58,6 +58,31 @@ function DashboardContent({ onSimulateCredit }) {
         </button>
       </motion.div>
 
+      {/* Contextual AI Power-up Banner - Conversion Trigger */}
+      {useUser().currentPlan.id === 'free' && (
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="glass p-6 border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-r from-blue-600/10 to-purple-600/10"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
+              <Zap size={20} />
+            </div>
+            <div>
+              <p className="text-white font-black text-sm uppercase tracking-tight">Desbloqueie todo o potencial da IA</p>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Ative múltiplos agentes e conexões ilimitadas no Plano Pro.</p>
+            </div>
+          </div>
+          <button 
+            onClick={() => useUser().setActiveSection('account')}
+            className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] hover:text-white transition-colors"
+          >
+            Ver Planos →
+          </button>
+        </motion.div>
+      )}
+
       <FinancialInsights />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         <div className="glass p-4 sm:p-6 h-[300px] sm:h-[350px]">
@@ -161,6 +186,14 @@ function MainApp({ user, onLogout }) {
             <div className="hidden xs:block">
               <BankConnector />
             </div>
+            {useUser().currentPlan.id !== 'premium' && (
+              <button 
+                onClick={() => setActiveSection('account')}
+                className="hidden md:flex items-center gap-2 bg-brand-green/10 text-brand-green border border-brand-green/20 px-4 py-2 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:bg-brand-green/20 transition-all"
+              >
+                <Crown size={12} /> Fazer Upgrade
+              </button>
+            )}
             <button
               onClick={() => setIsModalOpen(true)}
               className="bg-neon-gradient text-slate-950 px-4 py-2.5 sm:px-6 sm:py-3.5 rounded-xl sm:rounded-2xl font-black hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-xl shadow-brand-green/20 shrink-0"
@@ -179,6 +212,7 @@ function MainApp({ user, onLogout }) {
             { id: 'dashboard', icon: <LayoutDashboard size={14} />, label: 'Dashboard' },
             { id: 'agents', icon: <Users size={14} />, label: 'Agentes IA' },
             { id: 'credit', icon: <Shield size={14} />, label: 'Inteligência' },
+            { id: 'account', icon: <Crown size={14} />, label: 'Planos' },
             { id: 'history', icon: <History size={14} />, label: 'Histórico' }
           ].map((tab) => (
             <button

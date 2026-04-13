@@ -8,21 +8,24 @@ export const PLANS = {
     id: 'free',
     name: 'Free',
     maxConnections: 1,
-    features: ['Dashboard Básico', 'Insights de Crédito', '1 Conexão Bancária'],
+    maxActiveAgents: 1,
+    features: ['Dashboard Básico', 'Insights de Crédito', '1 Conexão Bancária', '1 Agente Ativo'],
     price: 0
   },
   PRO: {
     id: 'pro',
     name: 'Pro',
     maxConnections: 5,
-    features: ['Até 5 Conexões', 'Chat IA Ilimitado', 'Insights Avançados', 'Suporte Prioritário'],
+    maxActiveAgents: 3,
+    features: ['Até 5 Conexões', 'Chat IA Ilimitado', 'Insights Avançados', 'Suporte Prioritário', '3 Agentes Ativos'],
     price: 29.90
   },
   PREMIUM: {
     id: 'premium',
     name: 'Premium',
     maxConnections: 99,
-    features: ['Conexões Ilimitadas', 'Gestão Multi-Perfil', 'Mentoria de Crédito', 'Taxas Exclusivas'],
+    maxActiveAgents: 10,
+    features: ['Conexões Ilimitadas', 'Gestão Multi-Perfil', 'Mentoria de Crédito', 'Taxas Exclusivas', '10 Agentes Ativos'],
     price: 49.90
   }
 };
@@ -35,6 +38,11 @@ export const planService = {
   canAddConnection(currentCount, planId) {
     const plan = this.getPlanById(planId);
     return currentCount < plan.maxConnections;
+  },
+
+  canAddAgent(currentCount, planId) {
+    const plan = this.getPlanById(planId);
+    return currentCount < plan.maxActiveAgents;
   },
 
   getAvailablePlans() {

@@ -64,8 +64,10 @@ export const agentService = {
   },
 
   toggleAgent(id) {
-    if (AGENTS[id]) {
-      AGENTS[id].active = !AGENTS[id].active;
+    // Standardize: Match keys (uppercase) if ID is lowercase/prefixed
+    const key = Object.keys(AGENTS).find(k => AGENTS[k].id === id || k === id);
+    if (key && AGENTS[key]) {
+      AGENTS[key].active = !AGENTS[key].active;
     }
   }
 };
