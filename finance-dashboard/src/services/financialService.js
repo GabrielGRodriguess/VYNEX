@@ -79,7 +79,20 @@ export const financialService = {
    * Calculates sophisticated metrics for Vynex Score 2.0.
    */
   calculateBehavioralMetrics(transactions) {
+    if (!Array.isArray(transactions)) {
+      return {
+        monthlyIncome: 0,
+        monthlyExpense: 0,
+        monthlySurplus: 0,
+        fixedExpenseRatio: 0,
+        riskRatio: 0,
+        incomeConsistency: 0,
+        riskEvents: 0
+      };
+    }
+
     const last30Days = transactions.filter(t => {
+      if (!t?.date) return false;
       const date = new Date(t.date);
       const diff = (new Date() - date) / (1000 * 60 * 60 * 24);
       return diff <= 30;
@@ -88,14 +101,14 @@ export const financialService = {
     const income = last30Days.filter(t => t.type === 'income');
     const expenses = last30Days.filter(t => t.type === 'expense');
 
-    const totalIncome = income.reduce((acc, t) => acc + Number(t.amount), 0);
-    const totalExpense = expenses.reduce((acc, t) => acc + Number(t.amount), 0);
-    const riskExpenses = last30Days.filter(t => t.isRisk).reduce((acc, t) => acc + Number(t.amount), 0);
-    const fixedExpenses = last30Days.filter(t => t.isFixed).reduce((acc, t) => acc + Number(t.amount), 0);
+    const totalIncome = income.reduce((acc, t) => acc + Number(t.amount || 0), 0);
+    const totalExpense = expenses.reduce((acc, t) => acc + Number(t.amount || 0), 0);
+    const riskExpenses = last30Days.filter(t => t.isRisk).reduce((acc, t) => acc + Number(t.amount || 0), 0);
+    const fixedExpenses = last30Days.filter(t => t.isFixed).reduce((acc, t) => acc + Number(t.amount || 0), 0);
 
     // Consistency check: Frequency of salary/income
     const incomeDays = [...new Set(income.map(t => t.date))].length;
-    const incomeConsistency = Math.min(incomeDays / 4, 1); // Ideally 4+ income events/sources per month
+    const incomeConsistency = Math.min(incomeDays / 4, 1); 
 
     return {
       monthlyIncome: totalIncome,
@@ -112,21 +125,39 @@ export const financialService = {
    * Calculates category distribution and trends.
    */
   getAnalytics(transactions) {
-    const metrics = this.calculateBehavioralMetrics(transactions);
-    
-    const categories = transactions.reduce((acc, t) => {
-      if (t.type === 'expense') {
-        acc[t.category] = (acc[t.category] || 0) + Number(t.amount);
-      }
-      return acc;
-    }, {});
+    try {
+      const metrics = this.calculateBehavioralMetrics(transactions || []);
+      
+      const categories = (transactions || []).reduce((acc, t) => {
+        if (t.type === 'expense' && t.category) {
+          acc[t.category] = (acc[t.category] || 0) + Number(t.amount || 0);
+        }
+        return acc;
+      }, {});
 
-    return {
-      ...metrics,
-      totalIncome: metrics.monthlyIncome,
-      totalExpense: metrics.monthlyExpense,
-      categoryDistribution: categories,
-      transactionCount: transactions.length
-    };
+      return {
+        ...metrics,
+        totalIncome: metrics.monthlyIncome,
+        totalExpense: metrics.monthlyExpense,
+        categoryDistribution: categories,
+        transactionCount: (transactions || []).length
+      };
+    } catch (err) {
+      console.error("[VYNEX] Error calculating analytics:", err);
+      // Fallback safe object
+      return {
+        monthlyIncome: 0,
+        monthlyExpense: 0,
+        monthlySurplus: 0,
+        totalIncome: 0,
+        totalExpense: 0,
+        fixedExpenseRatio: 0,
+        riskRatio: 0,
+        incomeConsistency: 0,
+        riskEvents: 0,
+        categoryDistribution: {},
+        transactionCount: 0
+      };
+    }
   }
 };

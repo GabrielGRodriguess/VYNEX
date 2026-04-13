@@ -288,6 +288,46 @@ function MainApp({ user, onLogout }) {
   );
 }
 
+// simple Error Boundary
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("[VYNEX FATAL ERROR]", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-8 text-center text-white">
+          <div className="w-20 h-20 rounded-3xl bg-rose-500/20 flex items-center justify-center text-rose-500 mb-8 border border-rose-500/30">
+            <Shield size={40} />
+          </div>
+          <h1 className="text-3xl font-black uppercase tracking-tighter mb-4">Opa! Algo deu errado.</h1>
+          <p className="text-slate-400 max-w-md mb-8 italic">Pode ser um problema temporário de conexão ou de processamento de dados.</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="bg-brand-green text-slate-950 px-8 py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-brand-green/20"
+          >
+            Tentar Novamente
+          </button>
+          <div className="mt-12 p-4 bg-black/40 rounded-2xl border border-white/5 max-w-2xl w-full text-left overflow-auto">
+             <p className="text-[10px] font-mono text-slate-500 break-all">{this.state.error?.toString()}</p>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -301,10 +341,14 @@ function App() {
       console.log("[VYNEX] Auth Session:", session?.user?.email || "No session");
       setUser(session?.user ?? null);
       setLoading(false);
+    }).catch(err => {
+      console.error("[VYNEX] Auth Error:", err);
+      setLoading(false);
     });
 
     // Listen for changes on auth state (logged in, signed out, etc.)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("[VYNEX] Auth Event:", event);
       setUser(session?.user ?? null);
       if (event === 'PASSWORD_RECOVERY') {
         setRecoveryMode(true);
@@ -323,25 +367,27 @@ function App() {
   }
 
   return (
-    <ToastProvider>
-      <FinanceProvider user={user}>
-        <UserProvider user={user}>
-          <div className="min-h-screen bg-slate-950 text-slate-200">
-            {!user ? (
-              <Login 
-                onLogin={(u) => setUser(u)} 
-                initialView={recoveryMode ? 'reset' : 'login'} 
-              />
-            ) : (
-              <>
-                <MainApp user={user} onLogout={() => supabase.auth.signOut()} />
-                <ChatAssistant />
-              </>
-            )}
-          </div>
-        </UserProvider>
-      </FinanceProvider>
-    </ToastProvider>
+    <ErrorBoundary>
+      <ToastProvider>
+        <FinanceProvider user={user}>
+          <UserProvider user={user}>
+            <div className="min-h-screen bg-slate-950 text-slate-200">
+              {!user ? (
+                <Login 
+                  onLogin={(u) => setUser(u)} 
+                  initialView={recoveryMode ? 'reset' : 'login'} 
+                />
+              ) : (
+                <>
+                  <MainApp user={user} onLogout={() => supabase.auth.signOut()} />
+                  <ChatAssistant />
+                </>
+              )}
+            </div>
+          </UserProvider>
+        </FinanceProvider>
+      </ToastProvider>
+    </ErrorBoundary>
   );
 }
 

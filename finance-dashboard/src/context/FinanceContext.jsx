@@ -13,7 +13,19 @@ export function FinanceProvider({ user, children }) {
 
   // Advanced metrics calculated from transactions
   const analytics = useMemo(() => {
-    return financialService.getAnalytics(transactions);
+    try {
+      return financialService.getAnalytics(transactions);
+    } catch (err) {
+      console.error("[VYNEX] FinanceProvider analytics error:", err);
+      // Absolute fallback if everything else fails
+      return {
+        monthlyIncome: 0,
+        monthlyExpense: 0,
+        monthlySurplus: 0,
+        categoryDistribution: {},
+        transactionCount: 0
+      };
+    }
   }, [transactions]);
 
   // 1. LOAD CONNECTIONS AND TRANSACTIONS
