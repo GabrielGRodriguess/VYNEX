@@ -2,9 +2,16 @@ import React from 'react';
 import { useFinance } from '../context/FinanceContext';
 import { Play, Power, ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useToast } from '../context/ToastContext';
 
 export default function DemoControls() {
   const { isDemoMode, loadDemoData } = useFinance();
+  const toast = useToast();
+
+  const handleLoadDemo = () => {
+    loadDemoData();
+    toast.info('Modo Simulação', 'Dados de exemplo carregados para teste.');
+  };
 
   return (
     <div className="relative">
@@ -13,7 +20,7 @@ export default function DemoControls() {
           <motion.button
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            onClick={loadDemoData}
+            onClick={handleLoadDemo}
             className="flex items-center gap-2 px-4 py-2 bg-slate-800/40 hover:bg-slate-800/60 border border-white/5 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-brand-green transition-all"
           >
             <Play size={12} />

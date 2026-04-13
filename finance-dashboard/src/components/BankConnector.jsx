@@ -4,11 +4,13 @@ import { useUser } from '../context/UserContext';
 import { planService } from '../services/planService';
 import PlanLock from './PlanLock';
 import { Plus, RefreshCcw, Landmark, Info } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 
 export default function BankConnector() {
   const { connections, addConnection, loading } = useFinance();
   const { profile, currentPlan } = useUser();
   const [isLockOpen, setIsLockOpen] = useState(false);
+  const toast = useToast();
 
   const handleConnect = async () => {
     // 1. Check Limits based on Plan
@@ -23,7 +25,12 @@ export default function BankConnector() {
     const mockItemId = `item_${Math.random().toString(36).substr(2, 9)}`;
     const mockProvider = ['Itaú', 'Bradesco', 'Nubank', 'Inter'][Math.floor(Math.random() * 4)];
     
-    await addConnection(mockItemId, mockProvider);
+    try {
+      await addConnection(mockItemId, mockProvider);
+      toast.success('Banco Conectado', `Sua conta do ${mockProvider} foi integrada com sucesso.`);
+    } catch (err) {
+      toast.error('Erro na Conexão', 'Não foi possível conectar ao banco no momento.');
+    }
   };
 
   const limitReached = connections.length >= currentPlan.maxConnections;

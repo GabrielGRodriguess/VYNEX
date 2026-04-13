@@ -13,6 +13,7 @@ import CreditAnalysis from './components/CreditAnalysis';
 import CreditHistory from './components/CreditHistory';
 import DemoControls from './components/DemoControls';
 import { UserProvider, useUser } from './context/UserContext';
+import { ToastProvider, useToast } from './context/ToastContext';
 import ChatAssistant from './components/ChatAssistant';
 import Onboarding from './components/Onboarding';
 import logo from './assets/vynex-logo.png';
@@ -322,23 +323,25 @@ function App() {
   }
 
   return (
-    <FinanceProvider user={user}>
-      <UserProvider user={user}>
-        <div className="min-h-screen bg-slate-950 text-slate-200">
-          {!user ? (
-            <Login 
-              onLogin={(u) => setUser(u)} 
-              initialView={recoveryMode ? 'reset' : 'login'} 
-            />
-          ) : (
-            <>
-              <MainApp user={user} onLogout={() => supabase.auth.signOut()} />
-              <ChatAssistant />
-            </>
-          )}
-        </div>
-      </UserProvider>
-    </FinanceProvider>
+    <ToastProvider>
+      <FinanceProvider user={user}>
+        <UserProvider user={user}>
+          <div className="min-h-screen bg-slate-950 text-slate-200">
+            {!user ? (
+              <Login 
+                onLogin={(u) => setUser(u)} 
+                initialView={recoveryMode ? 'reset' : 'login'} 
+              />
+            ) : (
+              <>
+                <MainApp user={user} onLogout={() => supabase.auth.signOut()} />
+                <ChatAssistant />
+              </>
+            )}
+          </div>
+        </UserProvider>
+      </FinanceProvider>
+    </ToastProvider>
   );
 }
 

@@ -5,10 +5,13 @@ import { planService } from '../../services/planService';
 import { useUser } from '../../context/UserContext';
 import AgentCard from './AgentCard';
 import { Bot, Sparkles, AlertCircle, Crown } from 'lucide-react';
+import { useToast } from '../../context/ToastContext';
+import Alert from '../Common/Alert';
 
 export default function AgentGrid() {
   const { activeAgents, toggleAgent, currentPlan, setActiveSection } = useUser();
   const [error, setError] = useState(null);
+  const toast = useToast();
   
   const agents = agentService.getAgents().map(agent => ({
     ...agent,
@@ -31,7 +34,14 @@ export default function AgentGrid() {
 
     const success = await toggleAgent(id);
     if (!success) {
-      setError("Falha ao salvar preferência. Tente novamente.");
+      toast.error('Erro no Sistema', 'Não foi possível atualizar o status do agente.');
+    } else {
+      const newState = !agent.active;
+      if (newState) {
+        toast.success('Agente Ativado', `${agent.name} agora está analisando seus dados.`);
+      } else {
+        toast.info('Agente Desativado', `${agent.name} foi colocado em modo de espera.`);
+      }
     }
   };
 
@@ -71,18 +81,20 @@ export default function AgentGrid() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="glass p-4 border-rose-500/20 bg-rose-500/5 flex items-center justify-between gap-4"
           >
-            <div className="flex items-center gap-3 text-rose-400">
-               <AlertCircle size={18} />
-               <p className="text-xs font-bold uppercase tracking-tight">{error}</p>
-            </div>
-            <button 
-              onClick={() => setActiveSection('account')}
-              className="flex items-center gap-2 bg-brand-green/10 text-brand-green px-4 py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest border border-brand-green/20 hover:bg-brand-green/20"
+            <Alert 
+              type="warning" 
+              title="Limite de Agentes Atingido" 
+              message={error}
+              className="mb-8"
             >
-              <Crown size={12} /> Fazer Upgrade
-            </button>
+              <button 
+                onClick={() => setActiveSection('account')}
+                className="mt-4 flex items-center gap-2 bg-brand-green text-slate-950 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-brand-green/20"
+              >
+                <Crown size={12} /> Fazer Upgrade Agora
+              </button>
+            </Alert>
           </motion.div>
         )}
       </AnimatePresence>
