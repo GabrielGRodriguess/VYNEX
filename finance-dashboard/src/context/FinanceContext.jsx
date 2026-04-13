@@ -11,7 +11,12 @@ export function FinanceProvider({ user, children }) {
   const [loading, setLoading] = useState(true);
   const [isDemoMode, setIsDemoMode] = useState(false);
 
-  // 1. LOAD CONNECTIONS AND MANUAL TRANSACTIONS
+  // Advanced metrics calculated from transactions
+  const analytics = useMemo(() => {
+    return financialService.getAnalytics(transactions);
+  }, [transactions]);
+
+  // 1. LOAD CONNECTIONS AND TRANSACTIONS
   useEffect(() => {
     async function loadAllData() {
       if (!user) {
@@ -25,8 +30,8 @@ export function FinanceProvider({ user, children }) {
       setLoading(true);
       
       try {
-        // Load connections
-        const { data: connData, error: connError } = await supabase
+        // Load bank connections
+        const { data: connData } = await supabase
           .from('bank_connections')
           .select('*')
           .eq('user_id', user.id);
@@ -35,7 +40,7 @@ export function FinanceProvider({ user, children }) {
         setConnections(currentConnections);
 
         // Load manual transactions
-        const { data: txData, error: txError } = await supabase
+        const { data: txData } = await supabase
           .from('finance_transactions')
           .select('*')
           .eq('user_id', user.id)
@@ -43,7 +48,7 @@ export function FinanceProvider({ user, children }) {
 
         const manualTxs = txData || [];
 
-        // Aggregate using Service
+        // Aggregate using Service (Includes Layer 2 Classification)
         const aggregated = await financialService.getAggregatedData(currentConnections, manualTxs);
         
         setBalance(aggregated.balance);
@@ -71,9 +76,11 @@ export function FinanceProvider({ user, children }) {
       .single();
 
     if (!error && data) {
-      setConnections(prev => [...prev, data]);
-      // Re-trigger global sync
-      const aggregated = await financialService.getAggregatedData([...connections, data], transactions.filter(t => !t.fromBank));
+      const newConnections = [...connections, data];
+      setConnections(newConnections);
+      
+      // Re-trigger global sync with classification
+      const aggregated = await financialService.getAggregatedData(newConnections, transactions.filter(t => !t.fromBank));
       setBalance(aggregated.balance);
       setTransactions(aggregated.transactions);
     }
@@ -83,7 +90,8 @@ export function FinanceProvider({ user, children }) {
   const addTransaction = async (transaction) => {
     if (isDemoMode) {
        const newTx = { ...transaction, id: Date.now() };
-       setTransactions(prev => [newTx, ...prev]);
+       const classified = financialService.classifyTransactions([newTx])[0];
+       setTransactions(prev => [classified, ...prev]);
        if (transaction.type === 'income') setBalance(prev => prev + Number(transaction.amount));
        else setBalance(prev => prev - Number(transaction.amount));
        return;
@@ -106,7 +114,8 @@ export function FinanceProvider({ user, children }) {
       .select();
 
     if (!error && data) {
-      setTransactions(prev => [data[0], ...prev]);
+      const classified = financialService.classifyTransactions([data[0]])[0];
+      setTransactions(prev => [classified, ...prev]);
       if (transaction.type === 'income') setBalance(prev => prev + Number(transaction.amount));
       else setBalance(prev => prev - Number(transaction.amount));
     }
@@ -118,7 +127,6 @@ export function FinanceProvider({ user, children }) {
     if (!tx) return;
 
     if (isDemoMode || tx.fromBank) {
-      // For demo or bank txs we don't delete from DB, just filter UI (reset on reload)
       setTransactions(prev => prev.filter(t => t.id !== id));
       if (tx.type === 'income') setBalance(prev => prev - Number(tx.amount));
       else setBalance(prev => prev + Number(tx.amount));
@@ -133,11 +141,6 @@ export function FinanceProvider({ user, children }) {
     }
   };
 
-  const getIncome = () => transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + Number(t.amount), 0);
-  const getExpense = () => transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + Number(t.amount), 0);
-
-  const analytics = useMemo(() => financialService.getAnalytics(transactions), [transactions]);
-
   return (
     <FinanceContext.Provider value={{
       balance,
@@ -147,8 +150,6 @@ export function FinanceProvider({ user, children }) {
       addTransaction,
       deleteTransaction,
       addConnection,
-      getIncome,
-      getExpense,
       analytics,
       isDemoMode,
       setIsDemoMode,
@@ -162,3 +163,4 @@ export function FinanceProvider({ user, children }) {
 export function useFinance() {
   return useContext(FinanceContext);
 }
+

@@ -138,7 +138,9 @@ body {
 
 .section-title::before {
   content: '';
-  @apply w-1.5 h-1.5 rounded-full bg-brand-green neon-glow;
+  @apply w-1.5 h-1.5 rounded-full;
+  background-color: var(--brand-green);
+  box-shadow: 0 0 8px rgba(163, 255, 18, 0.4);
 }
 
 @media (max-width: 640px) {

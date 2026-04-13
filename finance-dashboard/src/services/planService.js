@@ -5,34 +5,59 @@
 
 export const PLANS = {
   FREE: {
-    id: 'free',
+    id: 'FREE',
     name: 'Free',
+    price: 0,
     maxConnections: 1,
-    maxActiveAgents: 1,
-    features: ['Dashboard Básico', 'Insights de Crédito', '1 Conexão Bancária', '1 Agente Ativo'],
-    price: 0
+    maxActiveAgents: 2,
+    features: [
+      '1 Conexão bancária',
+      '2 Agentes de IA Ativos',
+      'Dashboard Financeiro básico',
+      'Insights de gastos simples',
+      'Análise de Score básico'
+    ]
   },
   PRO: {
-    id: 'pro',
+    id: 'PRO',
     name: 'Pro',
+    price: 29,
     maxConnections: 5,
-    maxActiveAgents: 3,
-    features: ['Até 5 Conexões', 'Chat IA Ilimitado', 'Insights Avançados', 'Suporte Prioritário', '3 Agentes Ativos'],
-    price: 29.90
+    maxActiveAgents: 10, // "Todos"
+    features: [
+      'Até 5 Conexões bancárias',
+      'Todos os Agentes Ativos',
+      'Dashboard Avançado',
+      'Insights comportamentais',
+      'Análise de Crédito precisa',
+      'Suporte prioritário (Email)'
+    ]
   },
   PREMIUM: {
-    id: 'premium',
+    id: 'PREMIUM',
     name: 'Premium',
-    maxConnections: 99,
+    price: 49,
+    maxConnections: Infinity,
     maxActiveAgents: 10,
-    features: ['Conexões Ilimitadas', 'Gestão Multi-Perfil', 'Mentoria de Crédito', 'Taxas Exclusivas', '10 Agentes Ativos'],
-    price: 49.90
+    features: [
+      'Conexões Ilimitadas',
+      'Todos os Agentes Ativos',
+      'Inteligência Consolidada Multi-banco',
+      'Relatórios de Renda Real',
+      'Vynex Score 2.0 (Deep Data)',
+      'Suporte VIP 24h (WhatsApp)'
+    ]
   }
 };
 
 export const planService = {
   getPlanById(id) {
-    return Object.values(PLANS).find(p => p.id === id) || PLANS.FREE;
+    return PLANS[id?.toUpperCase()] || PLANS.FREE;
+  },
+
+  canAddAgent(currentActiveCount, planId) {
+    const plan = this.getPlanById(planId);
+    return currentActiveCount < plan.maxActiveAgents;
   },
 
   canAddConnection(currentCount, planId) {
@@ -40,9 +65,13 @@ export const planService = {
     return currentCount < plan.maxConnections;
   },
 
-  canAddAgent(currentCount, planId) {
+  hasFeature(planId, featureKey) {
     const plan = this.getPlanById(planId);
-    return currentCount < plan.maxActiveAgents;
+    if (planId === 'PREMIUM') return true;
+    if (planId === 'PRO') {
+      return ['advanced_dash', 'behavioral_insights'].includes(featureKey);
+    }
+    return false;
   },
 
   getAvailablePlans() {

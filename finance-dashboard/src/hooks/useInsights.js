@@ -2,96 +2,84 @@ import { useMemo } from 'react';
 import { useFinance } from '../context/FinanceContext';
 
 export function useInsights() {
-  const { transactions, balance } = useFinance();
+  const { analytics } = useFinance();
 
   const insights = useMemo(() => {
-    if (!transactions.length) return [];
-
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-
-    const expenses = transactions.filter(t => t.type === 'expense');
-    const income = transactions.filter(t => t.type === 'income');
-    
-    const currentMonthTxs = expenses.filter(t => {
-      const d = new Date(t.date);
-      return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-    });
-
-    const categoryTotals = currentMonthTxs.reduce((acc, t) => {
-      acc[t.category] = (acc[t.category] || 0) + Number(t.amount);
-      return acc;
-    }, {});
-
-    const latest = transactions[0];
     const generatedInsights = [];
 
-    // 2. COMPARAÇÃO MENSAL (Trend Analysis)
-    const prevMonthTxs = expenses.filter(t => {
-      const d = new Date(t.date);
-      return d.getMonth() === (currentMonth === 0 ? 11 : currentMonth - 1);
-    });
-    const prevTotal = prevMonthTxs.reduce((acc, t) => acc + Number(t.amount), 0);
-    const currentTotal = currentMonthTxs.reduce((acc, t) => acc + Number(t.amount), 0);
-    
-    if (prevTotal > 0 && currentTotal > prevTotal * 1.1) {
-      const diff = ((currentTotal / prevTotal - 1) * 100).toFixed(0);
+    // 1. SURPLUS/SAVINGS INSIGHT
+    if (analytics.monthlySurplus > 1000) {
       generatedInsights.push({
-        id: 'ia-insight-trend',
+        id: 'ia-insight-surplus',
+        type: 'feedback',
+        label: 'Capacidade de Aporte',
+        icon: '💰',
+        text: `Identifiquei um superávit real de R$ ${analytics.monthlySurplus.toFixed(0)} nos últimos 30 dias. Este valor é ideal para começar uma reserva de emergência ou acelerar seus investimentos.`,
+        color: 'text-brand-green'
+      });
+    } else if (analytics.monthlySurplus < 0) {
+      generatedInsights.push({
+        id: 'ia-insight-deficit',
         type: 'alert',
-        label: 'Tendência Mensal',
-        icon: '📈',
-        text: `Seus gastos subiram ${diff}% em relação ao mês passado. Esse aumento repentino pode comprometer suas metas de longo prazo. Que tal revisarmos juntos onde esse valor extra foi aplicado? Posso te ajudar a encontrar economias para equilibrar o mês.`,
+        label: 'Alerta de Déficit',
+        icon: '⚠️',
+        text: `Sua operação mensal fechou no negativo em R$ ${Math.abs(analytics.monthlySurplus).toFixed(0)}. Recomendo revisar seus custos variáveis para evitar o uso de crédito caro no próximo mês.`,
         color: 'text-rose-500'
       });
     }
 
-    // 3. DETECÇÃO DE RECORRÊNCIA (Pierre Style)
-    const recurringKeys = ['netflix', 'spotify', 'amazon', 'gym', 'academia', 'cloud', 'assine'];
-    const detectedSubscriptions = expenses.filter(t => 
-      recurringKeys.some(key => t.description.toLowerCase().includes(key))
-    );
-
-    if (detectedSubscriptions.length > 0 && generatedInsights.length < 3) {
+    // 2. RISK DETECTION (Layer 2 Classification)
+    if (analytics.riskEvents > 0) {
       generatedInsights.push({
-        id: 'ia-insight-recurring',
-        type: 'feedback',
-        label: 'Assinaturas Detectadas',
-        icon: '📑',
-        text: `Identifiquei ${detectedSubscriptions.length} assinaturas recorrentes na sua conta. Pequenos valores mensais podem passar despercebidos, mas juntos eles impactam sua liquidez. Quer uma lista detalhada do que você está pagando via VYNEX?`,
+        id: 'ia-insight-risk',
+        type: 'alert',
+        label: 'Padrão de Risco',
+        icon: '🎲',
+        text: `Detectamos ${analytics.riskEvents} movimentações em plataformas de alto risco/apostas. Esse comportamento impacta diretamente seu Score Vynex e sua confiabilidade bancária.`,
+        color: 'text-amber-500'
+      });
+    }
+
+    // 3. FIXED EXPENSE ANALYSIS
+    if (analytics.fixedExpenseRatio > 0.5) {
+      generatedInsights.push({
+        id: 'ia-insight-fixed',
+        type: 'alert',
+        label: 'Comprometimento Elevado',
+        icon: '🏠',
+        text: `Seus custos fixos consomem ${(analytics.fixedExpenseRatio * 100).toFixed(0)}% da sua renda. O ideal é manter esse valor abaixo de 50% para garantir sua liberdade de escolha financeira.`,
         color: 'text-blue-400'
       });
     }
 
-    // 4. FALLBACK OU PERFIL DE CRÉDITO (VYNEX Core)
-    const totalIncome = income.reduce((acc, t) => acc + Number(t.amount), 0);
-    if (totalIncome > 3000 && generatedInsights.length < 3) {
+    // 4. INCOME CONSISTENCY / CREDIT OPPORTUNITY
+    if (analytics.incomeConsistency > 0.8 && analytics.monthlyIncome > 2000) {
       generatedInsights.push({
-        id: 'ia-insight-income',
+        id: 'ia-insight-consistency',
         type: 'feedback',
-        label: 'Perfil de Crédito',
-        icon: '⭐️',
-        text: "Vi que seus recebimentos consolidados estão estáveis. Isso aumenta muito sua confiabilidade. Com esse perfil, você consegue as melhores taxas do mercado agora mesmo. Vale a pena ver quanto de limite você tem liberado.",
-        color: 'text-brand-green',
+        label: 'Saúde de Recebimentos',
+        icon: '✅',
+        text: "Sua renda apresenta alta previsibilidade e consistência. Isso te posiciona como um cliente de baixo risco e abre portas para as melhores taxas de crédito do ecossistema.",
+        color: 'text-emerald-400',
         action: 'credit'
       });
     }
 
-    // FALLBACK HUMANIZADO
+    // FALLBACK IF NO INSIGHTS YET
     if (generatedInsights.length === 0) {
       generatedInsights.push({
         id: 'ia-insight-fallback',
         type: 'feedback',
-        label: 'Inteligência VYNEX',
+        label: 'Inteligência Ativa',
         icon: '✨',
-        text: "Estou analisando seu novo patrimônio consolidado. Quanto mais bancos você conectar, mais precisos serão meus conselhos sobre seu dinheiro e potencial de crédito.",
+        text: "Minha IA está processando suas primeiras conexões. Em breve, gerarei recomendações profundas sobre seu comportamento e potencial de crédito.",
         color: 'text-brand-green'
       });
     }
 
     return generatedInsights.slice(0, 3);
-  }, [transactions, balance]);
+  }, [analytics]);
 
   return insights;
 }
+

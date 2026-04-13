@@ -1,6 +1,7 @@
 /**
  * financialService.js
  * Aggregates data from multiple bank connections and manual transactions.
+ * Includes Layer 2 (Classification) and Layer 3 (Behavioral Intelligence) engines.
  */
 
 import { fetchAllData } from './pluggyService';
@@ -8,8 +9,6 @@ import { fetchAllData } from './pluggyService';
 export const financialService = {
   /**
    * Aggregates total balance and transaction history across all active items.
-   * @param {Array} connections - List of connection objects {id, itemId, provider}
-   * @param {Array} manualTransactions - Transactions from Supabase
    */
   async getAggregatedData(connections, manualTransactions = []) {
     let aggregatedTransactions = [...manualTransactions];
@@ -35,12 +34,77 @@ export const financialService = {
       }
     });
 
+    // Layer 2: Automatic Classification
+    const classifiedTransactions = this.classifyTransactions(aggregatedTransactions);
+
     // Sort all transactions by date
-    aggregatedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+    classifiedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     return {
       balance: totalBalance,
-      transactions: aggregatedTransactions
+      transactions: classifiedTransactions
+    };
+  },
+
+  /**
+   * Layer 2: Classification Engine
+   * Detects patterns based on transaction descriptions.
+   */
+  classifyTransactions(transactions) {
+    const rules = [
+      { category: 'Salário', keywords: ['SALARIO', 'PROVENTOS', 'VENCIMENTOS', 'PAGAMENTO', 'FOLHA'], type: 'income' },
+      { category: 'Renda Extras', keywords: ['PIX RECEBIDO', 'TRANSFERENCIA RECEBIDA', 'TED RECEBIDA'], type: 'income' },
+      { category: 'Apostas / Risco', keywords: ['BET', 'BETANO', 'CASINO', 'JOGO', 'LOTERIA', 'BELA VISTA', 'GREEN'], type: 'expense' },
+      { category: 'Moradia / Fixo', keywords: ['ALUGUEL', 'CONDOMINIO', 'LUZ', 'AGUA', 'INTERNET', 'NETFLIX', 'SPOTIFY'], type: 'expense' },
+      { category: 'Transporte', keywords: ['UBER', '99APP', 'POSTO', 'COMBUSTIVEL', 'ESTACIONAMENTO'], type: 'expense' },
+      { category: 'Alimentação', keywords: ['IFOOD', 'MCDONALDS', 'RESTAURANTE', 'MERCADO', 'SUPERMERCADO', 'PADARIA'], type: 'expense' }
+    ];
+
+    return transactions.map(t => {
+      const desc = t.description.toUpperCase();
+      const match = rules.find(r => r.keywords.some(k => desc.includes(k)));
+      
+      return {
+        ...t,
+        category: match ? match.category : (t.category || 'Outros'),
+        type: match ? match.type : (t.type || 'expense'),
+        isRisk: match?.category === 'Apostas / Risco',
+        isFixed: match?.category === 'Moradia / Fixo'
+      };
+    });
+  },
+
+  /**
+   * Layer 3: Behavioral Intelligence Motor
+   * Calculates sophisticated metrics for Vynex Score 2.0.
+   */
+  calculateBehavioralMetrics(transactions) {
+    const last30Days = transactions.filter(t => {
+      const date = new Date(t.date);
+      const diff = (new Date() - date) / (1000 * 60 * 60 * 24);
+      return diff <= 30;
+    });
+
+    const income = last30Days.filter(t => t.type === 'income');
+    const expenses = last30Days.filter(t => t.type === 'expense');
+
+    const totalIncome = income.reduce((acc, t) => acc + Number(t.amount), 0);
+    const totalExpense = expenses.reduce((acc, t) => acc + Number(t.amount), 0);
+    const riskExpenses = last30Days.filter(t => t.isRisk).reduce((acc, t) => acc + Number(t.amount), 0);
+    const fixedExpenses = last30Days.filter(t => t.isFixed).reduce((acc, t) => acc + Number(t.amount), 0);
+
+    // Consistency check: Frequency of salary/income
+    const incomeDays = [...new Set(income.map(t => t.date))].length;
+    const incomeConsistency = Math.min(incomeDays / 4, 1); // Ideally 4+ income events/sources per month
+
+    return {
+      monthlyIncome: totalIncome,
+      monthlyExpense: totalExpense,
+      monthlySurplus: totalIncome - totalExpense,
+      fixedExpenseRatio: totalIncome > 0 ? fixedExpenses / totalIncome : 0,
+      riskRatio: totalExpense > 0 ? riskExpenses / totalExpense : 0,
+      incomeConsistency,
+      riskEvents: last30Days.filter(t => t.isRisk).length
     };
   },
 
@@ -48,17 +112,19 @@ export const financialService = {
    * Calculates category distribution and trends.
    */
   getAnalytics(transactions) {
-    const expenses = transactions.filter(t => t.type === 'expense');
-    const income = transactions.filter(t => t.type === 'income');
-
-    const categories = expenses.reduce((acc, t) => {
-      acc[t.category] = (acc[t.category] || 0) + Number(t.amount);
+    const metrics = this.calculateBehavioralMetrics(transactions);
+    
+    const categories = transactions.reduce((acc, t) => {
+      if (t.type === 'expense') {
+        acc[t.category] = (acc[t.category] || 0) + Number(t.amount);
+      }
       return acc;
     }, {});
 
     return {
-      totalIncome: income.reduce((acc, t) => acc + Number(t.amount), 0),
-      totalExpense: expenses.reduce((acc, t) => acc + Number(t.amount), 0),
+      ...metrics,
+      totalIncome: metrics.monthlyIncome,
+      totalExpense: metrics.monthlyExpense,
       categoryDistribution: categories,
       transactionCount: transactions.length
     };
