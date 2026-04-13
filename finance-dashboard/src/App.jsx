@@ -21,7 +21,7 @@ import EmptyState from './components/EmptyState';
 import AgentGrid from './components/Agents/AgentGrid';
 import SettingsPage from './components/Settings/SettingsPage';
 import AccountPage from './components/Profile/AccountPage';
-import { LayoutDashboard, TrendingUp, History, LogOut, Settings as SettingsIcon, Shield, Users } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, History, LogOut, Settings as SettingsIcon, Shield, Users, Crown, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 
