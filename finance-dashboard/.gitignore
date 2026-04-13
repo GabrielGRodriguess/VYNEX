@@ -10,6 +10,8 @@ dist-ssr
 package-lock.json
 backup/
 backup_snapshot/
+backup_refinement/
+backup_layout_fix/
 build_error.txt
 check.py
 

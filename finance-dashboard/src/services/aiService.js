@@ -44,21 +44,21 @@ export const aiService = {
     
     // 1. Credit-focused response
     if (query.includes('crédito') || query.includes('limite') || query.includes('emprest')) {
-      return `Seu VYNEX Score está em ${context.score} (${context.risk}). Com base na sua movimentação de R$ ${context.totalIncome.toFixed(2)} este mês, identifiquei ${context.offersCount} ofertas pré-aprovadas para você. Gostaria de ver os detalhes?`;
+      return `Seu Perfil Financeiro está com uma pontuação de ${context.score} (${context.risk}). Com base na sua consistência de R$ ${context.totalIncome.toFixed(2)} este mês, identifiquei oportunidades estratégicas que podem reduzir seus juros em até 15%. Deseja explorar essas opções?`;
     }
 
     // 2. Spending-focused response
     if (query.includes('gasto') || query.includes('onde foi') || query.includes('saída')) {
       const topCategory = "Moradia"; // Would be dynamic
-      return `Você gastou R$ ${context.totalExpense.toFixed(2)} este mês. O maior peso foi em ${topCategory}. Economizar 10% nessa categoria poderia aumentar seu score em 40 pontos.`;
+      return `Identifiquei uma saída total de R$ ${context.totalExpense.toFixed(2)} este mês. Percebi que ${topCategory} consome boa parte do seu orçamento. Pequenos ajustes nessa categoria podem fortalecer seu perfil financeiro consideravelmente.`;
     }
 
     // 3. Balance-focused response
     if (query.includes('saldo') || query.includes('quanto tenho')) {
-      return `Seu saldo consolidado é de R$ ${context.balance.toFixed(2)}. Vejo que você teve um superávit de R$ ${(context.totalIncome - context.totalExpense).toFixed(2)} este mês. Isso te qualifica para taxas de crédito exclusivas.`;
+      return `Seu patrimônio consolidado sob minha gestão é de R$ ${context.balance.toFixed(2)}. Vejo que você manteve um superávit saudável de R$ ${(context.totalIncome - context.totalExpense).toFixed(2)} este mês, o que indica uma excelente saúde financeira.`;
     }
 
     // Default Intelligence
-    return `Olá ${context.userName}! Analisei suas finanças: seu saldo é R$ ${context.balance.toFixed(2)} e seu Vynex Score de ${context.score} está excelente. Alguma dúvida sobre seus gastos ou quer ver quanto liberamos de crédito para você hoje?`;
+    return `Olá ${context.userName}! Analisei sua saúde financeira: seu saldo é R$ ${context.balance.toFixed(2)} e seu Perfil Vynex está em ${context.score} (Excelente). Como posso te ajudar a otimizar sua organização financeira hoje?`;
   }
 };

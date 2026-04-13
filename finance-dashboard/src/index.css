@@ -4,11 +4,11 @@
 
 @layer utilities {
   .glass {
-    @apply bg-slate-900/40 backdrop-blur-2xl rounded-[2rem] border border-white/5 transition-all duration-500 shadow-2xl;
+    @apply bg-slate-900/40 backdrop-blur-2xl rounded-[2rem] border border-white/5 transition-all duration-500 shadow-2xl min-w-0;
   }
   
   .glass-card {
-    @apply bg-slate-900/60 backdrop-blur-3xl rounded-[2.5rem] border border-white/10 shadow-2xl;
+    @apply bg-slate-900/60 backdrop-blur-3xl rounded-[2.5rem] border border-white/10 shadow-2xl min-w-0;
   }
 
   .neon-glow {
@@ -70,6 +70,19 @@
   --bg-dark: #050608;
 }
 
+/* Global Reset & Overflow Prevention */
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: 'Outfit', sans-serif;
   background-color: var(--bg-dark);
@@ -117,4 +130,22 @@ body {
 
 .mobile-label {
   @apply text-[9px] font-black text-slate-500 uppercase tracking-[0.2em];
+}
+
+.section-title {
+  @apply text-[10px] sm:text-xs font-black text-slate-500 uppercase tracking-[0.3em] mb-6 flex items-center gap-3;
+}
+
+.section-title::before {
+  content: '';
+  @apply w-1.5 h-1.5 rounded-full bg-brand-green neon-glow;
+}
+
+@media (max-width: 640px) {
+  .glass {
+    @apply rounded-[1.5rem];
+  }
+  .glass-card {
+    @apply rounded-[2rem];
+  }
 }

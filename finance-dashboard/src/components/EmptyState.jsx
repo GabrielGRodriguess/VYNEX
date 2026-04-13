@@ -36,11 +36,11 @@ export default function EmptyState() {
       >
         <div className="space-y-4">
           <h1 className="text-4xl sm:text-5xl font-black text-white uppercase tracking-tighter">
-            Para encontrar oportunidades, <br/>
-            <span className="text-brand-green">preciso ver como você gasta</span>
+            Traga clareza para sua <br/>
+            <span className="text-brand-green">vida financeira</span>
           </h1>
           <p className="text-slate-500 text-lg max-w-2xl mx-auto">
-            Conecte suas contas para que nossos agentes IA possam analisar sua saúde financeira e liberar as melhores ofertas de crédito.
+            Conecte suas contas para que nossos agentes IA possam organizar seus gastos, identificar padrões e sugerir caminhos inteligentes para o seu patrimônio.
           </p>
         </div>
 

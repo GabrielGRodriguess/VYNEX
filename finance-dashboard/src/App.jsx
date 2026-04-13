@@ -31,50 +31,50 @@ function DashboardContent({ onSimulateCredit }) {
   console.log("[VYNEX] DashboardContent render - Transactions count:", transactions?.length);
 
   return (
-    <div className="grid grid-cols-1 gap-8">
+    <div className="grid grid-cols-1 gap-6 sm:gap-8">
       <SummaryCards />
       
-      {/* Strategic Credit CTA Card */}
+      {/* Strategic Profile CTA Card - Intelligence First */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass p-8 bg-brand-green/10 border-brand-green/20 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden group hover:border-brand-green/40 transition-all cursor-pointer"
+        className="glass p-6 sm:p-8 bg-brand-green/10 border-brand-green/20 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden group hover:border-brand-green/40 transition-all cursor-pointer"
         onClick={onSimulateCredit}
       >
         <div className="absolute top-0 right-0 w-64 h-64 bg-brand-green/5 rounded-full blur-3xl -mr-32 -mt-32 group-hover:bg-brand-green/10 transition-colors"></div>
-        <div className="relative z-10 flex items-center gap-6">
+        <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-center sm:text-left">
           <div className="w-16 h-16 rounded-2xl bg-brand-green/20 flex items-center justify-center text-brand-green shadow-[0_0_20px_rgba(163,255,18,0.2)]">
             <TrendingUp size={32} />
           </div>
           <div>
-            <h3 className="text-xl font-black text-white uppercase tracking-tight">Limite pré-aprovado</h3>
-            <p className="text-slate-400 text-sm max-w-md">Com base na sua movimentação, você tem grandes chances de liberar crédito com taxas menores hoje.</p>
+            <h3 className="text-xl font-black text-white uppercase tracking-tight">Otimize seu Perfil</h3>
+            <p className="text-slate-400 text-xs sm:text-sm max-w-md">Sua movimentação indica um perfil de alta eficiência. Descubra como transformar isso em vantagens estratégicas.</p>
           </div>
         </div>
         <button 
-          className="relative z-10 bg-brand-green text-slate-950 px-8 py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand-green/20"
+          className="w-full sm:w-auto relative z-10 bg-brand-green text-slate-950 px-8 py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand-green/20 text-xs sm:text-sm"
         >
-          Simular meu crédito
+          Analisar meu potencial
         </button>
       </motion.div>
 
       <FinancialInsights />
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="glass p-6 h-[350px]">
-          <h3 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+        <div className="glass p-4 sm:p-6 h-[300px] sm:h-[350px]">
+          <h3 className="text-[10px] sm:text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-green neon-glow"></span>
             Minha Evolução
           </h3>
-          <div className="h-[260px]">
+          <div className="h-[210px] sm:h-[260px]">
             <BalanceChart />
           </div>
         </div>
-        <div className="glass p-6 h-[350px]">
-          <h3 className="text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+        <div className="glass p-4 sm:p-6 h-[300px] sm:h-[350px]">
+          <h3 className="text-[10px] sm:text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-green neon-glow"></span>
             Distribuição de Gastos
           </h3>
-          <div className="h-[260px]">
+          <div className="h-[210px] sm:h-[260px]">
             <ExpenseChart />
           </div>
         </div>
@@ -112,119 +112,105 @@ function MainApp({ user, onLogout }) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 lg:py-12 overflow-x-hidden">
-      <header className="flex items-center justify-between mb-8 sm:mb-12 gap-2 sm:gap-4">
-        <div className="flex items-center gap-2 sm:gap-6 min-w-0">
-          <img 
-            src={logo} 
-            alt="VYNEX Logo" 
-            className="h-6 sm:h-9 md:h-12 w-auto object-contain flex-shrink-0 mix-blend-screen drop-shadow-[0_0_12px_rgba(163,255,18,0.3)]" 
-          />
-          <div className="hidden sm:flex flex-col border-l border-white/10 pl-4 sm:pl-6">
-            <p className="text-slate-500 font-black text-[8px] sm:text-[10px] uppercase tracking-widest leading-none">
-              Inteligência Financeira
-            </p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 lg:py-12 overflow-x-hidden">
+      {/* Responsive Header */}
+      <header className="flex flex-col sm:flex-row items-center justify-between mb-8 sm:mb-12 gap-4 sm:gap-6">
+        <div className="flex items-center justify-between w-full sm:w-auto gap-4">
+          <div className="flex items-center gap-3 sm:gap-6">
+            <img 
+              src={logo} 
+              alt="VYNEX Logo" 
+              className="h-7 sm:h-9 md:h-12 w-auto object-contain flex-shrink-0 mix-blend-screen drop-shadow-[0_0_12px_rgba(163,255,18,0.3)]" 
+            />
+            <div className="hidden xs:flex flex-col border-l border-white/10 pl-3 sm:pl-6 leading-none">
+              <p className="text-slate-500 font-black text-[8px] sm:text-[10px] uppercase tracking-widest">
+                Inteligência
+              </p>
+               <p className="text-slate-500 font-black text-[8px] sm:text-[10px] uppercase tracking-widest">
+                Financeira
+              </p>
+            </div>
           </div>
-          <div className="hidden lg:flex items-center gap-2 bg-brand-green/5 border border-brand-green/10 px-4 py-1.5 rounded-full ml-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse" />
-            <span className="text-[9px] font-black text-brand-green uppercase tracking-widest leading-none">Assistente de Decisões</span>
+          <div className="sm:hidden flex items-center gap-2">
+             <DemoControls />
           </div>
-          <DemoControls />
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-          <div className="hidden lg:flex items-center gap-4 mr-2">
+        <div className="flex items-center justify-between w-full sm:w-auto gap-3 sm:gap-4 overflow-hidden">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
              <button 
               onClick={() => setActiveSection('account')}
-              className={`text-right group p-2 rounded-2xl transition-all ${activeSection === 'account' ? 'bg-brand-green/10' : 'hover:bg-white/5'}`}
+              className={`text-right group p-2 rounded-2xl transition-all flex flex-col items-end min-w-0 max-w-[100px] xs:max-w-[140px] sm:max-w-[180px] ${activeSection === 'account' ? 'bg-brand-green/10' : 'hover:bg-white/5'}`}
             >
-                <p className={`text-[9px] font-black uppercase tracking-tighter leading-none ${activeSection === 'account' ? 'text-brand-green' : 'text-white'}`}>{user?.email?.split('@')[0]}</p>
-                <p className="text-[7px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-300">Meu Perfil</p>
+                <p className={`text-[10px] font-black uppercase tracking-tighter leading-none truncate w-full ${activeSection === 'account' ? 'text-brand-green' : 'text-white'}`}>{user?.email?.split('@')[0]}</p>
+                <p className="text-[7px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-300">Perfil</p>
              </button>
              <button 
               onClick={() => setActiveSection('settings')}
-              className={`p-2 transition-colors ${activeSection === 'settings' ? 'text-brand-green' : 'text-slate-500 hover:text-white'}`}
+              className={`p-2 transition-colors shrink-0 ${activeSection === 'settings' ? 'text-brand-green' : 'text-slate-500 hover:text-white'}`}
              >
                 <SettingsIcon size={18} />
              </button>
-             <button onClick={onLogout} className="p-2 text-slate-500 hover:text-red-500 transition-colors">
-                <LogOut size={16} />
-             </button>
           </div>
-          <div className="hidden lg:block">
-            <OnlineUsersIndicator />
+          
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="hidden lg:block h-8 w-px bg-white/5 mx-2" />
+            <div className="hidden sm:block">
+               <DemoControls />
+            </div>
+            <div className="hidden xs:block">
+              <BankConnector />
+            </div>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-neon-gradient text-slate-950 px-4 py-2.5 sm:px-6 sm:py-3.5 rounded-xl sm:rounded-2xl font-black hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-xl shadow-brand-green/20 shrink-0"
+            >
+               <span className="text-lg sm:text-xl leading-none mt-[-2px]">+</span> 
+               <span className="text-[9px] sm:text-[10px] uppercase tracking-widest font-black">Lançar</span>
+            </button>
           </div>
-          <div className="hidden sm:block">
-            <BankConnector />
-          </div>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-neon-gradient text-slate-950 px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl font-black hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand-green/20"
-          >
-             <span className="text-lg leading-none">+</span> 
-             <span className="hidden sm:inline text-xs uppercase tracking-widest">Novo</span>
-          </button>
         </div>
       </header>
 
-      {/* Navigation Tabs - Evolved to include Agents */}
-      <div className="mb-10 sm:mb-12 overflow-x-auto no-scrollbar pb-2">
-        <nav className="flex p-1 bg-slate-900/40 rounded-2xl w-fit border border-white/5 gap-1">
-          <button
-            onClick={() => setActiveSection('dashboard')}
-            className={`flex items-center justify-center gap-2 px-6 sm:px-8 py-3 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 ${
-              activeSection === 'dashboard' 
-              ? 'bg-slate-800 text-brand-green shadow-xl border border-white/10' 
-              : 'text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            <LayoutDashboard size={12} />
-            Dashboard
-          </button>
-          <button
-            onClick={() => setActiveSection('agents')}
-            className={`flex items-center justify-center gap-2 px-6 sm:px-8 py-3 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 ${
-              activeSection === 'agents' 
-              ? 'bg-slate-800 text-brand-green shadow-xl border border-white/10' 
-              : 'text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            <Users size={12} />
-            Agentes IA
-          </button>
-          <button
-            onClick={() => setActiveSection('credit')}
-            className={`flex items-center justify-center gap-2 px-6 sm:px-8 py-3 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 ${
-              activeSection === 'credit' 
-              ? 'bg-slate-800 text-brand-green shadow-xl border border-white/10' 
-              : 'text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            <Shield size={12} />
-            Crédito
-          </button>
-          <button
-            onClick={() => setActiveSection('history')}
-            className={`flex items-center justify-center gap-2 px-6 sm:px-8 py-3 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 ${
-              activeSection === 'history' 
-              ? 'bg-slate-800 text-brand-green shadow-xl border border-white/10' 
-              : 'text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            <History size={12} />
-            Histórico
-          </button>
+      {/* Navigation Tabs - Refined for mobile scroll */}
+      <div className="mb-8 sm:mb-12">
+        <nav className="flex items-center gap-1 p-1 bg-slate-900/40 rounded-[1.25rem] w-full sm:w-fit border border-white/5 overflow-x-auto no-scrollbar">
+          {[
+            { id: 'dashboard', icon: <LayoutDashboard size={14} />, label: 'Dashboard' },
+            { id: 'agents', icon: <Users size={14} />, label: 'Agentes IA' },
+            { id: 'credit', icon: <Shield size={14} />, label: 'Inteligência' },
+            { id: 'history', icon: <History size={14} />, label: 'Histórico' }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveSection(tab.id)}
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 sm:px-8 py-3.5 sm:py-4 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 ${
+                activeSection === tab.id 
+                ? 'bg-slate-800 text-brand-green shadow-xl border border-white/10' 
+                : 'text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              {tab.icon}
+              {tab.label}
+            </button>
+          ))}
         </nav>
       </div>
 
-      {/* Mobile-only tools grouped effectively */}
-      <div className="lg:hidden flex items-center justify-between gap-4 mb-8">
-        <div className="flex-1 bg-slate-900/20 p-3 rounded-2xl border border-white/5 flex items-center justify-center">
-          <OnlineUsersIndicator />
+      {/* Mobile-only tools - Responsive Visibility */}
+      <div className="sm:hidden flex flex-col gap-4 mb-8">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex-1 bg-slate-900/20 p-4 rounded-2xl border border-white/5 flex items-center justify-center">
+            <OnlineUsersIndicator />
+          </div>
+          <div className="flex-1 bg-slate-900/20 p-2 rounded-2xl border border-white/5 flex items-center justify-center">
+            <BankConnector />
+          </div>
         </div>
-        <div className="sm:hidden flex-1 bg-slate-900/20 p-3 rounded-2xl border border-white/5 flex items-center justify-center">
-          <BankConnector />
-        </div>
+      </div>
+
+      <div className="hidden lg:block mb-8">
+        <OnlineUsersIndicator />
       </div>
 
 

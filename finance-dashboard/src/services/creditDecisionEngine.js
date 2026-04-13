@@ -62,17 +62,10 @@ export const getDecisionResult = (formData, financialData = null) => {
   // Final Normalization
   result.score_vynex = Math.min(scorePoints, 1000);
 
-  // 3. Product Intelligence
-  if (result.score_vynex >= 800) {
-    result.status_analise = "Perfil Premium - Alta Aprovação";
-    result.mensagem_front = "Seu comportamento financeiro é exemplar. Você tem acesso às menores taxas de juros do mercado.";
-  } else if (result.score_vynex >= 600) {
-    result.status_analise = "Perfil Consistente";
-    result.mensagem_front = "Boa saúde financeira. Há ótimas oportunidades de crédito disponíveis para o seu perfil.";
-  } else {
-    result.status_analise = "Aguardando Maturação";
-    result.mensagem_front = "Estamos analisando formas de otimizar seu score para liberar limites maiores.";
-  }
+  // 3. Product Intelligence using the Engine Methods
+  const category = creditDecisionEngine.getRiskCategory(result.score_vynex);
+  result.status_analise = category.label;
+  result.mensagem_front = creditDecisionEngine.getAnalysisSummary(result.score_vynex);
 
   // 4. Capacity Estimation
   const effectiveIncome = financialData ? financialData.totalIncome : (Number(renda) || 0);
@@ -81,7 +74,25 @@ export const getDecisionResult = (formData, financialData = null) => {
 
   if (result.score_vynex >= 400) {
     result.faixa_credito = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(estimatedLimit);
+    result.produto_recomendado = 'Empréstimo Consignado';
+    result.tipo_lead = 'hot_lead';
   }
 
   return result;
+};
+
+export const creditDecisionEngine = {
+  getRiskCategory(score) {
+    if (score >= 800) return { label: 'Perfil de Alta Eficiência', color: 'text-brand-green', bg: 'bg-brand-green/20' };
+    if (score >= 600) return { label: 'Estabilidade Sólida', color: 'text-emerald-400', bg: 'bg-emerald-400/20' };
+    if (score >= 400) return { label: 'Potencial de Otimização', color: 'text-amber-500', bg: 'bg-amber-500/20' };
+    return { label: 'Necessita Reorganização', color: 'text-rose-500', bg: 'bg-rose-500/20' };
+  },
+
+  getAnalysisSummary(score) {
+    if (score >= 800) return "Sua gestão financeira é exemplar. Seu perfil possui alta liquidez e baixíssimo risco, o que te posiciona para as melhores vantagens estratégicas do mercado.";
+    if (score >= 600) return "Você demonstra consistência. Há um bom equilíbrio entre ganhos e gastos, garantindo uma estabilidade que favorece seu crescimento patrimonial.";
+    if (score >= 400) return "Identificamos pontos de melhoria. Ajustar a relação entre dívidas e renda pode fortalecer consideravelmente seu perfil nos próximos meses.";
+    return "Recomendamos uma reorganização imediata. Focar na redução de custos fixos é o primeiro passo para recuperar sua saúde financeira.";
+  }
 };
