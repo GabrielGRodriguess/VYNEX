@@ -8,3 +8,8 @@ dist-ssr
 .env.*
 !.env.example
 package-lock.json
+backup/
+backup_snapshot/
+build_error.txt
+check.py
+

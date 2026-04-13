@@ -1,9 +1,11 @@
 import React from 'react';
 import { useFinance } from '../context/FinanceContext';
+import { useUser } from '../context/UserContext';
 import { motion } from 'framer-motion';
 
 export default function SummaryCards() {
-  const { balance, getIncome, getExpense } = useFinance();
+  const { balance, getIncome, getExpense, connections } = useFinance();
+  const { currentPlan } = useUser();
 
   const isNegative = balance < 0;
 
@@ -30,10 +32,19 @@ export default function SummaryCards() {
       glow: 'shadow-rose-500/10',
       icon: '📉'
     },
+    {
+      title: 'Bancos Conectados',
+      value: connections.length,
+      isCount: true,
+      color: 'text-white',
+      glow: 'shadow-blue-500/10',
+      icon: '🏦',
+      subtext: `Plano ${currentPlan.name}`
+    },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
       {cards.map((card, index) => (
         <motion.div 
           key={card.title} 
@@ -45,14 +56,14 @@ export default function SummaryCards() {
         >
           {/* Background Glow */}
           <div className={`absolute top-0 right-0 w-32 h-32 blur-[80px] opacity-10 transition-opacity group-hover:opacity-20 ${
-            index === 0 ? (isNegative ? 'bg-rose-500' : 'bg-brand-green') : index === 1 ? 'bg-emerald-500' : 'bg-rose-500'
+            index === 0 ? (isNegative ? 'bg-rose-500' : 'bg-brand-green') : index === 3 ? 'bg-blue-500' : index === 1 ? 'bg-emerald-500' : 'bg-rose-500'
           }`}></div>
           
           <div className="flex justify-between items-start relative z-10">
             <div>
               <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">{card.title}</p>
               <p className={`text-2xl font-black ${card.color} tracking-tight`}>
-                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(card.value)}
+                {card.isCount ? card.value : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(card.value)}
               </p>
               {card.subtext && (
                 <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1.5 opacity-60">

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { API_BASE_URL } from '../constants';
 import { getDecisionResult } from '../services/creditDecisionEngine';
+import { useFinance } from '../context/FinanceContext';
 
 // Sub-component: Animated Number Counter
 const AnimatedNumber = ({ value }) => {
@@ -33,6 +34,7 @@ const AnimatedNumber = ({ value }) => {
 };
 
 export default function CreditAnalysis({ user }) {
+  const { balance, analytics } = useFinance();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -91,8 +93,12 @@ export default function CreditAnalysis({ user }) {
       });
     }, 40);
 
-    // Get Decision from Engine
-    const decision = getDecisionResult(formData);
+    // Get Decision from Engine with Real Bank Data
+    const decision = getDecisionResult(formData, {
+      balance,
+      totalIncome: analytics.totalIncome,
+      totalExpense: analytics.totalExpense
+    });
     
     // Send to backend (Supabase)
     try {

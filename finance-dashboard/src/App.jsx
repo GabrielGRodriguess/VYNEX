@@ -12,10 +12,16 @@ import OnlineUsersIndicator from './components/OnlineUsersIndicator';
 import CreditAnalysis from './components/CreditAnalysis';
 import CreditHistory from './components/CreditHistory';
 import DemoControls from './components/DemoControls';
+import { UserProvider, useUser } from './context/UserContext';
+import ChatAssistant from './components/ChatAssistant';
+import Onboarding from './components/Onboarding';
 import logo from './assets/vynex-logo.png';
-import { LayoutDashboard, TrendingUp, History, LogOut } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import Login from './components/Login';
+import EmptyState from './components/EmptyState';
+import AgentGrid from './components/Agents/AgentGrid';
+import SettingsPage from './components/Settings/SettingsPage';
+import AccountPage from './components/Profile/AccountPage';
+import { Settings as SettingsIcon, Shield, Users } from 'lucide-react';
 
 
 function DashboardContent({ onSimulateCredit }) {
@@ -76,16 +82,21 @@ function DashboardContent({ onSimulateCredit }) {
 }
 
 function MainApp({ user, onLogout }) {
-  const { loading } = useFinance();
+  const { profile, loading: userLoading } = useUser();
+  const { connections, isBankConnected, loading: financeLoading } = useFinance();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
 
-  if (loading) {
+  if (financeLoading || userLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-slate-950">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-green"></div>
       </div>
     );
+  }
+
+  if (profile && !profile.onboarding_completed) {
+    return <Onboarding />;
   }
 
   return (
@@ -111,10 +122,19 @@ function MainApp({ user, onLogout }) {
 
         <div className="flex items-center gap-2 sm:gap-4 shrink-0">
           <div className="hidden lg:flex items-center gap-4 mr-2">
-             <div className="text-right">
-                <p className="text-[9px] font-black text-white uppercase tracking-tighter leading-none">{user?.email?.split('@')[0]}</p>
-                <p className="text-[7px] font-bold text-slate-500 uppercase tracking-widest">Conta VYNEX</p>
-             </div>
+             <button 
+              onClick={() => setActiveSection('account')}
+              className={`text-right group p-2 rounded-2xl transition-all ${activeSection === 'account' ? 'bg-brand-green/10' : 'hover:bg-white/5'}`}
+            >
+                <p className={`text-[9px] font-black uppercase tracking-tighter leading-none ${activeSection === 'account' ? 'text-brand-green' : 'text-white'}`}>{user?.email?.split('@')[0]}</p>
+                <p className="text-[7px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-300">Meu Perfil</p>
+             </button>
+             <button 
+              onClick={() => setActiveSection('settings')}
+              className={`p-2 transition-colors ${activeSection === 'settings' ? 'text-brand-green' : 'text-slate-500 hover:text-white'}`}
+             >
+                <SettingsIcon size={18} />
+             </button>
              <button onClick={onLogout} className="p-2 text-slate-500 hover:text-red-500 transition-colors">
                 <LogOut size={16} />
              </button>
@@ -135,40 +155,51 @@ function MainApp({ user, onLogout }) {
         </div>
       </header>
 
-      {/* Navigation Tabs - Fixed Mobile Grid to prevent overflow */}
-      <div className="mb-10 sm:mb-12">
-        <nav className="grid grid-cols-3 p-1 bg-slate-900/40 rounded-2xl w-full sm:w-fit border border-white/5 gap-1">
+      {/* Navigation Tabs - Evolved to include Agents */}
+      <div className="mb-10 sm:mb-12 overflow-x-auto no-scrollbar pb-2">
+        <nav className="flex p-1 bg-slate-900/40 rounded-2xl w-fit border border-white/5 gap-1">
           <button
             onClick={() => setActiveSection('dashboard')}
-            className={`flex items-center justify-center gap-2 px-2 sm:px-8 py-3 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 ${
+            className={`flex items-center justify-center gap-2 px-6 sm:px-8 py-3 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 ${
               activeSection === 'dashboard' 
               ? 'bg-slate-800 text-brand-green shadow-xl border border-white/10' 
               : 'text-slate-500 hover:text-slate-300'
             }`}
           >
-            <LayoutDashboard size={12} className="hidden xs:block" />
-            Minha Visão Financeira
+            <LayoutDashboard size={12} />
+            Dashboard
+          </button>
+          <button
+            onClick={() => setActiveSection('agents')}
+            className={`flex items-center justify-center gap-2 px-6 sm:px-8 py-3 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 ${
+              activeSection === 'agents' 
+              ? 'bg-slate-800 text-brand-green shadow-xl border border-white/10' 
+              : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            <Users size={12} />
+            Agentes IA
           </button>
           <button
             onClick={() => setActiveSection('credit')}
-            className={`flex items-center justify-center gap-2 px-2 sm:px-8 py-3 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 ${
+            className={`flex items-center justify-center gap-2 px-6 sm:px-8 py-3 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 ${
               activeSection === 'credit' 
               ? 'bg-slate-800 text-brand-green shadow-xl border border-white/10' 
               : 'text-slate-500 hover:text-slate-300'
             }`}
           >
-            <TrendingUp size={12} className="hidden xs:block" />
-            Simular Crédito
+            <Shield size={12} />
+            Crédito
           </button>
           <button
             onClick={() => setActiveSection('history')}
-            className={`flex items-center justify-center gap-2 px-2 sm:px-8 py-3 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 ${
+            className={`flex items-center justify-center gap-2 px-6 sm:px-8 py-3 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 ${
               activeSection === 'history' 
               ? 'bg-slate-800 text-brand-green shadow-xl border border-white/10' 
               : 'text-slate-500 hover:text-slate-300'
             }`}
           >
-            <History size={12} className="hidden xs:block" />
+            <History size={12} />
             Histórico
           </button>
         </nav>
@@ -196,11 +227,21 @@ function MainApp({ user, onLogout }) {
             transition={{ duration: 0.2 }}
           >
             {activeSection === 'dashboard' ? (
-              <DashboardContent onSimulateCredit={() => setActiveSection('credit')} />
+              !isBankConnected ? (
+                <EmptyState />
+              ) : (
+                <DashboardContent onSimulateCredit={() => setActiveSection('credit')} />
+              )
+            ) : activeSection === 'agents' ? (
+              <AgentGrid />
             ) : activeSection === 'credit' ? (
               <CreditAnalysis user={user} />
-            ) : (
+            ) : activeSection === 'history' ? (
               <CreditHistory />
+            ) : activeSection === 'settings' ? (
+              <SettingsPage />
+            ) : (
+              <AccountPage />
             )}
           </motion.div>
         </AnimatePresence>
@@ -249,16 +290,21 @@ function App() {
 
   return (
     <FinanceProvider user={user}>
-      <div className="min-h-screen bg-slate-950 text-slate-200">
-        {!user ? (
-          <Login 
-            onLogin={(u) => setUser(u)} 
-            initialView={recoveryMode ? 'reset' : 'login'} 
-          />
-        ) : (
-          <MainApp user={user} onLogout={() => supabase.auth.signOut()} />
-        )}
-      </div>
+      <UserProvider user={user}>
+        <div className="min-h-screen bg-slate-950 text-slate-200">
+          {!user ? (
+            <Login 
+              onLogin={(u) => setUser(u)} 
+              initialView={recoveryMode ? 'reset' : 'login'} 
+            />
+          ) : (
+            <>
+              <MainApp user={user} onLogout={() => supabase.auth.signOut()} />
+              <ChatAssistant />
+            </>
+          )}
+        </div>
+      </UserProvider>
     </FinanceProvider>
   );
 }
