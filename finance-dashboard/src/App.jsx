@@ -21,11 +21,14 @@ import EmptyState from './components/EmptyState';
 import AgentGrid from './components/Agents/AgentGrid';
 import SettingsPage from './components/Settings/SettingsPage';
 import AccountPage from './components/Profile/AccountPage';
-import { Settings as SettingsIcon, Shield, Users } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, History, LogOut, Settings as SettingsIcon, Shield, Users } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 
 function DashboardContent({ onSimulateCredit }) {
   const { transactions } = useFinance();
+  
+  console.log("[VYNEX] DashboardContent render - Transactions count:", transactions?.length);
 
   return (
     <div className="grid grid-cols-1 gap-8">
@@ -86,6 +89,15 @@ function MainApp({ user, onLogout }) {
   const { connections, isBankConnected, loading: financeLoading } = useFinance();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
+
+  console.log("[VYNEX] MainApp Check:", { 
+    user: user?.email, 
+    userLoading, 
+    financeLoading, 
+    hasProfile: !!profile,
+    connections: connections?.length,
+    activeSection
+  });
 
   if (financeLoading || userLoading) {
     return (
@@ -265,6 +277,7 @@ function App() {
     setLoading(true);
 
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("[VYNEX] Auth Session:", session?.user?.email || "No session");
       setUser(session?.user ?? null);
       setLoading(false);
     });
