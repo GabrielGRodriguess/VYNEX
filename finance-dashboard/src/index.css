@@ -143,37 +143,28 @@ body {
   box-shadow: 0 0 8px rgba(163, 255, 18, 0.4);
 }
 
-@media (max-width: 640px) {
-  .glass {
-    @apply rounded-[1.5rem];
-  }
-  .glass-card {
-    @apply rounded-[2rem];
-  }
-
-  /* Standardized UI Overlay Classes */
-  .modal-overlay {
-    @apply fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md;
-  }
-
-  .modal-container {
-    @apply bg-slate-900 border border-white/10 rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] w-full max-w-md p-8 sm:p-10 relative overflow-hidden;
-  }
-
-  .toast-container {
-    @apply fixed top-6 right-6 z-[200] flex flex-col gap-3 pointer-events-none w-full max-w-[400px];
-  }
-
-  .toast-item {
-    @apply pointer-events-auto bg-slate-900/90 backdrop-blur-xl border border-white/10 p-5 rounded-2xl shadow-2xl flex items-center gap-4 min-w-[300px] transition-all duration-300;
-  }
-
-  .alert-box {
-    @apply p-4 rounded-2xl border flex items-center gap-4 transition-all duration-300;
-  }
-
-  .alert-success { @apply bg-brand-green/10 border-brand-green/20 text-brand-green; }
-  .alert-error { @apply bg-rose-500/10 border-rose-500/20 text-rose-500; }
-  .alert-warning { @apply bg-amber-500/10 border-amber-500/20 text-amber-500; }
-  .alert-info { @apply bg-blue-500/10 border-blue-500/20 text-blue-400; }
+/* Standardized UI Overlay Classes - Global */
+.modal-overlay {
+  @apply fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md;
 }
+
+.modal-container {
+  @apply bg-slate-900 border border-white/10 rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] w-full max-w-md p-8 sm:p-10 relative overflow-hidden;
+}
+
+.toast-container {
+  @apply fixed top-6 right-6 z-[200] flex flex-col gap-3 pointer-events-none w-full max-w-[400px];
+}
+
+.toast-item {
+  @apply pointer-events-auto bg-slate-900/90 backdrop-blur-xl border border-white/10 p-5 rounded-2xl shadow-2xl flex items-center gap-4 min-w-[300px] transition-all duration-300;
+}
+
+.alert-box {
+  @apply p-4 rounded-2xl border flex items-center gap-4 transition-all duration-300;
+}
+
+.alert-success { @apply bg-brand-green/10 border-brand-green/20 text-brand-green; }
+.alert-error { @apply bg-rose-500/10 border-rose-500/20 text-rose-500; }
+.alert-warning { @apply bg-amber-500/10 border-amber-500/20 text-amber-500; }
+.alert-info { @apply bg-blue-500/10 border-blue-500/20 text-blue-400; }

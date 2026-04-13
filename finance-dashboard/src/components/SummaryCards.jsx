@@ -30,7 +30,7 @@ export default function SummaryCards() {
       progress: analytics.incomeConsistency * 100
     },
     {
-      title: 'Sobra do Mês Estimated',
+      title: 'Sobra do Mês Estimada',
       value: analytics.monthlySurplus || 0,
       color: analytics.monthlySurplus >= 0 ? 'text-blue-400' : 'text-rose-500',
       glow: 'shadow-blue-500/10',

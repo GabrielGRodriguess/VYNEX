@@ -5,6 +5,22 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function TransactionList() {
   const { transactions, deleteTransaction } = useFinance();
 
+  const CATEGORY_MAP = {
+    'Food': 'Alimentação',
+    'Salary': 'Salário',
+    'Transport': 'Transporte',
+    'Shopping': 'Compras',
+    'Health': 'Saúde',
+    'Entertainment': 'Lazer',
+    'Other': 'Outros',
+    'Services': 'Serviços',
+    'Income': 'Renda',
+    'Investment': 'Investimento',
+    'Bills': 'Contas',
+    'Subscription': 'Assinatura',
+    'Fixed': 'Fixo'
+  };
+
   return (
     <div className="glass p-8 shadow-2xl">
       <div className="flex items-center justify-between mb-8">
@@ -41,7 +57,7 @@ export default function TransactionList() {
                   <td className="py-6 text-slate-400 font-medium">{t.date}</td>
                   <td className="py-6">
                     <span className="px-3 py-1 bg-slate-800/50 border border-white/10 rounded-lg text-[10px] font-black text-slate-300 uppercase tracking-widest group-hover:border-brand-green/30 transition-colors">
-                      {t.category}
+                      {CATEGORY_MAP[t.category] || t.category}
                     </span>
                   </td>
                   <td className={`py-6 text-right font-black text-lg ${t.type === 'income' ? 'text-brand-green text-neon' : 'text-rose-500'}`}>

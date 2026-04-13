@@ -61,7 +61,7 @@ export const financialService = {
     ];
 
     return transactions.map(t => {
-      const desc = t.description.toUpperCase();
+      const desc = (t.description || '').toUpperCase();
       const match = rules.find(r => r.keywords.some(k => desc.includes(k)));
       
       return {
