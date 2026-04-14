@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useFinance } from '../context/FinanceContext';
 import { useUser } from '../context/UserContext';
 import { planService } from '../services/planService';

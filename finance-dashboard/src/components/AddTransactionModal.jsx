@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useFinance } from '../context/FinanceContext';
 import { useToast } from '../context/ToastContext';
 import BaseModal from './Common/BaseModal';

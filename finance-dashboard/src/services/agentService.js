@@ -7,49 +7,49 @@ export const AGENTS = {
   FINANCIAL_ANALYSIS: {
     id: 'agent_financial_analysis',
     name: 'Analista Financeiro',
-    role: 'Analisa seus gastos e comportamento de consumo.',
+    role: 'Especialista em Padrões e Economia',
     avatar: '📊',
-    description: 'Especialista em identificar padrões de gastos e sugerir economias.',
+    description: 'Analisa seus gastos e comportamento de consumo para sugerir economias inteligentes.',
     active: true
   },
   INSIGHTS: {
     id: 'agent_insights',
     name: 'Monitor de Insights',
-    role: 'Detecta anomalias e tendências em tempo real.',
+    role: 'Vigilante de Anomalias em Tempo Real',
     avatar: '👁️',
-    description: 'Te avisa sobre gastos incomuns ou assinaturas esquecidas.',
+    description: 'Detecta gastos incomuns, cobranças duplicadas ou assinaturas esquecidas instantaneamente.',
     active: true
   },
   SCORE: {
     id: 'agent_score',
     name: 'Estrategista de Score',
-    role: 'Focado em aumentar seu potencial de crédito.',
+    role: 'Consultor de Potencial de Crédito',
     avatar: '📈',
-    description: 'Dicas práticas para elevar seu Vynex Score 2.0.',
+    description: 'Fornece dicas práticas e planos de ação para elevar seu Vynex Score 2.0.',
     active: true
   },
   CREDIT_DECISION: {
     id: 'agent_credit_decision',
     name: 'Tomador de Decisão',
-    role: 'Avalia sua saúde financeira para ofertas de crédito.',
+    role: 'Avaliador de Saúde Financeira',
     avatar: '⚖️',
-    description: 'O motor que decide suas faixas de limite e taxas.',
+    description: 'O motor que avalia seus dados para decidir faixas de limite e taxas personalizadas.',
     active: true
   },
   OFFERS: {
     id: 'agent_offers',
     name: 'Consultor de Ofertas',
-    role: 'Busca as melhores oportunidades de crédito para você.',
+    role: 'Caçador de Oportunidades de Crédito',
     avatar: '💰',
-    description: 'Personaliza ofertas de empréstimo e cartão baseadas no seu perfil.',
+    description: 'Busca e personaliza as melhores ofertas de empréstimo e cartões para seu perfil.',
     active: true
   },
   ALERTS: {
     id: 'agent_alerts',
     name: 'Guardião de Alertas',
-    role: 'Seu sistema de aviso prévio.',
-    avatar: '🚨',
-    description: 'Alertas de vencimento, gastos próximos ao limite e segurança.',
+    role: 'Sistema de Segurança e Prevenção',
+    avatar: '🛡️',
+    description: 'Te avisa sobre vencimentos, limites próximos e atividades suspeitas de segurança.',
     active: true
   }
 };

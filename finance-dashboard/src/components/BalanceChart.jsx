@@ -1,4 +1,4 @@
-import React from 'react';
+import { useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useFinance } from '../context/FinanceContext';
 
@@ -20,7 +20,7 @@ const CustomTooltip = ({ active, payload }) => {
 export default function BalanceChart() {
   const { transactions, balance: currentBalance } = useFinance();
 
-  const chartData = React.useMemo(() => {
+  const chartData = useMemo(() => {
     let runningBalance = currentBalance;
     const history = [{ date: 'Hoje', saldo: runningBalance }];
     
@@ -36,7 +36,7 @@ export default function BalanceChart() {
     return history;
   }, [transactions, currentBalance]);
 
-  const trend = React.useMemo(() => {
+  const trend = useMemo(() => {
     if (chartData.length < 2) return 'stable';
     const first = chartData[0].saldo;
     const last = chartData[chartData.length - 1].saldo;

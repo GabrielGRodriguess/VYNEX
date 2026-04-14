@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Component } from 'react';
 import { supabase } from './services/supabaseClient';
 import { FinanceProvider, useFinance } from './context/FinanceContext';
 import SummaryCards from './components/SummaryCards';
@@ -133,9 +133,7 @@ function MainApp({ user, onLogout }) {
     );
   }
 
-  if (profile && !profile.onboarding_completed) {
-    return <Onboarding />;
-  }
+
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 lg:py-12 overflow-x-hidden">
@@ -284,12 +282,14 @@ function MainApp({ user, onLogout }) {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
       />
+
+      {profile && !profile.onboarding_completed && <Onboarding />}
     </div>
   );
 }
 
 // simple Error Boundary
-class ErrorBoundary extends React.Component {
+class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false, error: null };

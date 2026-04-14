@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { History, Calendar, CreditCard, ChevronRight, CheckCircle, AlertCircle, XCircle, RefreshCw } from 'lucide-react';
 import { API_BASE_URL } from '../constants';

@@ -1,18 +1,33 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Rocket, ShieldCheck, Banknote, ArrowRight, Check, Zap, Crown } from 'lucide-react';
+import { Rocket, ShieldCheck, Banknote, ArrowRight, Check, Zap, Crown, X } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 import { PLANS } from '../services/planService';
 import logo from '../assets/vynex-logo.png';
+import { useToast } from '../context/ToastContext';
 
 export default function Onboarding() {
   const [step, setStep] = useState(1);
   const { updatePlan, completeOnboarding, profile } = useUser();
   const [selectedPlan, setSelectedPlan] = useState('free');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const toast = useToast();
+
+  if (!isVisible) return null;
 
   const handleFinish = async () => {
-    await updatePlan(selectedPlan);
-    await completeOnboarding();
+    try {
+      setIsSubmitting(true);
+      await updatePlan(selectedPlan);
+      await completeOnboarding();
+      toast.success('Bem-vindo!', 'Seu plano foi configurado e sua jornada começou.');
+    } catch (error) {
+      console.error('Erro ao finalizar onboarding:', error);
+      toast.error('Erro no Sistema', 'Não foi possível salvar seu plano. Verifique sua conexão ou se as tabelas do banco foram criadas.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const steps = [
@@ -45,8 +60,8 @@ export default function Onboarding() {
     },
     {
       id: 2,
-      title: 'Escolha seu Poder',
-      subtitle: 'Selecione o plano ideal para sua gestão.',
+      title: 'ESCOLHA SEU PLANO',
+      subtitle: 'Selecione a opção ideal para liberar os recursos da sua gestão financeira.',
       icon: <Crown className="text-amber-500" size={48} />,
       content: (
         <div className="grid grid-cols-1 gap-4">
@@ -54,11 +69,12 @@ export default function Onboarding() {
             <button
               key={plan.id}
               onClick={() => setSelectedPlan(plan.id)}
+              disabled={isSubmitting}
               className={`p-5 rounded-3xl border transition-all text-left relative overflow-hidden group ${
                 selectedPlan === plan.id 
                   ? 'bg-brand-green/10 border-brand-green shadow-2xl' 
                   : 'bg-slate-900/40 border-white/10 hover:border-white/20'
-              }`}
+              } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <div className="flex justify-between items-start relative z-10">
                 <div>
@@ -89,6 +105,14 @@ export default function Onboarding() {
     <div className="fixed inset-0 z-[100] bg-slate-950 flex flex-col items-center justify-center p-6">
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-brand-green/20 to-transparent" />
       
+      <button 
+        onClick={() => setIsVisible(false)}
+        className="absolute top-8 right-8 p-3 rounded-2xl bg-slate-900 border border-white/5 text-slate-500 hover:text-white transition-all z-[110]"
+        title="Pular por enquanto"
+      >
+        <X size={20} />
+      </button>
+
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -126,12 +150,22 @@ export default function Onboarding() {
               Continuar <ArrowRight size={20} />
             </button>
           ) : (
-            <button
-              onClick={handleFinish}
-              className="w-full py-5 bg-brand-green text-slate-950 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-brand-green/20 hover:scale-[1.02] transition-all"
-            >
-              Começar minha jornada <Check size={20} />
-            </button>
+            <div className="space-y-4">
+              <button
+                onClick={handleFinish}
+                disabled={isSubmitting}
+                className="w-full py-5 bg-brand-green text-slate-950 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-brand-green/20 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-wait"
+              >
+                {isSubmitting ? 'Processando...' : 'Começar minha jornada'} <Check size={20} />
+              </button>
+              
+              <button
+                onClick={() => setIsVisible(false)}
+                className="w-full py-3 text-slate-500 font-bold text-[10px] uppercase tracking-[0.2em] hover:text-white transition-all"
+              >
+                Pular configuração e entrar no app →
+              </button>
+            </div>
           )}
           
           <div className="mt-8 flex justify-center gap-2">

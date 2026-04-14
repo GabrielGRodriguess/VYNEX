@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { agentService } from '../../services/agentService';
 import { planService } from '../../services/planService';
@@ -9,8 +9,7 @@ import { useToast } from '../../context/ToastContext';
 import Alert from '../Common/Alert';
 
 export default function AgentGrid() {
-  const { activeAgents, toggleAgent, currentPlan, setActiveSection } = useUser();
-  const [error, setError] = useState(null);
+  const { activeAgents, toggleAgent, currentPlan, role, isPremium, isAdmin } = useUser();
   const toast = useToast();
   
   const agents = agentService.getAgents().map(agent => ({
@@ -19,28 +18,31 @@ export default function AgentGrid() {
   }));
 
   const activeCount = agents.filter(a => a.active).length;
+  const maxAgents = currentPlan.maxActiveAgents;
 
   const handleToggle = async (id) => {
-    setError(null);
     const agent = agents.find(a => a.id === id);
     
     // If turning ON, check limits
     if (!agent.active) {
-      if (!planService.canAddAgent(activeCount, currentPlan.id)) {
-        setError(`Seu plano ${currentPlan.name} permite até ${currentPlan.maxActiveAgents} agente(s) ativo(s).`);
+      if (!planService.canAddAgent(activeCount, currentPlan.id, role)) {
+        toast.info(
+          'Limite do Plano', 
+          'No plano gratuito você pode ativar até 2 agentes. Faça upgrade para liberar todos.'
+        );
         return;
       }
     }
 
     const success = await toggleAgent(id);
     if (!success) {
-      toast.error('Erro no Sistema', 'Não foi possível atualizar o status do agente.');
+      toast.error('Erro no Sistema', 'Não foi possível atualizar o status do agente no banco de dados.');
     } else {
       const newState = !agent.active;
       if (newState) {
-        toast.success('Agente Ativado', `${agent.name} agora está analisando seus dados.`);
+        toast.success('Agente Ativado', `${agent.name} agora faz parte do seu time ativo.`);
       } else {
-        toast.info('Agente Desativado', `${agent.name} foi colocado em modo de espera.`);
+        toast.info('Agente em Pausa', `${agent.name} foi removido do time de monitoramento.`);
       }
     }
   };
@@ -51,53 +53,29 @@ export default function AgentGrid() {
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-brand-green">
             <Bot size={20} />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em]">Sistema Multi-Agente</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.3em]">Time de Especialistas IA</span>
           </div>
           <h2 className="text-4xl font-black text-white uppercase tracking-tighter">
-            Gerencie sua <span className="text-brand-green">Inteligência</span>
+            Gerencie seu <span className="text-brand-green">Dream Team</span>
           </h2>
           <p className="text-slate-500 text-sm max-w-md">
-            Ative ou silencie agentes específicos para personalizar como a VYNEX cuida do seu dinheiro.
+            Selecione quais especialistas devem monitorar sua vida financeira e gerar insights em tempo real.
           </p>
         </div>
 
-        <div className="glass px-6 py-4 border-brand-green/20 flex items-center gap-4 bg-brand-green/5 min-w-[200px]">
+        <div className="glass px-6 py-4 border-brand-green/20 flex items-center gap-4 bg-brand-green/5 min-w-[220px] transition-all hover:bg-brand-green/10">
            <div className="w-10 h-10 rounded-xl bg-brand-green/20 flex items-center justify-center text-brand-green shadow-[0_0_15px_rgba(163,255,18,0.2)]">
-              <Sparkles size={20} />
+              <Crown size={20} />
            </div>
            <div>
               <div className="flex items-baseline gap-1">
-                <p className="text-white font-black text-sm">{activeCount}</p>
-                <p className="text-slate-500 text-[10px] font-bold">/ {currentPlan.maxActiveAgents === Infinity ? '∞' : currentPlan.maxActiveAgents}</p>
+                <p className="text-white font-black text-xl leading-none">{activeCount}</p>
+                <p className="text-slate-500 text-[10px] font-bold">/ {maxAgents === Infinity ? '∞' : maxAgents}</p>
               </div>
-              <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest">Agentes Ativos</p>
+              <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest">Especialistas Ativos</p>
            </div>
         </div>
       </div>
-
-      <AnimatePresence>
-        {error && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-          >
-            <Alert 
-              type="warning" 
-              title="Limite de Agentes Atingido" 
-              message={error}
-              className="mb-8"
-            >
-              <button 
-                onClick={() => setActiveSection('account')}
-                className="mt-4 flex items-center gap-2 bg-brand-green text-slate-950 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-brand-green/20"
-              >
-                <Crown size={12} /> Fazer Upgrade Agora
-              </button>
-            </Alert>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {agents.map(agent => (

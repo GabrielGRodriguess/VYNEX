@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext, useMemo } from 'react';
+import { createContext, useState, useEffect, useContext, useMemo } from 'react';
 import { supabase } from '../services/supabaseClient';
 import { financialService } from '../services/financialService';
 

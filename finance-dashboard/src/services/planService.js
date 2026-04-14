@@ -23,7 +23,7 @@ export const PLANS = {
     name: 'Pro',
     price: 29,
     maxConnections: 5,
-    maxActiveAgents: 10, // "Todos"
+    maxActiveAgents: Infinity,
     features: [
       'Até 5 Conexões bancárias',
       'Todos os Agentes Ativos',
@@ -38,7 +38,7 @@ export const PLANS = {
     name: 'Premium',
     price: 49,
     maxConnections: Infinity,
-    maxActiveAgents: 10,
+    maxActiveAgents: Infinity,
     features: [
       'Conexões Ilimitadas',
       'Todos os Agentes Ativos',
@@ -55,8 +55,17 @@ export const planService = {
     return PLANS[id?.toUpperCase()] || PLANS.FREE;
   },
 
-  canAddAgent(currentActiveCount, planId) {
+  canAddAgent(currentActiveCount, planId, role = 'free') {
+    // Admin and Premium roles always have unlimited access
+    if (role === 'admin' || role === 'premium') return true;
+    
     const plan = this.getPlanById(planId);
+    
+    // Explicitly handle FREE plan limit of 2
+    if (planId?.toUpperCase() === 'FREE' || role === 'free') {
+      return currentActiveCount < 2;
+    }
+
     return currentActiveCount < plan.maxActiveAgents;
   },
 

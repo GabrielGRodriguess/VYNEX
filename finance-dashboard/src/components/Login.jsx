@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Mail, Lock, ArrowRight, ShieldAlert, UserPlus, RefreshCw, KeyRound, Check } from 'lucide-react';
 import logo from '../assets/vynex-logo.png';
