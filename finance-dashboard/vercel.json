@@ -6,7 +6,7 @@
     },
     {
       "source": "/((?!api/).*)",
-      "destination": "/finance-dashboard/index.html"
+      "destination": "/index.html"
     }
   ]
 }
