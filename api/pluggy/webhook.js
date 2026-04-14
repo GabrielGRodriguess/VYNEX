@@ -1,5 +1,5 @@
-import { getSupabaseAdmin } from '../_lib/supabase';
-import { getPluggyApiKey } from '../_lib/pluggy';
+import { getSupabaseAdmin } from '../_lib/supabase.js';
+import { getPluggyApiKey } from '../_lib/pluggy.js';
 
 export default async function handler(req, res) {
   // 1. PRIMEIRA LINHA LÓGICA: Validação de Método
