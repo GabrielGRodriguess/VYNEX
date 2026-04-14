@@ -42,6 +42,7 @@ export default async function handler(req, res) {
           produto_recomendado: leadData.produto_recomendado,
           score_vynex: leadData.score_vynex,
           valor_estimado: leadData.valor_estimado,
+          operador_email: leadData.operador_email || 'anonimo',
           created_at: new Date().toISOString()
         }
       ])
