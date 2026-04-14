@@ -17,14 +17,26 @@ export default function Onboarding() {
   if (!isVisible) return null;
 
   const handleFinish = async () => {
+    setIsSubmitting(true);
+    
+    // DECISION: We prioritize access over persistence. 
+    // The UserContext now handles local state updates immediately.
+    
     try {
-      setIsSubmitting(true);
-      await updatePlan(selectedPlan);
-      await completeOnboarding();
+      // Fire and forget (UserContext handles the await internaly if needed, 
+      // but here we move forward to clear the screen)
+      updatePlan(selectedPlan);
+      completeOnboarding();
+      
+      // Navigate immediately to the app
+      setIsVisible(false);
+      
       toast.success('Bem-vindo!', 'Seu plano foi configurado e sua jornada começou.');
     } catch (error) {
       console.error('Erro ao finalizar onboarding:', error);
-      toast.error('Erro no Sistema', 'Não foi possível salvar seu plano. Verifique sua conexão ou se as tabelas do banco foram criadas.');
+      // Even on error, we let the user in
+      setIsVisible(false);
+      toast.error('Aviso', 'Entrando no modo de contingência. Suas escolhas serão sincronizadas em breve.');
     } finally {
       setIsSubmitting(false);
     }

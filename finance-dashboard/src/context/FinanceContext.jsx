@@ -81,22 +81,34 @@ export function FinanceProvider({ user, children }) {
   const addConnection = async (itemId, provider) => {
     if (!user) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from('bank_connections')
-      .insert([{ user_id: user.id, itemId, provider }])
-      .select()
-      .single();
+    
+    try {
+      const { data, error } = await supabase
+        .from('bank_connections')
+        .insert([{ user_id: user.id, itemId, provider }])
+        .select()
+        .single();
 
-    if (!error && data) {
-      const newConnections = [...connections, data];
-      setConnections(newConnections);
-      
-      // Re-trigger global sync with classification
-      const aggregated = await financialService.getAggregatedData(newConnections, transactions.filter(t => !t.fromBank));
-      setBalance(aggregated.balance);
-      setTransactions(aggregated.transactions);
+      if (error) {
+        console.error('[VYNEX] addConnection Supabase Error:', error);
+        throw error; // Crucial: Throwing error prevents false-positive success toasts in the UI
+      }
+
+      if (data) {
+        const newConnections = [...connections, data];
+        setConnections(newConnections);
+        
+        // Re-trigger global sync with classification
+        const aggregated = await financialService.getAggregatedData(newConnections, transactions.filter(t => !t.fromBank));
+        setBalance(aggregated.balance);
+        setTransactions(aggregated.transactions);
+      }
+    } catch (err) {
+      console.error('[VYNEX] addConnection Critical Error:', err);
+      throw err;
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const addTransaction = async (transaction) => {

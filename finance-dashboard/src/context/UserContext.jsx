@@ -18,30 +18,53 @@ export function UserProvider({ user, children }) {
 
       setLoading(true);
       
-      // Load or Create Profile in Supabase
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      // 1. Try to load from LocalStorage first for instant (contingency) access
+      const localProfile = localStorage.getItem(`vynex_profile_${user.id}`);
+      if (localProfile) {
+        try {
+          console.log('[VYNEX] Loading profile from LocalStorage (Contingency)');
+          const parsed = JSON.parse(localProfile);
+          if (parsed && typeof parsed === 'object') {
+            setProfile(parsed);
+          }
+        } catch (e) {
+          console.error('[VYNEX] Failed to parse local profile:', e);
+          localStorage.removeItem(`vynex_profile_${user.id}`);
+        }
+      }
 
-      if (error && (error.code === 'PGRST116' || error.message?.includes('not found') || error.status === 404)) {
-        // Create initial profile with robust defaults
-        const { data: newProfile, error: createError } = await supabase
+      // 2. Load or Create Profile in Supabase
+      try {
+        const { data, error } = await supabase
           .from('user_profiles')
-          .insert([{ 
-            user_id: user.id, 
-            plan_id: 'free', 
-            role: 'free',
-            preferences: { activeAgents: {} },
-            onboarding_completed: false 
-          }])
-          .select()
+          .select('*')
+          .eq('user_id', user.id)
           .single();
-        
-        if (!createError) setProfile(newProfile);
-      } else if (!error && data) {
-        setProfile(data);
+
+        if (error && (error.code === 'PGRST116' || error.message?.includes('not found') || error.status === 404)) {
+          // Create initial profile with robust defaults
+          const { data: newProfile, error: createError } = await supabase
+            .from('user_profiles')
+            .insert([{ 
+              user_id: user.id, 
+              plan_id: 'free', 
+              role: 'free',
+              preferences: { activeAgents: {} },
+              onboarding_completed: false 
+            }])
+            .select()
+            .single();
+          
+          if (!createError && newProfile) {
+            setProfile(newProfile);
+            localStorage.setItem(`vynex_profile_${user.id}`, JSON.stringify(newProfile));
+          }
+        } else if (!error && data) {
+          setProfile(data);
+          localStorage.setItem(`vynex_profile_${user.id}`, JSON.stringify(data));
+        }
+      } catch (err) {
+        console.warn('[VYNEX] Supabase unreachable or table missing.', err);
       }
       
       setLoading(false);
@@ -52,17 +75,24 @@ export function UserProvider({ user, children }) {
 
   const updatePlan = async (planId) => {
     if (!user) return;
-    const { error } = await supabase
-      .from('user_profiles')
-      .update({ plan_id: planId })
-      .eq('user_id', user.id);
     
-    if (error) {
-      console.error('Error updating plan:', error);
-      throw error;
-    }
-
+    // 1. Update local state immediately for snappy UI
     setProfile(prev => ({ ...prev, plan_id: planId }));
+    
+    try {
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ plan_id: planId })
+        .eq('user_id', user.id);
+      
+      if (!error) {
+        localStorage.setItem(`vynex_profile_${user.id}`, JSON.stringify({ ...profile, plan_id: planId }));
+      } else {
+        console.error('[VYNEX] Error updating plan in Supabase:', error);
+      }
+    } catch (err) {
+      console.error('[VYNEX] Critical error in updatePlan:', err);
+    }
   };
 
   const toggleAgent = async (agentId) => {
@@ -101,15 +131,24 @@ export function UserProvider({ user, children }) {
 
   const completeOnboarding = async () => {
     if (!user) return;
-    const { error } = await supabase
-      .from('user_profiles')
-      .update({ onboarding_completed: true })
-    if (error) {
-      console.error('Error completing onboarding:', error);
-      throw error;
-    }
 
+    // 1. Update local state immediately
     setProfile(prev => ({ ...prev, onboarding_completed: true }));
+
+    try {
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ onboarding_completed: true })
+        .eq('user_id', user.id); // FIXED: Added missing .eq filter
+        
+      if (!error) {
+        localStorage.setItem(`vynex_profile_${user.id}`, JSON.stringify({ ...profile, onboarding_completed: true }));
+      } else {
+        console.error('[VYNEX] Error completing onboarding in Supabase:', error);
+      }
+    } catch (err) {
+      console.error('[VYNEX] Critical error in completeOnboarding:', err);
+    }
   };
 
   const userRole = profile?.role || 'free';

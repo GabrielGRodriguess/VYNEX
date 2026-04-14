@@ -26,7 +26,7 @@ import { LayoutDashboard, TrendingUp, History, LogOut, Settings as SettingsIcon,
 import { motion, AnimatePresence } from 'framer-motion';
 
 
-function DashboardContent({ onSimulateCredit }) {
+function DashboardContent({ onSimulateCredit, setActiveSection }) {
   const { transactions } = useFinance();
   
   console.log("[VYNEX] DashboardContent render - Transactions count:", transactions?.length);
@@ -76,7 +76,7 @@ function DashboardContent({ onSimulateCredit }) {
             </div>
           </div>
           <button 
-            onClick={() => useUser().setActiveSection('account')}
+            onClick={() => setActiveSection('account')}
             className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] hover:text-white transition-colors"
           >
             Ver Planos →
@@ -261,7 +261,10 @@ function MainApp({ user, onLogout }) {
               !isBankConnected ? (
                 <EmptyState />
               ) : (
-                <DashboardContent onSimulateCredit={() => setActiveSection('credit')} />
+                <DashboardContent 
+                  onSimulateCredit={() => setActiveSection('credit')} 
+                  setActiveSection={setActiveSection}
+                />
               )
             ) : activeSection === 'agents' ? (
               <AgentGrid />

@@ -4,21 +4,27 @@
 const IS_MOCK_MODE = import.meta.env.VITE_USE_MOCK_DATA === 'true';
 
 export async function getConnectToken() {
-  if (IS_MOCK_MODE) return 'mock-access-token';
+  if (IS_MOCK_MODE) {
+    console.log('[VYNEX] Using MOCK Connect Token');
+    return 'mock-access-token';
+  }
   
   try {
     const response = await fetch('/api/connect-token');
-    if (!response.ok) throw new Error('Falha ao buscar Connect Token');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Falha ao buscar Connect Token');
+    }
     const { accessToken } = await response.json();
     return accessToken;
   } catch (err) {
-    console.error(err);
+    console.error('[VYNEX] Error fetching connect token:', err);
     throw err;
   }
 }
 
 export async function fetchAllData(itemId) {
-  if (IS_MOCK_MODE || itemId === 'mock-item') {
+  if (IS_MOCK_MODE) {
     return fetchMockData();
   }
 
