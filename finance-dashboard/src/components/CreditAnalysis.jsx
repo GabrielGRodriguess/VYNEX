@@ -127,7 +127,7 @@ export default function CreditAnalysis({ user }) {
             type="text" 
             value={formData.nome} 
             onChange={e => setFormData({...formData, nome: e.target.value})}
-            className="w-full bg-slate-900 border border-white/5 rounded-2xl p-4 text-white focus:border-brand-green/50 transition-all outline-none"
+            className="w-full bg-slate-900 border border-white/5 rounded-2xl p-4 text-white focus:border-brand-primary/50 transition-all outline-none"
             placeholder="Ex: João Silva"
           />
           {errors.nome && <p className="text-rose-500 text-[10px] mt-1 font-bold">{errors.nome}</p>}
@@ -138,13 +138,13 @@ export default function CreditAnalysis({ user }) {
             type="tel" 
             value={formData.telefone} 
             onChange={e => setFormData({...formData, telefone: e.target.value})}
-            className="w-full bg-slate-900 border border-white/5 rounded-2xl p-4 text-white focus:border-brand-green/50 transition-all outline-none"
+            className="w-full bg-slate-900 border border-white/5 rounded-2xl p-4 text-white focus:border-brand-primary/50 transition-all outline-none"
             placeholder="(11) 99999-9999"
           />
           {errors.telefone && <p className="text-rose-500 text-[10px] mt-1 font-bold">{errors.telefone}</p>}
         </div>
       </div>
-      <button onClick={nextStep} className="w-full h-16 bg-brand-green text-slate-950 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all">
+      <button onClick={nextStep} className="w-full h-16 bg-brand-primary text-slate-950 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all">
         Continuar <ArrowRight size={18} />
       </button>
     </motion.div>
@@ -165,14 +165,14 @@ export default function CreditAnalysis({ user }) {
               type="number" 
               value={formData.renda} 
               onChange={e => setFormData({...formData, renda: e.target.value})}
-              className="w-full bg-slate-900 border border-white/5 rounded-2xl p-4 pl-12 text-white focus:border-brand-green/50 transition-all outline-none"
+              className="w-full bg-slate-900 border border-white/5 rounded-2xl p-4 pl-12 text-white focus:border-brand-primary/50 transition-all outline-none"
               placeholder="0.00"
             />
           </div>
           {errors.renda && <p className="text-rose-500 text-[10px] mt-1 font-bold">{errors.renda}</p>}
         </div>
-        <div className="p-4 bg-brand-green/5 rounded-2xl border border-brand-green/10 flex items-start gap-3">
-          <Info size={16} className="text-brand-green mt-0.5 shrink-0" />
+        <div className="p-4 bg-brand-primary/5 rounded-2xl border border-brand-primary/10 flex items-start gap-3">
+          <Info size={16} className="text-brand-primary mt-0.5 shrink-0" />
           <p className="text-[10px] text-slate-400 leading-relaxed">
             Sua renda será cruzada com os dados do Open Finance para validar sua estabilidade financeira automática.
           </p>
@@ -182,7 +182,7 @@ export default function CreditAnalysis({ user }) {
         <button onClick={() => setStep(1)} className="flex-1 h-16 bg-white/5 text-slate-400 rounded-2xl font-black uppercase tracking-widest border border-white/5 transition-all outline-none">
           Voltar
         </button>
-        <button onClick={nextStep} className="flex-[2] h-16 bg-brand-green text-slate-950 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all">
+        <button onClick={nextStep} className="flex-[2] h-16 bg-brand-primary text-slate-950 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all">
           Continuar <ArrowRight size={18} />
         </button>
       </div>
@@ -205,7 +205,7 @@ export default function CreditAnalysis({ user }) {
                 onClick={() => setFormData({...formData, tipo_vinculo: type})}
                 className={`py-3 rounded-xl text-[10px] font-black uppercase border transition-all ${
                   formData.tipo_vinculo === type 
-                    ? 'border-brand-green bg-brand-green/10 text-brand-green' 
+                    ? 'border-brand-primary bg-brand-primary/10 text-brand-primary' 
                     : 'border-white/5 bg-slate-900 text-slate-500'
                 }`}
               >
@@ -225,7 +225,7 @@ export default function CreditAnalysis({ user }) {
                 className="sr-only"
               />
               <div className={`w-5 h-5 rounded border transition-all flex items-center justify-center ${
-                formData.autorizado ? 'bg-brand-green border-brand-green' : 'border-white/20 bg-slate-900 group-hover:border-brand-green/50'
+                formData.autorizado ? 'bg-brand-primary border-brand-primary' : 'border-white/20 bg-slate-900 group-hover:border-brand-primary/50'
               }`}>
                 {formData.autorizado && <CheckCircle size={12} className="text-slate-950" />}
               </div>
@@ -241,7 +241,7 @@ export default function CreditAnalysis({ user }) {
         <button onClick={() => setStep(2)} className="flex-1 h-16 bg-white/5 text-slate-400 rounded-2xl font-black uppercase tracking-widest border border-white/5 transition-all outline-none">
           Voltar
         </button>
-        <button onClick={startAnalysis} className="flex-[2] h-16 bg-brand-green text-slate-950 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-brand-green/20">
+        <button onClick={startAnalysis} className="flex-[2] h-16 bg-brand-primary text-slate-950 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-brand-primary/20">
           Analisar Agora <Zap size={18} />
         </button>
       </div>
@@ -251,9 +251,9 @@ export default function CreditAnalysis({ user }) {
   const renderStep4 = () => (
     <div className="flex flex-col items-center justify-center text-center py-12 space-y-8">
       <div className="relative">
-        <div className="w-24 h-24 rounded-full border-2 border-brand-green/10 border-t-brand-green animate-spin" />
+        <div className="w-24 h-24 rounded-full border-2 border-brand-primary/10 border-t-brand-primary animate-spin" />
         <div className="absolute inset-0 flex items-center justify-center">
-          <Database className="text-brand-green animate-pulse" size={24} />
+          <Database className="text-brand-primary animate-pulse" size={24} />
         </div>
       </div>
       <div className="space-y-3">
@@ -264,20 +264,20 @@ export default function CreditAnalysis({ user }) {
       </div>
       <div className="w-full max-w-xs bg-slate-900 h-2 rounded-full overflow-hidden border border-white/5">
         <motion.div 
-          className="h-full bg-brand-green shadow-[0_0_15px_rgba(163,255,18,0.5)]"
+          className="h-full bg-brand-primary shadow-[0_0_15px_rgba(163,255,18,0.5)]"
           initial={{ width: 0 }}
           animate={{ width: `${loadingProgress}%` }}
         />
       </div>
-      <p className="text-[10px] font-black text-brand-green uppercase tracking-[0.2em]">{loadingProgress}% Concluído</p>
+      <p className="text-[10px] font-black text-brand-primary uppercase tracking-[0.2em]">{loadingProgress}% Concluído</p>
     </div>
   );
 
   const renderStep5 = () => (
     <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-6">
       <div className="flex flex-col items-center gap-4 text-center">
-        <div className="w-16 h-16 bg-brand-green/10 rounded-2xl flex items-center justify-center border border-brand-green/20">
-          <ShieldCheck className="text-brand-green" size={32} />
+        <div className="w-16 h-16 bg-brand-primary/10 rounded-2xl flex items-center justify-center border border-brand-primary/20">
+          <ShieldCheck className="text-brand-primary" size={32} />
         </div>
         <div className="space-y-1">
           <h2 className="text-3xl font-black text-white uppercase tracking-tighter">Análise Concluída</h2>
@@ -286,10 +286,10 @@ export default function CreditAnalysis({ user }) {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="glass p-6 space-y-1 relative overflow-hidden bg-brand-green/[0.02]">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-brand-green/10 blur-2xl -mr-8 -mt-8" />
+        <div className="glass p-6 space-y-1 relative overflow-hidden bg-brand-primary/[0.02]">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-brand-primary/10 blur-2xl -mr-8 -mt-8" />
           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Score VYNEX 2.0</p>
-          <div className="flex items-end gap-2 text-brand-green">
+          <div className="flex items-end gap-2 text-brand-primary">
              <p className="text-5xl font-black tracking-tighter"><AnimatedNumber value={result.score_vynex} /></p>
           </div>
         </div>
@@ -319,7 +319,7 @@ export default function CreditAnalysis({ user }) {
       </div>
 
       <div className="p-6 bg-slate-900/50 rounded-3xl border border-white/5 space-y-4">
-        <div className="flex items-center gap-2 text-brand-green">
+        <div className="flex items-center gap-2 text-brand-primary">
           <Zap size={18} />
           <span className="text-[10px] font-black uppercase tracking-widest">Sugestão: {result.produto_recomendado}</span>
         </div>
@@ -329,7 +329,7 @@ export default function CreditAnalysis({ user }) {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
-        <button onClick={handleWhatsApp} className="flex-1 h-16 bg-brand-green text-slate-950 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:scale-[1.02] shadow-2xl shadow-brand-green/30 transition-all">
+        <button onClick={handleWhatsApp} className="flex-1 h-16 bg-brand-primary text-slate-950 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:scale-[1.02] shadow-2xl shadow-brand-primary/30 transition-all">
           <MessageSquare size={22} />
           Ver Simulação
         </button>
@@ -348,7 +348,7 @@ export default function CreditAnalysis({ user }) {
           <p className="text-white font-black text-lg">Veja quanto você pode liberar</p>
         </div>
         <div className="text-right">
-          <span className="text-[9px] font-black text-brand-green uppercase tracking-widest bg-brand-green/10 px-3 py-1 rounded-full border border-brand-green/20">Passo {step}/5</span>
+          <span className="text-[9px] font-black text-brand-primary uppercase tracking-widest bg-brand-primary/10 px-3 py-1 rounded-full border border-brand-primary/20">Passo {step}/5</span>
         </div>
       </div>
 

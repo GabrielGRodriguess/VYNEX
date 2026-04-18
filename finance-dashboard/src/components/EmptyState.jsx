@@ -6,7 +6,7 @@ import BankConnector from './BankConnector';
 export default function EmptyState() {
   const cards = [
     {
-      icon: <ShieldCheck className="text-brand-green" />,
+      icon: <ShieldCheck className="text-brand-primary" />,
       title: "Segurança nível bancário",
       desc: "Seus dados são criptografados com o mesmo padrão dos grandes bancos."
     },
@@ -37,7 +37,7 @@ export default function EmptyState() {
         <div className="space-y-4">
           <h1 className="text-4xl sm:text-5xl font-black text-white uppercase tracking-tighter">
             Traga clareza para sua <br/>
-            <span className="text-brand-green">vida financeira</span>
+            <span className="text-brand-primary">vida financeira</span>
           </h1>
           <p className="text-slate-500 text-lg max-w-2xl mx-auto">
             Conecte suas contas para que nossos agentes IA possam organizar seus gastos, identificar padrões e sugerir caminhos inteligentes para o seu patrimônio.
@@ -55,9 +55,9 @@ export default function EmptyState() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: idx * 0.1 }}
-              className="glass p-6 text-left space-y-4 border-white/5 hover:border-brand-green/20 transition-all group"
+              className="glass p-6 text-left space-y-4 border-white/5 hover:border-brand-primary/20 transition-all group"
             >
-              <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-brand-green/10 transition-colors">
+              <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-brand-primary/10 transition-colors">
                 {card.icon}
               </div>
               <div>

@@ -9,7 +9,7 @@ export default function AgentCard({ agent, onToggle }) {
       whileHover={{ y: -4 }}
       className={`glass p-6 border-white/10 relative overflow-hidden group transition-all duration-500 ${
         agent.active 
-          ? 'bg-brand-green/[0.05] border-brand-green/40 shadow-[0_0_20px_rgba(163,255,18,0.1)] ring-1 ring-brand-green/20' 
+          ? 'bg-brand-primary/[0.05] border-brand-primary/40 shadow-[0_0_20px_rgba(163,255,18,0.1)] ring-1 ring-brand-primary/20' 
           : 'opacity-70 hover:opacity-100'
       }`}
     >
@@ -18,14 +18,14 @@ export default function AgentCard({ agent, onToggle }) {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute inset-0 bg-gradient-to-br from-brand-green/5 via-transparent to-transparent pointer-events-none"
+          className="absolute inset-0 bg-gradient-to-br from-brand-primary/5 via-transparent to-transparent pointer-events-none"
         />
       )}
 
       <div className="flex justify-between items-start mb-6 relative z-10">
         <div className={`text-3xl w-14 h-14 rounded-2xl flex items-center justify-center border transition-all duration-500 ${
           agent.active 
-            ? 'bg-brand-green/20 border-brand-green/30 shadow-[0_0_15px_rgba(163,255,18,0.3)]' 
+            ? 'bg-brand-primary/20 border-brand-primary/30 shadow-[0_0_15px_rgba(163,255,18,0.3)]' 
             : 'bg-slate-900 border-white/5 shadow-2xl'
         }`}>
           {agent.avatar}
@@ -33,7 +33,7 @@ export default function AgentCard({ agent, onToggle }) {
         <button
           onClick={() => onToggle(agent.id)}
           className={`w-12 h-6 rounded-full relative transition-all duration-300 shadow-inner ${
-            agent.active ? 'bg-brand-green' : 'bg-slate-800'
+            agent.active ? 'bg-brand-primary' : 'bg-slate-800'
           }`}
         >
           <motion.div
@@ -53,11 +53,11 @@ export default function AgentCard({ agent, onToggle }) {
             {agent.name}
           </h3>
           {agent.active && (
-            <div className="w-1.5 h-1.5 rounded-full bg-brand-green shadow-[0_0_8px_#A3FF12] animate-pulse" />
+            <div className="w-1.5 h-1.5 rounded-full bg-brand-primary shadow-[0_0_8px_#A3FF12] animate-pulse" />
           )}
         </div>
         <p className={`text-[10px] font-black uppercase tracking-widest leading-tight transition-colors ${
-          agent.active ? 'text-brand-green/80' : 'text-slate-500'
+          agent.active ? 'text-brand-primary/80' : 'text-slate-500'
         }`}>
           {agent.role}
         </p>
@@ -68,10 +68,10 @@ export default function AgentCard({ agent, onToggle }) {
 
       <div className="mt-6 pt-6 border-t border-white/5 flex items-center gap-4 relative z-10">
         <div className={`flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest transition-colors ${
-          agent.active ? 'text-brand-green' : 'text-slate-500'
+          agent.active ? 'text-brand-primary' : 'text-slate-500'
         }`}>
           <div className={`w-1.5 h-1.5 rounded-full transition-all ${
-            agent.active ? 'bg-brand-green shadow-[0_0_5px_#A3FF12]' : 'bg-slate-700'
+            agent.active ? 'bg-brand-primary shadow-[0_0_5px_#A3FF12]' : 'bg-slate-700'
           }`} />
           {agent.active ? 'Ativo e Monitorando' : 'Especialista em Pausa'}
         </div>

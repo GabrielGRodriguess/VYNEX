@@ -15,7 +15,7 @@ export default function SettingsPage({ onAddException }) {
   const SettingSection = ({ icon, title, children }) => (
     <div className="glass p-8 border-white/5 space-y-6">
       <div className="flex items-center gap-4">
-        <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-brand-green">
+        <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-brand-primary">
           {icon}
         </div>
         <h3 className="text-sm font-black text-white uppercase tracking-widest">{title}</h3>
@@ -27,12 +27,12 @@ export default function SettingsPage({ onAddException }) {
   return (
     <div className="max-w-4xl mx-auto space-y-10 pb-20">
       <div className="space-y-2 text-center md:text-left">
-        <div className="flex items-center justify-center md:justify-start gap-2 text-brand-green">
+        <div className="flex items-center justify-center md:justify-start gap-2 text-brand-primary">
           <Settings size={20} />
           <span className="text-[10px] font-black uppercase tracking-[0.3em]">Preferências do App</span>
         </div>
         <h2 className="text-4xl font-black text-white uppercase tracking-tighter">
-          Personalize sua <span className="text-brand-green">Experiência</span>
+          Personalize sua <span className="text-brand-primary">Experiência</span>
         </h2>
       </div>
 
@@ -47,7 +47,7 @@ export default function SettingsPage({ onAddException }) {
               <select 
                 value={prefs.defaultPage}
                 onChange={(e) => setPrefs({...prefs, defaultPage: e.target.value})}
-                className="bg-slate-950 border border-white/10 rounded-xl px-4 py-2 text-xs font-bold text-white focus:outline-none focus:border-brand-green"
+                className="bg-slate-950 border border-white/10 rounded-xl px-4 py-2 text-xs font-bold text-white focus:outline-none focus:border-brand-primary"
               >
                 <option value="dashboard">Dashboard</option>
                 <option value="chat">Chat (AI First)</option>
@@ -65,7 +65,7 @@ export default function SettingsPage({ onAddException }) {
                     key={t}
                     onClick={() => setPrefs({...prefs, theme: t})}
                     className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
-                      prefs.theme === t ? 'bg-brand-green text-slate-950' : 'text-slate-500'
+                      prefs.theme === t ? 'bg-brand-primary text-slate-950' : 'text-slate-500'
                     }`}
                   >
                     {t}
@@ -85,7 +85,7 @@ export default function SettingsPage({ onAddException }) {
               </div>
               <button
                 onClick={() => setPrefs({...prefs, sound: !prefs.sound})}
-                className={`w-12 h-6 rounded-full relative transition-all ${prefs.sound ? 'bg-brand-green' : 'bg-slate-800'}`}
+                className={`w-12 h-6 rounded-full relative transition-all ${prefs.sound ? 'bg-brand-primary' : 'bg-slate-800'}`}
               >
                 <motion.div animate={{ x: prefs.sound ? 24 : 4 }} className="w-4 h-4 rounded-full bg-slate-950 absolute top-1" />
               </button>
@@ -98,7 +98,7 @@ export default function SettingsPage({ onAddException }) {
               </div>
               <button
                 onClick={() => setPrefs({...prefs, vibration: !prefs.vibration})}
-                className={`w-12 h-6 rounded-full relative transition-all ${prefs.vibration ? 'bg-brand-green' : 'bg-slate-800'}`}
+                className={`w-12 h-6 rounded-full relative transition-all ${prefs.vibration ? 'bg-brand-primary' : 'bg-slate-800'}`}
               >
                 <motion.div animate={{ x: prefs.vibration ? 24 : 4 }} className="w-4 h-4 rounded-full bg-slate-950 absolute top-1" />
               </button>
@@ -118,7 +118,7 @@ export default function SettingsPage({ onAddException }) {
                 </div>
                 <div className="flex items-center gap-2 mt-3">
                   {manualAdjustmentStatus.canAdd ? (
-                    <span className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-brand-green/10 text-brand-green text-[9px] font-black uppercase tracking-widest border border-brand-green/20">
+                    <span className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-brand-primary/10 text-brand-primary text-[9px] font-black uppercase tracking-widest border border-brand-primary/20">
                       <AlertCircle size={10} /> Disponível Agora
                     </span>
                   ) : (
@@ -138,7 +138,7 @@ export default function SettingsPage({ onAddException }) {
                     : 'bg-slate-900/50 border border-white/5 text-slate-600 cursor-not-allowed'
                 }`}
               >
-                <AlertCircle size={14} className={manualAdjustmentStatus.canAdd ? 'text-brand-green' : 'text-slate-700'} />
+                <AlertCircle size={14} className={manualAdjustmentStatus.canAdd ? 'text-brand-primary' : 'text-slate-700'} />
                 Adicionar Exceção
               </button>
             </div>
@@ -146,7 +146,7 @@ export default function SettingsPage({ onAddException }) {
         </SettingSection>
 
         <div className="p-8 flex justify-end">
-          <button className="bg-brand-green text-slate-950 px-10 py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand-green/20">
+          <button className="bg-brand-primary text-slate-950 px-10 py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand-primary/20">
             Salvar Preferências
           </button>
         </div>

@@ -85,10 +85,10 @@ export default function Login({ onLogin, initialView = 'login' }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4 relative overflow-hidden">
       {/* Background Glows */}
-      <div className="absolute top-[-10%] left-[-10%] w-72 h-72 bg-brand-green/20 rounded-full blur-[100px] animate-pulse" />
-      <div className="absolute bottom-[0%] right-[-5%] w-96 h-96 bg-brand-green/10 rounded-full blur-[120px]" />
+      <div className="absolute top-[-10%] left-[-10%] w-72 h-72 bg-brand-primary/5 rounded-full blur-[100px] animate-pulse" />
+      <div className="absolute bottom-[0%] right-[-5%] w-96 h-96 bg-brand-primary/5 rounded-full blur-[120px]" />
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -101,19 +101,19 @@ export default function Login({ onLogin, initialView = 'login' }) {
             animate={{ scale: 1 }}
             src={logo} 
             alt="VYNEX Logo" 
-            className="h-16 w-auto mb-4 drop-shadow-[0_0_15px_rgba(163,255,18,0.3)]"
+            className="h-16 w-auto mb-4 drop-shadow-[0_0_15px_rgba(37,99,235,0.1)]"
           />
-          <h1 className="text-3xl font-black text-white uppercase tracking-tighter text-center">
+          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter text-center">
             {getViewTitle()}
           </h1>
           <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-2 mt-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-green neon-glow"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-primary"></span>
             Inteligência Financeira
           </p>
         </div>
 
-        <div className="glass p-8 sm:p-10 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-brand-green/30 to-transparent" />
+        <div className="glass p-8 sm:p-10 relative overflow-hidden bg-white border border-slate-100 rounded-[2rem] shadow-xl">
+          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-brand-primary/10 to-transparent" />
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <AnimatePresence mode="wait">
@@ -125,17 +125,16 @@ export default function Login({ onLogin, initialView = 'login' }) {
                 transition={{ duration: 0.2 }}
                 className="space-y-6"
               >
-                {/* Email Field (Always visible except in reset) */}
                 {view !== 'reset' && (
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Seu E-mail</label>
                     <div className="relative flex items-center">
-                      <Mail className="absolute left-4 text-slate-500" size={18} />
+                      <Mail className="absolute left-4 text-slate-400" size={18} />
                       <input 
                         type="email" 
                         required
                         placeholder="seu@email.com"
-                        className="input-style pl-12 h-14"
+                        className="input-style pl-12 h-14 w-full bg-slate-50 border-slate-200 rounded-2xl text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                       />
@@ -143,7 +142,6 @@ export default function Login({ onLogin, initialView = 'login' }) {
                   </div>
                 )}
 
-                {/* Password Field (Not in forgot) */}
                 {(view === 'login' || view === 'signup' || view === 'reset') && (
                   <div className="space-y-2">
                     <div className="flex justify-between items-center px-1">
@@ -154,19 +152,19 @@ export default function Login({ onLogin, initialView = 'login' }) {
                         <button 
                           type="button"
                           onClick={() => setView('forgot')}
-                          className="text-[9px] font-black text-brand-green uppercase tracking-widest hover:underline"
+                          className="text-[9px] font-black text-brand-primary uppercase tracking-widest hover:underline"
                         >
                           Esqueceu a senha?
                         </button>
                       )}
                     </div>
                     <div className="relative flex items-center">
-                      <Lock className="absolute left-4 text-slate-500" size={18} />
+                      <Lock className="absolute left-4 text-slate-400" size={18} />
                       <input 
                         type="password" 
                         required
                         placeholder="••••••••"
-                        className="input-style pl-12 h-14"
+                        className="input-style pl-12 h-14 w-full bg-slate-50 border-slate-200 rounded-2xl text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                       />
@@ -174,17 +172,16 @@ export default function Login({ onLogin, initialView = 'login' }) {
                   </div>
                 )}
 
-                {/* Confirm Password (SignUp/Reset) */}
                 {(view === 'signup') && (
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Confirmar Senha</label>
                     <div className="relative flex items-center">
-                      <KeyRound className="absolute left-4 text-slate-500" size={18} />
+                      <KeyRound className="absolute left-4 text-slate-400" size={18} />
                       <input 
                         type="password" 
                         required
                         placeholder="••••••••"
-                        className="input-style pl-12 h-14"
+                        className="input-style pl-12 h-14 w-full bg-slate-50 border-slate-200 rounded-2xl text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                       />
@@ -195,14 +192,14 @@ export default function Login({ onLogin, initialView = 'login' }) {
             </AnimatePresence>
 
             {error && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-red-500 bg-red-500/10 p-3 rounded-xl border border-red-500/20">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-red-500 bg-red-50 p-3 rounded-xl border border-red-100">
                 <ShieldAlert size={16} />
                 <span className="text-[10px] font-black uppercase tracking-widest">{error}</span>
               </motion.div>
             )}
 
             {success && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-brand-green bg-brand-green/10 p-3 rounded-xl border border-brand-green/20">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-emerald-600 bg-emerald-50 p-3 rounded-xl border border-emerald-100">
                 <Check size={16} />
                 <span className="text-[10px] font-black uppercase tracking-widest">{success}</span>
               </motion.div>
@@ -211,10 +208,10 @@ export default function Login({ onLogin, initialView = 'login' }) {
             <button
               disabled={loading}
               type="submit"
-              className="w-full h-16 bg-brand-green text-slate-950 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:scale-[1.02] shadow-2xl shadow-brand-green/30 transition-all disabled:opacity-50"
+              className="w-full h-16 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-slate-800 transition-all disabled:opacity-50"
             >
               {loading ? (
-                <div className="w-6 h-6 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
                   {getButtonText()}
@@ -226,11 +223,11 @@ export default function Login({ onLogin, initialView = 'login' }) {
 
           <div className="mt-8 flex flex-col items-center gap-4">
             {view === 'login' ? (
-              <button onClick={() => setView('signup')} className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-white flex items-center gap-2">
+              <button onClick={() => setView('signup')} className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-slate-900 flex items-center gap-2">
                 <UserPlus size={14} /> Criar conta agora
               </button>
             ) : (
-              <button onClick={() => setView('login')} className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-white flex items-center gap-2">
+              <button onClick={() => setView('login')} className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-slate-900 flex items-center gap-2">
                 <RefreshCw size={14} /> Voltar para o Login
               </button>
             )}

@@ -37,7 +37,7 @@ export const ToastProvider = ({ children }) => {
 
   const getIcon = (type) => {
     switch (type) {
-      case 'success': return <CheckCircle2 className="text-brand-green" size={24} />;
+      case 'success': return <CheckCircle2 className="text-brand-primary" size={24} />;
       case 'error': return <XCircle className="text-rose-500" size={24} />;
       case 'warning': return <AlertCircle className="text-amber-500" size={24} />;
       default: return <Info className="text-blue-400" size={24} />;

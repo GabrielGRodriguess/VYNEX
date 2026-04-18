@@ -23,13 +23,13 @@ const BaseModal = ({ isOpen, onClose, title, children, showClose = true, maxWidt
             className={`modal-container ${maxWidth}`}
           >
             {/* Background design elements */}
-            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-40 h-40 bg-brand-green/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-40 h-40 bg-brand-primary/10 rounded-full blur-3xl pointer-events-none" />
             
             <div className="relative z-10">
               <div className="flex justify-between items-center mb-6 sm:mb-8">
                 {title && (
                   <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-3">
-                    <span className="w-1.5 sm:w-2 h-5 sm:h-6 bg-brand-green rounded-full shadow-[0_0_10px_rgba(163,255,18,0.5)]"></span>
+                    <span className="w-1.5 sm:w-2 h-5 sm:h-6 bg-brand-primary rounded-full shadow-[0_0_10px_rgba(163,255,18,0.5)]"></span>
                     {title}
                   </h2>
                 )}

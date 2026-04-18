@@ -30,7 +30,7 @@ export default function CreditHistory() {
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'Aprovado': return <CheckCircle className="text-brand-green" size={14} />;
+      case 'Aprovado': return <CheckCircle className="text-brand-primary" size={14} />;
       case 'Análise Manual': return <AlertCircle className="text-amber-500" size={14} />;
       case 'Negado': return <XCircle className="text-rose-500" size={14} />;
       default: return null;
@@ -39,7 +39,7 @@ export default function CreditHistory() {
 
   const getStatusBg = (status) => {
     switch (status) {
-      case 'Aprovado': return 'bg-brand-green/10 border-brand-green/20 text-brand-green';
+      case 'Aprovado': return 'bg-brand-primary/10 border-brand-primary/20 text-brand-primary';
       case 'Análise Manual': return 'bg-amber-500/10 border-amber-500/20 text-amber-500';
       case 'Negado': return 'bg-rose-500/10 border-rose-500/20 text-rose-500';
       default: return 'bg-slate-800 border-white/5 text-slate-400';
@@ -49,7 +49,7 @@ export default function CreditHistory() {
   if (loading && history.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-10 sm:p-20 space-y-4">
-        <div className="w-10 h-10 border-2 border-brand-green border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-10 h-10 border-2 border-brand-primary border-t-transparent rounded-full animate-spin"></div>
         <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest text-center">Cruzando dados históricos...</p>
       </div>
     );
@@ -60,7 +60,7 @@ export default function CreditHistory() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex flex-col gap-1">
           <h2 className="text-xl font-black text-white flex items-center gap-3">
-            <History className="text-brand-green flex-shrink-0" />
+            <History className="text-brand-primary flex-shrink-0" />
             Histórico VYNEX
           </h2>
           <p className="text-slate-500 text-[10px] uppercase tracking-widest font-bold">Relatório consolidado de solicitações</p>
@@ -104,7 +104,7 @@ export default function CreditHistory() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="glass p-5 sm:p-6 group hover:border-brand-green/30 transition-all border-white/5 relative overflow-hidden"
+                className="glass p-5 sm:p-6 group hover:border-brand-primary/30 transition-all border-white/5 relative overflow-hidden"
               >
                 <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
                   <div className="space-y-1">
@@ -133,7 +133,7 @@ export default function CreditHistory() {
                   </div>
                   <div className="bg-slate-950/40 p-2 sm:p-3 rounded-xl border border-white/5">
                     <p className="text-[8px] font-black text-slate-600 uppercase mb-1 flex items-center gap-1">Chance</p>
-                    <p className="text-xs sm:text-sm font-black text-brand-green">{record.probabilidade}%</p>
+                    <p className="text-xs sm:text-sm font-black text-brand-primary">{record.probabilidade}%</p>
                   </div>
                   <div className="bg-slate-950/40 p-2 sm:p-3 rounded-xl border border-white/5 col-span-2 xs:col-span-1 flex flex-col justify-center">
                     <p className="text-[8px] font-black text-slate-600 uppercase mb-1">Status</p>
@@ -163,7 +163,7 @@ export default function CreditHistory() {
                   <p className="text-[9px] sm:text-[10px] text-slate-500 font-bold line-clamp-1 italic italic pr-4">
                     "{record.motivo}"
                   </p>
-                  <ChevronRight size={14} className="text-brand-green flex-shrink-0" />
+                  <ChevronRight size={14} className="text-brand-primary flex-shrink-0" />
                 </div>
               </motion.div>
             ))}

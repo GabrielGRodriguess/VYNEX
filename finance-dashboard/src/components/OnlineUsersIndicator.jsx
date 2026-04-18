@@ -38,10 +38,10 @@ export default function OnlineUsersIndicator() {
   };
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-green/[0.03] border border-brand-green/20 backdrop-blur-md shadow-[0_0_15px_rgba(163,255,18,0.05)]">
+    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-primary/[0.03] border border-brand-primary/20 backdrop-blur-md shadow-[0_0_15px_rgba(163,255,18,0.05)]">
       <div className="relative flex h-2 w-2">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-green opacity-75"></span>
-        <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-green shadow-[0_0_8px_#A3FF12]"></span>
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-primary opacity-75"></span>
+        <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-primary shadow-[0_0_8px_#A3FF12]"></span>
       </div>
       
       <div className="flex items-center gap-1.5 overflow-hidden">
@@ -52,13 +52,13 @@ export default function OnlineUsersIndicator() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -5, opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="text-[10px] font-black text-brand-green"
+            className="text-[10px] font-black text-brand-primary"
           >
             {count}
           </motion.span>
         </AnimatePresence>
         
-        <p className="text-[10px] font-black text-brand-green/80 uppercase tracking-widest whitespace-nowrap">
+        <p className="text-[10px] font-black text-brand-primary/80 uppercase tracking-widest whitespace-nowrap">
           {getCopy(count)}
         </p>
       </div>

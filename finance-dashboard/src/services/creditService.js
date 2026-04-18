@@ -54,7 +54,7 @@ export const creditService = {
    * Translates score into a risk category
    */
   getRiskCategory(score) {
-    if (score >= 800) return { label: 'Excelente', color: 'text-brand-green', bg: 'bg-brand-green/10' };
+    if (score >= 800) return { label: 'Excelente', color: 'text-brand-primary', bg: 'bg-brand-primary/10' };
     if (score >= 600) return { label: 'Bom', color: 'text-blue-400', bg: 'bg-blue-400/10' };
     if (score >= 400) return { label: 'Regular', color: 'text-amber-500', bg: 'bg-amber-500/10' };
     return { label: 'Baixo', color: 'text-rose-500', bg: 'bg-rose-500/10' };

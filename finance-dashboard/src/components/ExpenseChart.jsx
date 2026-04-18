@@ -21,9 +21,9 @@ export default function ExpenseChart() {
   }, [transactions]);
 
   const COLORS = [
-    '#A3FF12', // VYNEX Green
+    '#2563EB', // Blue-600
+    '#3B82F6', // Blue-500
     '#F43F5E', // Rose
-    '#3B82F6', // Blue
     '#F59E0B', // Amber
     '#8B5CF6', // Purple
     '#06B6D4', // Cyan
@@ -75,11 +75,12 @@ export default function ExpenseChart() {
               </Pie>
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: '#0F172A', 
+                  backgroundColor: '#FFFFFF', 
                   borderRadius: '16px', 
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  color: 'white',
-                  fontSize: '12px'
+                  border: '1px solid #E2E8F0',
+                  color: '#0F172A',
+                  fontSize: '12px',
+                  boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'
                 }}
                 formatter={(value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
               />
@@ -94,24 +95,23 @@ export default function ExpenseChart() {
             </PieChart>
           </ResponsiveContainer>
         ) : (
-          <div className="flex items-center justify-center h-full text-slate-500 font-medium italic">
+          <div className="flex items-center justify-center h-full text-slate-400 font-medium italic">
             Nenhum gasto registrado para análise.
           </div>
         )}
       </div>
 
       {data.length > 0 && topCategory && (
-        <div className="mt-6 p-5 bg-brand-green/[0.03] border border-brand-green/10 rounded-3xl space-y-3 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-brand-green/5 rounded-full blur-2xl -mr-12 -mt-12 group-hover:bg-brand-green/10 transition-colors"></div>
+        <div className="mt-6 p-5 bg-blue-50/50 border border-blue-100 rounded-3xl space-y-3 relative overflow-hidden group">
           <div className="flex items-center gap-3 relative z-10">
-            <div className="w-8 h-8 rounded-lg bg-slate-900 border border-white/5 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform">
+            <div className="w-8 h-8 rounded-lg bg-white border border-blue-100 flex items-center justify-center text-sm shadow-sm">
               💡
             </div>
-            <p className="text-[10px] font-black text-brand-green uppercase tracking-widest leading-none">Insight Automático</p>
+            <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest leading-none">Insight Automático</p>
           </div>
-          <p className="text-xs font-bold text-slate-200 leading-relaxed relative z-10">
-            Seus gastos com <span className="text-brand-green">{topCategory.name}</span> dominam seu mês. 
-            Isso aumentou cerca de <span className="text-brand-green">14%</span> comparado ao mês passado. 
+          <p className="text-xs font-bold text-slate-600 leading-relaxed relative z-10">
+            Seus gastos com <span className="text-blue-600">{topCategory.name}</span> dominam seu mês. 
+            Isso aumentou cerca de <span className="text-blue-600">14%</span> comparado ao mês passado. 
             Que tal revisar essas assinaturas ou parcelas?
           </p>
         </div>

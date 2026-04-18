@@ -21,7 +21,7 @@ export default function DemoControls() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             onClick={handleLoadDemo}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-800/40 hover:bg-slate-800/60 border border-white/5 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-brand-green transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-slate-800/40 hover:bg-slate-800/60 border border-white/5 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-brand-primary transition-all"
           >
             <Play size={12} />
             Ver Exemplo
@@ -30,15 +30,15 @@ export default function DemoControls() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-4 bg-brand-green/10 border border-brand-green/20 px-4 py-2 rounded-xl"
+            className="flex items-center gap-4 bg-brand-primary/10 border border-brand-primary/20 px-4 py-2 rounded-xl"
           >
-            <div className="flex items-center gap-2 text-brand-green">
+            <div className="flex items-center gap-2 text-brand-primary">
               <ShieldAlert size={14} className="animate-pulse" />
               <span className="text-[10px] font-black uppercase tracking-widest">Modo Simulação</span>
             </div>
             <button 
               onClick={() => window.location.reload()} 
-              className="p-1 hover:bg-brand-green/20 rounded-lg text-brand-green transition-colors"
+              className="p-1 hover:bg-brand-primary/20 rounded-lg text-brand-primary transition-colors"
               title="Sair do Demo"
             >
               <Power size={14} />

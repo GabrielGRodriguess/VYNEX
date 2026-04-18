@@ -6,13 +6,13 @@ export default function TransactionList() {
   const { transactions, deleteTransaction } = useFinance();
 
   return (
-    <div className="glass p-8 shadow-2xl">
+    <div className="glass">
       <div className="flex items-center justify-between mb-8">
-        <h3 className="text-xl font-bold flex items-center gap-3">
-          <span className="w-2 h-8 bg-brand-green rounded-full shadow-[0_0_15px_rgba(163,255,18,0.5)]"></span>
+        <h3 className="text-xl font-black text-slate-900 flex items-center gap-3">
+          <span className="w-2 h-8 bg-blue-600 rounded-full"></span>
           Histórico de Movimentações
         </h3>
-        <span className="text-xs font-black text-slate-500 uppercase tracking-widest bg-slate-800/50 px-3 py-1 rounded-full border border-white/5">
+        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
           {transactions.length} Registros
         </span>
       </div>
@@ -20,14 +20,14 @@ export default function TransactionList() {
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] border-b border-white/5">
+            <tr className="text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100">
               <th className="pb-6">Data</th>
               <th className="pb-6">Categoria</th>
               <th className="pb-6 text-right">Valor</th>
               <th className="pb-6 text-right">Ação</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-slate-50">
             <AnimatePresence mode="popLayout">
               {transactions.map((t) => (
                 <motion.tr 
@@ -36,24 +36,23 @@ export default function TransactionList() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, scale: 0.98 }}
                   key={t.id} 
-                  className="text-sm group hover:bg-white/[0.02] transition-colors"
+                  className="text-sm group hover:bg-slate-50/50 transition-colors"
                 >
                   <td className="py-6 text-slate-400 font-medium">{t.date}</td>
                   <td className="py-6">
                     <span 
-                      className="px-3 py-1 bg-slate-800/50 border border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest group-hover:border-brand-green/30 transition-colors"
-                      style={{ color: `var(--color-${getCategoryById(t.category).color})` || 'white', borderColor: getCategoryById(t.category).isRisk ? 'rgba(244, 63, 94, 0.3)' : undefined }}
+                      className={`px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors ${getCategoryById(t.category).isRisk ? 'text-rose-600 border-rose-100 bg-rose-50' : 'text-blue-600 border-blue-100 bg-blue-50'}`}
                     >
                       {getCategoryById(t.category).label}
                     </span>
                   </td>
-                  <td className={`py-6 text-right font-black text-lg ${t.type === 'income' ? 'text-brand-green text-neon' : 'text-rose-500'}`}>
+                  <td className={`py-6 text-right font-black text-lg ${t.type === 'income' ? 'text-blue-600' : 'text-rose-500'}`}>
                     {t.type === 'income' ? '+' : '-'} {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount)}
                   </td>
                   <td className="py-6 text-right">
                     <button 
                       onClick={() => deleteTransaction(t.id)}
-                      className="opacity-0 group-hover:opacity-100 p-2 text-slate-500 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all"
+                      className="opacity-0 group-hover:opacity-100 p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
                       title="Excluir"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -66,7 +65,7 @@ export default function TransactionList() {
             </AnimatePresence>
             {transactions.length === 0 && (
               <tr>
-                <td colSpan="4" className="py-16 text-center text-slate-500 font-medium italic">
+                <td colSpan="4" className="py-16 text-center text-slate-400 font-medium italic">
                   Nenhuma movimentação encontrada ainda.
                 </td>
               </tr>

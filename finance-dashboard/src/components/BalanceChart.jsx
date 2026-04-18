@@ -6,9 +6,9 @@ const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length > 0) {
     const isPositive = payload[0].value >= 0;
     return (
-      <div className="glass p-4 border-white/10 shadow-2xl">
-        <p className="text-[10px] text-slate-500 uppercase tracking-widest font-black mb-1">{payload[0].payload.date}</p>
-        <p className={`text-sm font-black ${isPositive ? 'text-brand-green' : 'text-rose-500'}`}>
+      <div className="glass p-4 border-slate-200 bg-white shadow-xl">
+        <p className="text-[10px] text-slate-400 uppercase tracking-widest font-black mb-1">{payload[0].payload.date}</p>
+        <p className={`text-sm font-black ${isPositive ? 'text-blue-600' : 'text-rose-500'}`}>
           {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(payload[0].value)}
         </p>
       </div>
@@ -49,13 +49,13 @@ export default function BalanceChart() {
     <div className="w-full h-full min-h-[300px] flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-           <div className={`w-2 h-2 rounded-full ${trend === 'up' ? 'bg-brand-green' : trend === 'down' ? 'bg-rose-500' : 'bg-slate-500'} animate-pulse`}></div>
-           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+           <div className={`w-2 h-2 rounded-full ${trend === 'up' ? 'bg-blue-600' : trend === 'down' ? 'bg-rose-500' : 'bg-slate-400'} animate-pulse`}></div>
+           <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
              Tendência: {trend === 'up' ? 'Crescimento' : trend === 'down' ? 'Atenção' : 'Estável'}
            </span>
         </div>
         {trend === 'down' && (
-          <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest bg-rose-500/10 px-2 py-1 rounded-lg border border-rose-500/20">
+          <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest bg-rose-50 px-2 py-1 rounded-lg border border-rose-100">
             Ação Sugerida
           </span>
         )}
@@ -65,34 +65,34 @@ export default function BalanceChart() {
           <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="colorSaldo" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={trend === 'down' ? '#F43F5E' : '#A3FF12'} stopOpacity={0.2}/>
-                <stop offset="95%" stopColor={trend === 'down' ? '#F43F5E' : '#A3FF12'} stopOpacity={0}/>
+                <stop offset="5%" stopColor={trend === 'down' ? '#F43F5E' : '#2563EB'} stopOpacity={0.1}/>
+                <stop offset="95%" stopColor={trend === 'down' ? '#F43F5E' : '#2563EB'} stopOpacity={0}/>
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
             <XAxis 
               dataKey="date" 
               axisLine={false} 
               tickLine={false} 
-              tick={{ fill: '#64748b', fontSize: 10, fontWeight: 900 }}
+              tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 900 }}
               dy={10}
             />
             <YAxis 
               axisLine={false} 
               tickLine={false} 
-              tick={{ fill: '#64748b', fontSize: 10, fontWeight: 900 }}
+              tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 900 }}
               tickFormatter={(value) => `R$ ${value}`}
             />
             <Tooltip content={<CustomTooltip />} />
             <Area 
               type="monotone" 
               dataKey="saldo" 
-              stroke={trend === 'down' ? '#F43F5E' : '#A3FF12'} 
+              stroke={trend === 'down' ? '#F43F5E' : '#2563EB'} 
               strokeWidth={3} 
               fillOpacity={1} 
               fill="url(#colorSaldo)" 
               animationDuration={1500}
-              activeDot={{ r: 6, fill: trend === 'down' ? '#F43F5E' : '#A3FF12', stroke: '#0F172A', strokeWidth: 2 }}
+              activeDot={{ r: 6, fill: trend === 'down' ? '#F43F5E' : '#2563EB', stroke: '#FFFFFF', strokeWidth: 2 }}
             />
           </AreaChart>
         </ResponsiveContainer>

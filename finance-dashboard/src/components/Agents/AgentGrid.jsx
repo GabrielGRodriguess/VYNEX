@@ -51,20 +51,20 @@ export default function AgentGrid() {
     <div className="space-y-10 pb-20">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
-          <div className="flex items-center gap-2 text-brand-green">
+          <div className="flex items-center gap-2 text-brand-primary">
             <Bot size={20} />
             <span className="text-[10px] font-black uppercase tracking-[0.3em]">Time de Especialistas IA</span>
           </div>
           <h2 className="text-4xl font-black text-white uppercase tracking-tighter">
-            Gerencie seu <span className="text-brand-green">Dream Team</span>
+            Gerencie seu <span className="text-brand-primary">Dream Team</span>
           </h2>
           <p className="text-slate-500 text-sm max-w-md">
             Selecione quais especialistas devem monitorar sua vida financeira e gerar insights em tempo real.
           </p>
         </div>
 
-        <div className="glass px-6 py-4 border-brand-green/20 flex items-center gap-4 bg-brand-green/5 min-w-[220px] transition-all hover:bg-brand-green/10">
-           <div className="w-10 h-10 rounded-xl bg-brand-green/20 flex items-center justify-center text-brand-green shadow-[0_0_15px_rgba(163,255,18,0.2)]">
+        <div className="glass px-6 py-4 border-brand-primary/20 flex items-center gap-4 bg-brand-primary/5 min-w-[220px] transition-all hover:bg-brand-primary/10">
+           <div className="w-10 h-10 rounded-xl bg-brand-primary/20 flex items-center justify-center text-brand-primary shadow-[0_0_15px_rgba(163,255,18,0.2)]">
               <Crown size={20} />
            </div>
            <div>

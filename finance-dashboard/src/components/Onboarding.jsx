@@ -47,7 +47,7 @@ export default function Onboarding() {
       id: 1,
       title: 'Bem-vindo ao Novo VYNEX',
       subtitle: 'Conecte seus bancos e converse com seu dinheiro.',
-      icon: <Rocket className="text-brand-green" size={48} />,
+      icon: <Rocket className="text-brand-primary" size={48} />,
       content: (
         <div className="space-y-6 text-center">
           <p className="text-slate-400 text-sm leading-relaxed">
@@ -55,7 +55,7 @@ export default function Onboarding() {
           </p>
           <div className="grid grid-cols-1 gap-4">
             <div className="glass p-4 border-white/5 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-brand-green/10 flex items-center justify-center text-brand-green">
+              <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary">
                 <ShieldCheck size={20} />
               </div>
               <p className="text-[10px] font-black uppercase tracking-widest text-left">Open Finance Seguro</p>
@@ -84,7 +84,7 @@ export default function Onboarding() {
               disabled={isSubmitting}
               className={`p-5 rounded-3xl border transition-all text-left relative overflow-hidden group ${
                 selectedPlan === plan.id 
-                  ? 'bg-brand-green/10 border-brand-green shadow-2xl' 
+                  ? 'bg-brand-primary/10 border-brand-primary shadow-2xl' 
                   : 'bg-slate-900/40 border-white/10 hover:border-white/20'
               } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
@@ -95,7 +95,7 @@ export default function Onboarding() {
                     {plan.price === 0 ? 'Gratuito para sempre' : `R$ ${plan.price.toFixed(2)} / mês`}
                   </p>
                 </div>
-                {selectedPlan === plan.id && <Check className="text-brand-green" size={20} />}
+                {selectedPlan === plan.id && <Check className="text-brand-primary" size={20} />}
               </div>
               <div className="mt-4 space-y-1 relative z-10">
                 {plan.features.slice(0, 2).map((f, i) => (
@@ -114,12 +114,12 @@ export default function Onboarding() {
   const currentStep = steps.find(s => s.id === step);
 
   return (
-    <div className="fixed inset-0 z-[100] bg-slate-950 flex flex-col items-center justify-center p-6">
-      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-brand-green/20 to-transparent" />
+    <div className="fixed inset-0 z-[100] bg-slate-50 flex flex-col items-center justify-center p-6">
+      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-brand-primary/10 to-transparent" />
       
       <button 
         onClick={() => setIsVisible(false)}
-        className="absolute top-8 right-8 p-3 rounded-2xl bg-slate-900 border border-white/5 text-slate-500 hover:text-white transition-all z-[110]"
+        className="absolute top-8 right-8 p-3 rounded-2xl bg-white border border-slate-200 text-slate-500 hover:text-slate-900 transition-all z-[110] shadow-sm"
         title="Pular por enquanto"
       >
         <X size={20} />
@@ -131,12 +131,12 @@ export default function Onboarding() {
         className="w-full max-w-lg space-y-12"
       >
         <div className="flex flex-col items-center text-center space-y-4">
-          <img src={logo} alt="VYNEX" className="h-10 opacity-50 grayscale" />
-          <div className="w-16 h-16 rounded-3xl bg-slate-900 border border-white/5 flex items-center justify-center shadow-2xl">
+          <img src={logo} alt="VYNEX" className="h-10 opacity-30 grayscale" />
+          <div className="w-16 h-16 rounded-3xl bg-white border border-slate-200 flex items-center justify-center shadow-lg">
             {currentStep.icon}
           </div>
           <div className="space-y-2">
-            <h1 className="text-3xl font-black text-white uppercase tracking-tighter">{currentStep.title}</h1>
+            <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">{currentStep.title}</h1>
             <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.3em]">{currentStep.subtitle}</p>
           </div>
         </div>
@@ -157,7 +157,7 @@ export default function Onboarding() {
           {step < steps.length ? (
             <button
               onClick={() => setStep(prev => prev + 1)}
-              className="w-full py-5 bg-brand-green text-slate-950 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-brand-green/20 hover:scale-[1.02] transition-all"
+              className="w-full py-5 bg-brand-primary text-slate-950 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-brand-primary/20 hover:scale-[1.02] transition-all"
             >
               Continuar <ArrowRight size={20} />
             </button>
@@ -166,14 +166,14 @@ export default function Onboarding() {
               <button
                 onClick={handleFinish}
                 disabled={isSubmitting}
-                className="w-full py-5 bg-brand-green text-slate-950 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-brand-green/20 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-wait"
+                className="w-full py-5 bg-brand-primary text-white rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-brand-primary/20 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-wait"
               >
                 {isSubmitting ? 'Processando...' : 'Começar minha jornada'} <Check size={20} />
               </button>
               
               <button
                 onClick={() => setIsVisible(false)}
-                className="w-full py-3 text-slate-500 font-bold text-[10px] uppercase tracking-[0.2em] hover:text-white transition-all"
+                className="w-full py-3 text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] hover:text-slate-900 transition-all"
               >
                 Pular configuração e entrar no app →
               </button>
@@ -184,7 +184,7 @@ export default function Onboarding() {
             {steps.map(s => (
               <div 
                 key={s.id} 
-                className={`h-1 rounded-full transition-all ${step === s.id ? 'w-8 bg-brand-green' : 'w-2 bg-slate-800'}`} 
+                className={`h-1 rounded-full transition-all ${step === s.id ? 'w-8 bg-brand-primary' : 'w-2 bg-slate-800'}`} 
               />
             ))}
           </div>

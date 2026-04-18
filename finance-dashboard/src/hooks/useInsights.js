@@ -15,7 +15,7 @@ export function useInsights() {
         label: 'Capacidade de Aporte',
         icon: '💰',
         text: `Identifiquei um superávit real de R$ ${analytics.monthlySurplus.toFixed(0)} nos últimos 30 dias. Este valor é ideal para começar uma reserva de emergência ou acelerar seus investimentos.`,
-        color: 'text-brand-green'
+        color: 'text-brand-primary'
       });
     } else if (analytics.monthlySurplus < 0) {
       generatedInsights.push({
@@ -73,7 +73,7 @@ export function useInsights() {
         label: 'Inteligência Ativa',
         icon: '✨',
         text: "Minha IA está processando suas primeiras conexões. Em breve, gerarei recomendações profundas sobre seu comportamento e potencial de crédito.",
-        color: 'text-brand-green'
+        color: 'text-brand-primary'
       });
     }
 

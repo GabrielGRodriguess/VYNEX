@@ -43,11 +43,11 @@ export default function AccountPage() {
     <div className="max-w-6xl mx-auto space-y-12 pb-24 px-4">
       {/* Redesigned Header: Content Focused */}
       <div className="relative p-8 md:p-12 rounded-[3rem] border border-white/5 bg-slate-900/40 overflow-hidden">
-        <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-brand-green/10 via-transparent to-purple-600/5 opacity-50" />
+        <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-brand-primary/10 via-transparent to-purple-600/5 opacity-50" />
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="space-y-4 text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-3">
-               <span className="bg-brand-green text-slate-950 text-[9px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-brand-green/20">
+               <span className="bg-brand-primary text-slate-950 text-[9px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-brand-primary/20">
                   <Crown size={12} fill="currentColor" /> {currentPlan.name}
                </span>
                <span className="text-slate-500 text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full border border-white/10">
@@ -55,14 +55,14 @@ export default function AccountPage() {
                </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter">
-              Seu Plano e <span className="text-brand-green">Benefícios</span>
+              Seu Plano e <span className="text-brand-primary">Benefícios</span>
             </h1>
             <p className="text-slate-500 text-sm max-w-lg">
               Gerencie sua assinatura, monitore seus limites de inteligência e conecte novas instituições para ampliar sua clareza financeira.
             </p>
           </div>
           <div className="bg-slate-950/50 p-6 rounded-[2.5rem] border border-white/5 backdrop-blur-xl flex flex-col items-center gap-4 min-w-[200px]">
-             <div className="w-16 h-16 rounded-2xl bg-brand-green/20 flex items-center justify-center text-brand-green shadow-[0_0_30px_rgba(163,255,18,0.2)]">
+             <div className="w-16 h-16 rounded-2xl bg-brand-primary/20 flex items-center justify-center text-brand-primary shadow-[0_0_30px_rgba(163,255,18,0.2)]">
                 <Activity size={32} />
              </div>
              <div className="text-center">
@@ -80,7 +80,7 @@ export default function AccountPage() {
           value={connections.length} 
           limit={currentPlan.maxConnections} 
           icon={<Zap size={18} />} 
-          color="text-brand-green" 
+          color="text-brand-primary" 
         />
         <Stat 
           label="Agentes Ativos" 
@@ -115,12 +115,12 @@ export default function AccountPage() {
           <div className="flex p-1.5 bg-slate-900 rounded-2xl border border-white/10 self-start md:self-auto">
              <button 
                 onClick={() => setBillingCycle('monthly')}
-                className={`px-8 py-3 rounded-xl text-[11px] font-black uppercase transition-all tracking-widest ${billingCycle === 'monthly' ? 'bg-slate-800 text-brand-green shadow-xl' : 'text-slate-500'}`}
+                className={`px-8 py-3 rounded-xl text-[11px] font-black uppercase transition-all tracking-widest ${billingCycle === 'monthly' ? 'bg-slate-800 text-brand-primary shadow-xl' : 'text-slate-500'}`}
              >Mensal</button>
              <button 
                 onClick={() => setBillingCycle('annual')}
-                className={`px-8 py-3 rounded-xl text-[11px] font-black uppercase transition-all tracking-widest ${billingCycle === 'annual' ? 'bg-slate-800 text-brand-green shadow-xl' : 'text-slate-500'}`}
-             >Anual <span className="ml-1 text-[9px] bg-brand-green/20 text-brand-green px-2 py-0.5 rounded-full">-20%</span></button>
+                className={`px-8 py-3 rounded-xl text-[11px] font-black uppercase transition-all tracking-widest ${billingCycle === 'annual' ? 'bg-slate-800 text-brand-primary shadow-xl' : 'text-slate-500'}`}
+             >Anual <span className="ml-1 text-[9px] bg-brand-primary/20 text-brand-primary px-2 py-0.5 rounded-full">-20%</span></button>
           </div>
         </div>
 
@@ -131,12 +131,12 @@ export default function AccountPage() {
               whileHover={{ y: -8 }}
               className={`glass p-10 relative overflow-hidden flex flex-col group transition-all duration-500 ${
                 currentPlan.id === plan.id.toLowerCase() 
-                ? 'border-brand-green/40 bg-brand-green/[0.02] ring-1 ring-brand-green/20' 
+                ? 'border-brand-primary/40 bg-brand-primary/[0.02] ring-1 ring-brand-primary/20' 
                 : 'border-white/5 hover:border-white/20'
               }`}
             >
               {currentPlan.id === plan.id.toLowerCase() && (
-                <div className="absolute top-6 right-6 bg-brand-green text-slate-950 text-[9px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-xl shadow-brand-green/20">
+                <div className="absolute top-6 right-6 bg-brand-primary text-slate-950 text-[9px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-xl shadow-brand-primary/20">
                   Ativo Agora
                 </div>
               )}
@@ -153,7 +153,7 @@ export default function AccountPage() {
                 <div className="space-y-5 pt-4">
                   {plan.features.map((feat, i) => (
                     <div key={i} className="flex items-start gap-3 group/item">
-                      <div className="w-5 h-5 rounded-full bg-brand-green/10 flex items-center justify-center text-brand-green shrink-0 mt-0.5 group-hover/item:scale-110 transition-transform">
+                      <div className="w-5 h-5 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0 mt-0.5 group-hover/item:scale-110 transition-transform">
                         <Check size={12} strokeWidth={3} />
                       </div>
                       <span className="text-[11px] sm:text-[12px] font-bold text-slate-300 group-hover/item:text-white transition-colors">{feat}</span>
@@ -168,7 +168,7 @@ export default function AccountPage() {
                 className={`w-full mt-10 py-5 rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-[11px] transition-all relative z-10 ${
                   currentPlan.id === plan.id.toLowerCase() 
                     ? 'bg-slate-800 text-slate-600 cursor-default grayscale' 
-                    : 'bg-brand-green text-slate-950 hover:bg-white hover:scale-105 active:scale-95 shadow-xl shadow-brand-green/10'
+                    : 'bg-brand-primary text-slate-950 hover:bg-white hover:scale-105 active:scale-95 shadow-xl shadow-brand-primary/10'
                 }`}
               >
                 {currentPlan.id === plan.id.toLowerCase() ? 'Incluso no seu Plano' : 'Assinar ' + plan.name}

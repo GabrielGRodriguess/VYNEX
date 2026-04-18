@@ -84,7 +84,7 @@ export default function StatementInboundWizard({ isOpen, onClose }) {
                 onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                 onDragLeave={() => setIsDragging(false)}
                 onDrop={onDrop}
-                className={`border-2 border-dashed rounded-[2rem] p-12 text-center transition-all cursor-pointer ${isDragging ? 'border-brand-green bg-brand-green/5' : 'border-white/10 hover:border-brand-green/30 bg-slate-900/40'}`}
+                className={`border-2 border-dashed rounded-[2rem] p-12 text-center transition-all cursor-pointer ${isDragging ? 'border-brand-primary bg-brand-primary/5' : 'border-white/10 hover:border-brand-primary/30 bg-slate-900/40'}`}
                 onClick={() => document.getElementById('fileInput').click()}
               >
                 <input 
@@ -94,7 +94,7 @@ export default function StatementInboundWizard({ isOpen, onClose }) {
                   accept=".csv,.txt"
                   onChange={(e) => handleFileUpload(e.target.files[0])}
                 />
-                <div className="w-20 h-20 bg-brand-green/10 rounded-3xl flex items-center justify-center text-brand-green mx-auto mb-6">
+                <div className="w-20 h-20 bg-brand-primary/10 rounded-3xl flex items-center justify-center text-brand-primary mx-auto mb-6">
                   <Upload size={40} />
                 </div>
                 <h3 className="text-xl font-black text-white uppercase tracking-tighter mb-2">Arraste seu extrato CSV</h3>
@@ -121,7 +121,7 @@ export default function StatementInboundWizard({ isOpen, onClose }) {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-slate-800 rounded-lg text-brand-green">
+                  <div className="p-2 bg-slate-800 rounded-lg text-brand-primary">
                     <FileText size={16} />
                   </div>
                   <span className="text-xs font-bold text-slate-200 truncate max-w-[200px]">{fileName}</span>
@@ -147,7 +147,7 @@ export default function StatementInboundWizard({ isOpen, onClose }) {
                         <tr key={t.id} className="text-[11px] group hover:bg-white/[0.02]">
                           <td className="px-6 py-4 text-slate-400">{t.date}</td>
                           <td className="px-6 py-4 text-white font-medium truncate max-w-[150px]">{t.description}</td>
-                          <td className={`px-6 py-4 text-right font-black ${t.type === 'income' ? 'text-brand-green' : 'text-rose-500'}`}>
+                          <td className={`px-6 py-4 text-right font-black ${t.type === 'income' ? 'text-brand-primary' : 'text-rose-500'}`}>
                             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount)}
                           </td>
                           <td className="px-6 py-4 text-right">
@@ -174,7 +174,7 @@ export default function StatementInboundWizard({ isOpen, onClose }) {
                 </button>
                 <button 
                   onClick={handleConfirm}
-                  className="flex-1 bg-neon-gradient text-slate-950 py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-brand-green/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                  className="flex-1 bg-neon-gradient text-slate-950 py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-brand-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
                   Importar e Analisar <ChevronRight size={18} />
                 </button>
@@ -189,7 +189,7 @@ export default function StatementInboundWizard({ isOpen, onClose }) {
               animate={{ opacity: 1 }}
               className="flex flex-col items-center justify-center py-20 space-y-6"
             >
-              <Loader2 className="animate-spin text-brand-green" size={48} />
+              <Loader2 className="animate-spin text-brand-primary" size={48} />
               <div className="text-center space-y-2">
                 <h3 className="text-xl font-black text-white uppercase tracking-tighter">Gerando Inteligência</h3>
                 <p className="text-slate-400 text-sm">Classificando transações e calculando seu score...</p>

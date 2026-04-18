@@ -102,7 +102,7 @@ export const getDecisionResult = (formData, financialData = null) => {
 
 export const creditDecisionEngine = {
   getRiskCategory(score) {
-    if (score >= 800) return { label: 'Alta Eficiência', color: 'text-brand-green', bg: 'bg-brand-green/20' };
+    if (score >= 800) return { label: 'Alta Eficiência', color: 'text-brand-primary', bg: 'bg-brand-primary/20' };
     if (score >= 600) return { label: 'Consistência Sólida', color: 'text-emerald-400', bg: 'bg-emerald-400/20' };
     if (score >= 400) return { label: 'Perfil em Evolução', color: 'text-amber-500', bg: 'bg-amber-500/20' };
     return { label: 'Risco Elevado', color: 'text-rose-500', bg: 'bg-rose-500/10' };

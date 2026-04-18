@@ -69,7 +69,7 @@ export default function BankConnector() {
               className="w-8 h-8 sm:w-10 sm:h-10 rounded-[0.75rem] bg-slate-900 border border-white/10 flex items-center justify-center text-xs shadow-2xl relative group"
               title={conn.provider}
             >
-              <Landmark size={12} className="text-brand-green sm:size-[14px]" />
+              <Landmark size={12} className="text-brand-primary sm:size-[14px]" />
               <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-slate-900 text-[8px] px-2 py-1 rounded border border-white/10 opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap z-20">
                 {conn.provider}
               </div>
@@ -82,7 +82,7 @@ export default function BankConnector() {
       {!loading && connections.length > 0 && (
         <div className={`hidden lg:flex flex-col items-end mr-2 px-3 py-1.5 rounded-xl border ${limitReached ? 'border-rose-500/20 bg-rose-500/5' : 'border-white/5 bg-white/5'}`}>
            <p className="text-[7px] font-black text-slate-500 uppercase tracking-widest">Limite Uso</p>
-           <p className={`text-[10px] font-black ${limitReached ? 'text-rose-500' : 'text-brand-green'}`}>
+           <p className={`text-[10px] font-black ${limitReached ? 'text-rose-500' : 'text-brand-primary'}`}>
              {connections.length} / {currentPlan.maxConnections === Infinity ? '∞' : currentPlan.maxConnections}
            </p>
         </div>
@@ -100,7 +100,7 @@ export default function BankConnector() {
         {loading || isConnecting ? (
           <RefreshCcw size={14} className="animate-spin shrink-0 sm:size-4" />
         ) : (
-          <Plus size={14} className={`${limitReached ? 'text-amber-500' : 'text-brand-green'} shrink-0 sm:size-4`} />
+          <Plus size={14} className={`${limitReached ? 'text-amber-500' : 'text-brand-primary'} shrink-0 sm:size-4`} />
         )}
         <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest truncate">
           {isConnecting ? 'Inicializando...' : (connections.length === 0 ? 'Conectar meus bancos' : (limitReached ? 'Aumentar Limite' : 'Novo Banco'))}

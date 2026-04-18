@@ -9,7 +9,7 @@ export const CATEGORIES = {
     label: 'Salário',
     type: 'income',
     keywords: ['SALARIO', 'PROVENTOS', 'VENCIMENTOS', 'PAGAMENTO', 'FOLHA', 'RENDA MENSAL'],
-    color: 'brand-green'
+    color: 'brand-primary'
   },
   EXTRA_INCOME: {
     id: 'EXTRA_INCOME',

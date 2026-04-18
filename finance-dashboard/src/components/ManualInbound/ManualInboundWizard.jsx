@@ -56,7 +56,7 @@ export default function ManualInboundWizard({ isOpen, onClose }) {
       case 'intro':
         return (
           <div className="text-center space-y-6 py-4">
-            <div className="w-20 h-20 bg-brand-green/10 rounded-3xl flex items-center justify-center text-brand-green mx-auto border border-brand-green/20">
+            <div className="w-20 h-20 bg-brand-primary/10 rounded-3xl flex items-center justify-center text-brand-primary mx-auto border border-brand-primary/20">
               <Wallet size={40} />
             </div>
             <div className="space-y-2">
@@ -65,7 +65,7 @@ export default function ManualInboundWizard({ isOpen, onClose }) {
             </div>
             <button 
               onClick={nextStep}
-              className="w-full bg-brand-green text-slate-950 py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-[1.02] transition-all"
+              className="w-full bg-brand-primary text-slate-950 py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-[1.02] transition-all"
             >
               Começar Mapeamento
             </button>
@@ -78,7 +78,7 @@ export default function ManualInboundWizard({ isOpen, onClose }) {
             <div className="space-y-4">
               <label className="label-style">Qual sua renda mensal principal?</label>
               <div className="relative">
-                <span className="absolute left-5 top-1/2 -translate-y-1/2 text-brand-green font-black">R$</span>
+                <span className="absolute left-5 top-1/2 -translate-y-1/2 text-brand-primary font-black">R$</span>
                 <input 
                   type="number" 
                   className="input-style pl-12"
@@ -183,8 +183,8 @@ export default function ManualInboundWizard({ isOpen, onClose }) {
 
         return (
           <div className="space-y-6">
-            <div className="glass p-6 border-brand-green/20 bg-brand-green/5 text-center">
-              <p className="text-[10px] font-black text-brand-green uppercase tracking-widest mb-1">Margem Estimada</p>
+            <div className="glass p-6 border-brand-primary/20 bg-brand-primary/5 text-center">
+              <p className="text-[10px] font-black text-brand-primary uppercase tracking-widest mb-1">Margem Estimada</p>
               <h4 className={`text-3xl font-black ${margin >= 0 ? 'text-white' : 'text-rose-500'}`}>
                 R$ {margin.toLocaleString('pt-BR')}
               </h4>
@@ -201,7 +201,7 @@ export default function ManualInboundWizard({ isOpen, onClose }) {
             </div>
             <button 
               onClick={handleComplete}
-              className="w-full bg-neon-gradient text-slate-950 py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-brand-green/20 hover:scale-[1.02] active:scale-95 transition-all"
+              className="w-full bg-neon-gradient text-slate-950 py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-brand-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
             >
               Gerar Inteligência
             </button>
@@ -222,7 +222,7 @@ export default function ManualInboundWizard({ isOpen, onClose }) {
             {STEPS.map((_, idx) => (
               <div 
                 key={idx} 
-                className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${idx <= currentStep ? 'bg-brand-green shadow-[0_0_10px_rgba(163,255,18,0.4)]' : 'bg-slate-800'}`} 
+                className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${idx <= currentStep ? 'bg-brand-primary shadow-[0_0_10px_rgba(163,255,18,0.4)]' : 'bg-slate-800'}`} 
               />
             ))}
           </div>

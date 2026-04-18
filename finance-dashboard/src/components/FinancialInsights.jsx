@@ -10,16 +10,16 @@ export default function FinancialInsights() {
   return (
     <div className="glass p-8 relative overflow-hidden">
       {/* Subtle Background pattern */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-brand-green/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+      <div className="absolute top-0 right-0 w-32 h-32 bg-brand-primary/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
       
       <div className="relative z-10">
         <div className="flex justify-between items-center mb-8">
           <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-green/40 shadow-[0_0_10px_rgba(163,255,18,0.2)]"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-primary/40 shadow-[0_0_10px_rgba(163,255,18,0.2)]"></span>
             Inteligência VYNEX
           </h3>
           <div className="flex items-center gap-2">
-            <div className="w-1 h-1 rounded-full bg-brand-green animate-pulse"></div>
+            <div className="w-1 h-1 rounded-full bg-brand-primary animate-pulse"></div>
             <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">
               Análise Ativa
             </span>
@@ -41,9 +41,9 @@ export default function FinancialInsights() {
                     insight.type === 'alert' 
                       ? 'bg-amber-500/[0.04] border border-amber-500/10' 
                       : 'bg-white/[0.02] border border-white/5'
-                  } border-l-4 ${insight.type === 'alert' ? 'border-l-amber-500' : 'border-l-brand-green'}`}>
+                  } border-l-4 ${insight.type === 'alert' ? 'border-l-amber-500' : 'border-l-brand-primary'}`}>
                     <div className={`mt-1 flex-shrink-0 w-12 h-12 rounded-2xl bg-slate-950 border border-white/5 flex items-center justify-center text-xl shadow-2xl ${
-                      insight.type === 'alert' ? 'shadow-amber-500/10' : 'shadow-brand-green/10'
+                      insight.type === 'alert' ? 'shadow-amber-500/10' : 'shadow-brand-primary/10'
                     }`}>
                       {insight.icon}
                     </div>
@@ -51,12 +51,12 @@ export default function FinancialInsights() {
                     <div className="flex-1 space-y-1.5">
                       <div className="flex items-center justify-between">
                         <span className={`text-[9px] font-black uppercase tracking-widest ${
-                          insight.type === 'alert' ? 'text-amber-500' : 'text-brand-green'
+                          insight.type === 'alert' ? 'text-amber-500' : 'text-brand-primary'
                         }`}>
                           {insight.label}
                         </span>
                         {insight.action === 'credit' && (
-                          <span className="text-[8px] font-black text-brand-green uppercase tracking-tighter bg-brand-green/10 px-2 py-0.5 rounded-full border border-brand-green/20 animate-pulse">
+                          <span className="text-[8px] font-black text-brand-primary uppercase tracking-tighter bg-brand-primary/10 px-2 py-0.5 rounded-full border border-brand-primary/20 animate-pulse">
                             Oportunidade
                           </span>
                         )}

@@ -38,25 +38,27 @@ function DashboardContent({ onSimulateCredit, setActiveSection, onOpenWizard, on
   const hasData = normalizedTransactions.length > 0;
   
   return (
-    <div className="space-y-10 sm:space-y-12">
-      {/* 1. Ingestion Strategy Layer */}
+    <div className="space-y-16 sm:space-y-20">
+      {hasData && <NexDashboardCommentary />}
+
+      {/* 1. Ingestion Strategy Layer - Simplified */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="glass p-8 border-brand-green/30 bg-brand-green/5 flex flex-col justify-between gap-6 relative overflow-hidden group hover:border-brand-green/50 transition-all cursor-pointer"
+          className="glass flex flex-col justify-between gap-6 relative overflow-hidden group hover:border-blue-300 transition-all cursor-pointer bg-blue-50/20 border-blue-100"
           onClick={onOpenWizard}
         >
           <div className="relative z-10 space-y-4">
-            <div className="w-12 h-12 rounded-xl bg-brand-green/20 flex items-center justify-center text-brand-green">
-              <Zap size={24} />
+            <div className="w-10 h-10 rounded-xl bg-blue-600/10 flex items-center justify-center text-blue-600">
+              <Zap size={20} />
             </div>
             <div>
-              <h3 className="text-xl font-black text-white uppercase tracking-tight">Análise Manual Inteligente</h3>
-              <p className="text-slate-400 text-xs leading-relaxed max-w-[280px]">Mapeie sua saúde financeira em 2 minutos sem precisar conectar seu banco agora.</p>
+              <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Análise Manual</h3>
+              <p className="text-slate-500 text-[10px] leading-relaxed max-w-[280px]">Mapeie sua saúde financeira em 2 minutos sem precisar conectar seu banco.</p>
             </div>
           </div>
-          <button className="w-fit bg-brand-green text-slate-950 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] hover:scale-105 transition-all">
+          <button className="btn-primary w-fit text-[9px] py-3">
             Começar Agora
           </button>
         </motion.div>
@@ -64,19 +66,19 @@ function DashboardContent({ onSimulateCredit, setActiveSection, onOpenWizard, on
         <motion.div 
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="glass p-8 border-blue-500/30 bg-blue-500/5 flex flex-col justify-between gap-6 relative overflow-hidden group hover:border-blue-500/50 transition-all cursor-pointer"
+          className="glass flex flex-col justify-between gap-6 relative overflow-hidden group hover:border-blue-300 transition-all cursor-pointer"
           onClick={onOpenStatement}
         >
           <div className="relative z-10 space-y-4">
-            <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
-              <Database size={24} />
+            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600">
+              <Database size={20} />
             </div>
             <div>
-              <h3 className="text-xl font-black text-white uppercase tracking-tight">Upload de Extratos</h3>
-              <p className="text-slate-400 text-xs leading-relaxed max-w-[280px]">Importe arquivos CSV ou PDF para uma análise automática e profunda.</p>
+              <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Upload de Extratos</h3>
+              <p className="text-slate-500 text-[10px] leading-relaxed max-w-[280px]">Importe arquivos CSV ou PDF para uma análise automática e profunda.</p>
             </div>
           </div>
-          <button className="w-fit border border-blue-500/30 text-blue-400 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-blue-500/10 transition-all">
+          <button className="w-fit border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[9px] hover:bg-slate-50 transition-all">
             Importar Arquivo
           </button>
         </motion.div>
@@ -90,26 +92,25 @@ function DashboardContent({ onSimulateCredit, setActiveSection, onOpenWizard, on
               <ScoreGaugeCard score={analytics.score} />
             </div>
             <div className="lg:col-span-1">
-              <div className="glass p-8 bg-purple-500/5 border-purple-500/20 h-full flex flex-col justify-between">
+              <div className="glass h-full flex flex-col justify-between">
                 <div className="space-y-4">
-                  <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
                     <Activity size={20} />
                   </div>
-                  <h4 className="text-lg font-black text-white uppercase tracking-tight">Risco de Liquidez</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <h4 className="text-lg font-black text-slate-900 uppercase tracking-tight">Risco de Liquidez</h4>
+                  <p className="text-[10px] text-slate-500 leading-relaxed">
                     Seu comprometimento com gastos fixos é de <strong>{(analytics.assessment.fixedExpenseRatio * 100).toFixed(0)}%</strong> da renda identificada.
                   </p>
                 </div>
-                <div className="mt-6 w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                <div className="mt-6 w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.4)]" 
+                    className="h-full bg-blue-600 shadow-sm" 
                     style={{ width: `${analytics.assessment.fixedExpenseRatio * 100}%` }}
                   />
                 </div>
               </div>
             </div>
           </div>
-          <NexDashboardCommentary />
         </div>
       )}
 
@@ -126,7 +127,7 @@ function DashboardContent({ onSimulateCredit, setActiveSection, onOpenWizard, on
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         <div className="glass p-4 sm:p-6 h-[300px] sm:h-[350px]">
           <h3 className="text-[10px] sm:text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-green neon-glow"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-primary neon-glow"></span>
             Evolução Mensal
           </h3>
           <div className="h-[210px] sm:h-[260px]">
@@ -135,7 +136,7 @@ function DashboardContent({ onSimulateCredit, setActiveSection, onOpenWizard, on
         </div>
         <div className="glass p-4 sm:p-6 h-[300px] sm:h-[350px]">
           <h3 className="text-[10px] sm:text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-green neon-glow"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-primary neon-glow"></span>
             Categorias de Gasto
           </h3>
           <div className="h-[210px] sm:h-[260px]">
@@ -172,8 +173,8 @@ function MainApp({ user, onLogout }) {
 
   if (financeLoading || userLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-950">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-green"></div>
+      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary"></div>
       </div>
     );
   }
@@ -187,7 +188,7 @@ function MainApp({ user, onLogout }) {
             <img 
               src={logo} 
               alt="VYNEX Logo" 
-              className="h-7 sm:h-9 md:h-12 w-auto object-contain flex-shrink-0 mix-blend-screen drop-shadow-[0_0_12px_rgba(163,255,18,0.3)]" 
+              className="h-7 sm:h-9 md:h-12 w-auto object-contain flex-shrink-0 drop-shadow-[0_0_12px_rgba(37,99,235,0.1)]" 
             />
             <div className="hidden xs:flex flex-col border-l border-white/10 pl-3 sm:pl-6 leading-none">
               <p className="text-slate-500 font-black text-[8px] sm:text-[10px] uppercase tracking-widest">
@@ -206,14 +207,14 @@ function MainApp({ user, onLogout }) {
           <div className="flex items-center gap-2 sm:gap-4 min-w-0">
              <button 
               onClick={() => setActiveSection('account')}
-              className={`text-right group p-2 rounded-2xl transition-all flex flex-col items-end min-w-0 max-w-[100px] xs:max-w-[140px] sm:max-w-[180px] ${activeSection === 'account' ? 'bg-brand-green/10' : 'hover:bg-white/5'}`}
+              className={`text-right group p-2 rounded-2xl transition-all flex flex-col items-end min-w-0 max-w-[100px] xs:max-w-[140px] sm:max-w-[180px] ${activeSection === 'account' ? 'bg-blue-50' : 'hover:bg-slate-100'}`}
             >
-                <p className={`text-[10px] font-black uppercase tracking-tighter leading-none truncate w-full ${activeSection === 'account' ? 'text-brand-green' : 'text-white'}`}>{user?.email?.split('@')[0]}</p>
+                <p className={`text-[10px] font-black uppercase tracking-tighter leading-none truncate w-full ${activeSection === 'account' ? 'text-brand-primary' : 'text-slate-900'}`}>{user?.email?.split('@')[0]}</p>
                 <p className="text-[7px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-300">Perfil</p>
              </button>
              <button 
               onClick={() => setActiveSection('settings')}
-              className={`p-2 transition-colors shrink-0 ${activeSection === 'settings' ? 'text-brand-green' : 'text-slate-500 hover:text-white'}`}
+              className={`p-2 transition-colors shrink-0 ${activeSection === 'settings' ? 'text-brand-primary' : 'text-slate-400 hover:text-slate-900'}`}
               title="Configurações"
              >
                 <SettingsIcon size={18} />
@@ -237,7 +238,7 @@ function MainApp({ user, onLogout }) {
             {useUser().currentPlan.id !== 'premium' && (
               <button 
                 onClick={() => setActiveSection('account')}
-                className="hidden md:flex items-center gap-2 bg-brand-green/10 text-brand-green border border-brand-green/20 px-4 py-2 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:bg-brand-green/20 transition-all"
+                className="hidden md:flex items-center gap-2 bg-blue-50 text-brand-primary border border-blue-100 px-4 py-2 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:bg-blue-100 transition-all"
               >
                 <Crown size={12} /> Fazer Upgrade
               </button>
@@ -249,7 +250,7 @@ function MainApp({ user, onLogout }) {
 
       {/* Navigation Tabs - Refined for mobile scroll */}
       <div className="mb-8 sm:mb-12">
-        <nav className="flex items-center gap-1 p-1 bg-slate-900/40 rounded-[1.25rem] w-full sm:w-fit border border-white/5 overflow-x-auto no-scrollbar">
+        <nav className="flex items-center gap-1 p-1 bg-white rounded-[1.25rem] w-full sm:w-fit border border-slate-200 overflow-x-auto no-scrollbar shadow-sm">
           {[
             { id: 'dashboard', icon: <LayoutDashboard size={14} />, label: 'Dashboard' },
             { id: 'agents', icon: <Users size={14} />, label: 'Agentes IA' },
@@ -262,13 +263,13 @@ function MainApp({ user, onLogout }) {
               onClick={() => setActiveSection(tab.id)}
               className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 sm:px-8 py-3.5 sm:py-4 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 ${
                 activeSection === tab.id 
-                ? 'bg-slate-800 text-brand-green shadow-xl border border-white/10' 
-                : 'text-slate-500 hover:text-slate-300'
+                ? 'bg-blue-50 text-brand-primary shadow-sm border border-blue-100' 
+                : 'text-slate-400 hover:text-slate-600'
               }`}
             >
               {tab.icon}
               {tab.label}
-              {tab.id === 'dashboard' && <span className="ml-1 px-1 bg-brand-green text-slate-950 text-[6px] rounded-full">New</span>}
+              {tab.id === 'dashboard' && <span className="ml-1 px-1 bg-brand-primary text-white text-[6px] rounded-full">New</span>}
             </button>
           ))}
         </nav>
@@ -277,10 +278,10 @@ function MainApp({ user, onLogout }) {
       {/* Mobile-only tools - Responsive Visibility */}
       <div className="sm:hidden flex flex-col gap-4 mb-8">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex-1 bg-slate-900/20 p-4 rounded-2xl border border-white/5 flex items-center justify-center">
+          <div className="flex-1 bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-center shadow-sm">
             <OnlineUsersIndicator />
           </div>
-          <div className="flex-1 bg-slate-900/20 p-2 rounded-2xl border border-white/5 flex items-center justify-center">
+          <div className="flex-1 bg-white p-2 rounded-2xl border border-slate-200 flex items-center justify-center shadow-sm">
             <BankConnector />
           </div>
         </div>
@@ -308,7 +309,7 @@ function MainApp({ user, onLogout }) {
                   <div className="max-w-md mx-auto">
                     <button 
                       onClick={() => setIsWizardOpen(true)}
-                      className="w-full bg-brand-green text-slate-950 py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-brand-green/20 hover:scale-[1.02] transition-all"
+                      className="w-full bg-brand-primary text-slate-950 py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-brand-primary/20 hover:scale-[1.02] transition-all"
                     >
                       Análise Manual Expressa
                     </button>
@@ -376,7 +377,7 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-8 text-center text-white">
+        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-8 text-center text-slate-900">
           <div className="w-20 h-20 rounded-3xl bg-rose-500/20 flex items-center justify-center text-rose-500 mb-8 border border-rose-500/30">
             <Shield size={40} />
           </div>
@@ -384,7 +385,7 @@ class ErrorBoundary extends Component {
           <p className="text-slate-400 max-w-md mb-8 italic">Pode ser um problema temporário de conexão ou de processamento de dados.</p>
           <button 
             onClick={() => window.location.reload()}
-            className="bg-brand-green text-slate-950 px-8 py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-brand-green/20"
+            className="bg-brand-primary text-slate-950 px-8 py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-brand-primary/20"
           >
             Tentar Novamente
           </button>
@@ -430,8 +431,8 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-brand-green border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-brand-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -442,7 +443,7 @@ function App() {
         <FinanceProvider user={user}>
           <UserProvider user={user}>
             <NexProvider>
-              <div className="min-h-screen bg-slate-950 text-slate-200">
+              <div className="min-h-screen bg-transparent">
                 {!user ? (
                   <Login 
                     onLogin={(u) => setUser(u)} 

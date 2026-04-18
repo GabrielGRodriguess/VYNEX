@@ -7,7 +7,8 @@ import { abService } from '../../services/abService';
 import { analyticsService } from '../../services/analyticsService';
 import { useFinance } from '../../context/FinanceContext';
 import { useUser } from '../../context/UserContext';
-import { MessageSquare, ArrowRight, Sparkles, ExternalLink } from 'lucide-react';
+import { MessageSquare, ArrowRight, Sparkles, ExternalLink, Activity, PieChart, PlusCircle } from 'lucide-react';
+import nexNeutral from '../../assets/mascot/nex-neutral.png';
 
 export default function NexDashboardCommentary() {
   const { analytics } = useFinance();
@@ -49,65 +50,65 @@ export default function NexDashboardCommentary() {
     }
   };
 
-  const getMoodColor = (mood) => {
-    switch (mood) {
-      case 'elite': return 'text-brand-green border-brand-green/20 bg-brand-green/5';
-      case 'balanced': return 'text-blue-400 border-blue-400/20 bg-blue-500/5';
-      case 'cautious': return 'text-amber-500 border-amber-500/20 bg-amber-500/5';
-      case 'critical': return 'text-rose-500 border-rose-500/20 bg-rose-500/5';
-      default: return 'text-slate-400 border-white/5 bg-white/5';
-    }
-  };
-
   return (
-    <div className="space-y-4">
-      <motion.div 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className={`glass p-6 sm:p-8 border ${getMoodColor(diagnostic.mood)} relative overflow-hidden group`}
-      >
-        <div className="flex flex-col md:flex-row gap-6 items-start relative z-10">
-          {/* Nex Avatar */}
-          <div className="relative shrink-0">
-            <div className="w-16 h-16 rounded-2xl bg-slate-950/50 flex items-center justify-center border border-white/10 overflow-hidden">
-               <Sparkles className={getMoodColor(diagnostic.mood).split(' ')[0]} size={24} />
-            </div>
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-slate-950 rounded-full flex items-center justify-center border border-white/10">
-              <div className={`w-2 h-2 rounded-full animate-pulse ${getMoodColor(diagnostic.mood).split(' ')[0].replace('text-', 'bg-')}`} />
-            </div>
-          </div>
-
-          {/* Text Content */}
-          <div className="flex-1 space-y-4">
-            <div className="space-y-1">
-              <h4 className="text-sm font-black uppercase tracking-[0.2em] opacity-60">Nex Intelligence</h4>
-              <h3 className="text-xl font-black text-white uppercase tracking-tight">{diagnostic.title}</h3>
-            </div>
-            
-            <p className="text-sm text-slate-300 leading-relaxed font-medium">
-              "{diagnostic.text}"
-            </p>
-
-            <div className="pt-6 border-t border-white/5 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Próximo Passo Estratégico</p>
-                <p className="text-xs text-slate-400 italic leading-relaxed">{diagnostic.recommendation}</p>
-              </div>
-              <div className="flex flex-col gap-2">
-                <button 
-                  onClick={handleConversion}
-                  className="w-full bg-brand-green text-slate-950 px-5 py-3.5 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2"
-                >
-                  {offer?.cta || 'Desbloquear Oferta'} <ExternalLink size={14} />
-                </button>
-                <p className="text-[9px] text-center text-slate-500 uppercase tracking-widest font-bold">
-                  Continua no WhatsApp
-                </p>
-              </div>
-            </div>
+    <motion.div 
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="glass relative overflow-hidden"
+    >
+      <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start relative z-10">
+        {/* Nex Avatar with Glow */}
+        <div className="relative shrink-0 mt-2">
+          <div className="w-20 h-20 md:w-24 md:h-24 flex items-center justify-center">
+             <img 
+               src={nexNeutral} 
+               alt="Nex" 
+               className="w-full h-auto nex-breathe"
+               style={{
+                 filter: 'drop-shadow(0 0 8px rgba(37, 99, 235, 0.3))'
+               }}
+             />
           </div>
         </div>
-      </motion.div>
-    </div>
+
+        {/* Content Section */}
+        <div className="flex-1 space-y-4 w-full">
+          <div className="flex items-center justify-between w-full">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-100">
+              <Sparkles size={12} className="animate-pulse" />
+              <span className="text-[9px] font-black uppercase tracking-widest">IA Intelligence</span>
+            </div>
+          </div>
+
+          <div className="bg-[#EFF6FF] text-[#1E3A8A] p-4 rounded-xl rounded-tl-none relative border border-blue-100/50">
+            <p className="text-sm md:text-base leading-relaxed font-bold">
+              "{diagnostic.text}"
+            </p>
+          </div>
+
+          {/* Actions Bar */}
+          <div className="flex flex-wrap gap-2 pt-1">
+            <button 
+              onClick={() => {}} // Ver análise
+              className="btn-primary flex items-center gap-2 px-4 py-3"
+            >
+              <PieChart size={14} /> <span className="hidden xs:inline">Ver Análise</span>
+            </button>
+            <button 
+              onClick={() => {}} // Ajustar gastos
+              className="bg-white border border-[#E2E8F0] text-slate-600 px-4 py-3 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-50 transition-all flex items-center gap-2"
+            >
+              <Activity size={14} className="text-blue-500" /> <span className="hidden xs:inline">Ajustar Gastos</span>
+            </button>
+            <button 
+              onClick={handleConversion}
+              className="bg-blue-50 text-blue-600 border border-blue-100 px-4 py-3 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-blue-100 transition-all flex items-center gap-2"
+            >
+              <span className="truncate">{offer?.cta || 'Adicionar Conta'}</span> <PlusCircle size={14} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </motion.div>
   );
 }

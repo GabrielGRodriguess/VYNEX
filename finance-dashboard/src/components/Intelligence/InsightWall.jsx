@@ -8,18 +8,18 @@ export default function InsightWall({ insights }) {
   const getIcon = (type) => {
     switch (type) {
       case 'warning': return <AlertCircle size={18} className="text-amber-500" />;
-      case 'opportunity': return <Zap size={18} className="text-blue-400" />;
-      case 'success': return <CheckCircle2 size={18} className="text-brand-green" />;
+      case 'opportunity': return <Zap size={18} className="text-blue-600" />;
+      case 'success': return <CheckCircle2 size={18} className="text-blue-600" />;
       default: return null;
     }
   };
 
   const getColorClass = (type) => {
     switch (type) {
-      case 'warning': return 'border-amber-500/20 bg-amber-500/5';
-      case 'opportunity': return 'border-blue-500/20 bg-blue-500/5';
-      case 'success': return 'border-brand-green/20 bg-brand-green/5';
-      default: return 'border-white/5 bg-white/5';
+      case 'warning': return 'border-amber-100 bg-amber-50/50';
+      case 'opportunity': return 'border-blue-100 bg-blue-50/50';
+      case 'success': return 'border-blue-100 bg-blue-50/50';
+      default: return 'border-slate-200 bg-white';
     }
   };
 
@@ -33,22 +33,22 @@ export default function InsightWall({ insights }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className={`p-5 rounded-3xl border flex flex-col justify-between gap-4 group hover:scale-[1.02] transition-all cursor-pointer ${getColorClass(insight.type)}`}
+            className={`p-5 rounded-3xl border flex flex-col justify-between gap-4 group hover:scale-[1.01] transition-all cursor-pointer ${getColorClass(insight.type)}`}
           >
             <div className="flex items-start gap-4">
-              <div className="shrink-0 p-2 bg-slate-950/40 rounded-xl">
+              <div className="shrink-0 p-2 bg-white rounded-xl shadow-sm border border-slate-100">
                 {getIcon(insight.type)}
               </div>
-              <p className="text-xs font-bold text-slate-200 leading-relaxed">
+              <p className="text-sm font-bold text-slate-800 leading-relaxed">
                 {insight.text}
               </p>
             </div>
             
             <div className="flex items-center justify-between mt-2">
-              <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">
+              <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
                 Impacto: {insight.impact > 0 ? '+' : ''}{insight.impact} pts no Score
               </span>
-              <button className="flex items-center gap-1 text-[10px] font-black text-brand-green uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+              <button className="flex items-center gap-1 text-[10px] font-black text-blue-600 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
                 Ação <ArrowRight size={12} />
               </button>
             </div>
