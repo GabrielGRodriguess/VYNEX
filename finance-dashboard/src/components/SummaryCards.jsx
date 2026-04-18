@@ -5,53 +5,53 @@ import { motion } from 'framer-motion';
 import { Wallet, TrendingUp, ArrowDownCircle, Landmark, ShieldCheck, Activity, Target } from 'lucide-react';
 
 export default function SummaryCards() {
-  const { balance, analytics, connections } = useFinance();
-  const { currentPlan } = useUser();
+  const { analytics } = useFinance();
+  const { summary } = analytics;
 
-  const isNegative = balance < 0;
+  const isNegative = summary.totalBalance < 0;
 
   const cards = [
     {
-      title: 'Patrimônio Consolidado',
-      value: balance,
+      title: 'Saldo Consolidado',
+      value: summary.totalBalance,
       color: isNegative ? 'text-rose-500' : 'text-brand-green',
       glow: isNegative ? 'shadow-rose-500/20' : 'shadow-brand-green/20',
       icon: <Wallet size={20} />,
-      subtext: isNegative ? 'Ação recomendada' : 'Liquidez imediata',
+      subtext: isNegative ? 'Déficit identificado' : 'Liquidez disponível',
       progress: 100
     },
     {
-      title: 'Renda Real Identificada',
-      value: analytics.monthlyIncome || 0,
+      title: 'Renda Mensal',
+      value: summary.monthlyIncome,
       color: 'text-emerald-400',
       glow: 'shadow-emerald-500/10',
       icon: <TrendingUp size={20} />,
-      subtext: `Consistência: ${(analytics.incomeConsistency * 100).toFixed(0)}%`,
-      progress: analytics.incomeConsistency * 100
+      subtext: `Consistência: ${(analytics.assessment.incomeConsistency * 100).toFixed(0)}%`,
+      progress: analytics.assessment.incomeConsistency * 100
     },
     {
-      title: 'Sobra do Mês Estimada',
-      value: analytics.monthlySurplus || 0,
-      color: analytics.monthlySurplus >= 0 ? 'text-blue-400' : 'text-rose-500',
+      title: 'Sobra Estimada',
+      value: summary.surplus,
+      color: summary.surplus >= 0 ? 'text-blue-400' : 'text-rose-500',
       glow: 'shadow-blue-500/10',
       icon: <Target size={20} />,
-      subtext: analytics.monthlySurplus >= 0 ? 'Capacidade de aporte' : 'Déficit operacional',
-      progress: Math.max(0, Math.min((analytics.monthlySurplus / (analytics.monthlyIncome || 1)) * 100, 100))
+      subtext: summary.surplus >= 0 ? 'Potencial de aporte' : 'Déficit operacional',
+      progress: Math.max(0, Math.min((summary.surplus / (summary.monthlyIncome || 1)) * 100, 100))
     },
     {
-      title: 'Comprometimento Fixo',
-      value: (analytics.fixedExpenseRatio * 100).toFixed(1),
+      title: 'Comprometimento',
+      value: (analytics.assessment.fixedExpenseRatio * 100).toFixed(1),
       isPercent: true,
-      color: analytics.fixedExpenseRatio > 0.6 ? 'text-rose-400' : 'text-purple-400',
+      color: analytics.assessment.fixedExpenseRatio > 0.6 ? 'text-rose-400' : 'text-purple-400',
       glow: 'shadow-purple-500/10',
       icon: <Activity size={20} />,
-      subtext: analytics.fixedExpenseRatio > 0.6 ? 'Risco de liquidez' : 'Gasto sob controle',
-      progress: (1 - analytics.fixedExpenseRatio) * 100
+      subtext: analytics.assessment.fixedExpenseRatio > 0.6 ? 'Risco elevado' : 'Sob controle',
+      progress: Math.max(0, (1 - analytics.assessment.fixedExpenseRatio) * 100)
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
       {cards.map((card, index) => (
         <motion.div 
           key={card.title} 
@@ -71,11 +71,6 @@ export default function SummaryCards() {
               <div className="p-2 sm:p-3 bg-slate-800/50 rounded-2xl border border-white/5 text-slate-400 group-hover:text-white transition-all transform group-hover:scale-110">
                 {card.icon}
               </div>
-              {card.isPercent && (
-                <span className="text-[10px] font-black bg-white/5 border border-white/10 px-3 py-1 rounded-full text-slate-500">
-                   KPI
-                </span>
-              )}
             </div>
 
             <div className="min-w-0 space-y-1">
@@ -89,7 +84,6 @@ export default function SummaryCards() {
               </p>
             </div>
             
-            {/* Intel Progress bar */}
             <div className="mt-5 w-full h-1 bg-white/5 rounded-full overflow-hidden">
                <motion.div 
                  initial={{ width: 0 }}

@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useFinance } from '../context/FinanceContext';
 import { useToast } from '../context/ToastContext';
 import BaseModal from './Common/BaseModal';
+import { getCategoriesByType } from '../constants/categories';
 
 export default function AddTransactionModal({ isOpen, onClose }) {
-  const { addTransaction } = useFinance();
+  const { addTransaction, transactions } = useFinance();
   const toast = useToast();
   const [formData, setFormData] = useState({
     type: 'expense',
@@ -13,20 +14,38 @@ export default function AddTransactionModal({ isOpen, onClose }) {
     date: new Date().toISOString().split('T')[0],
   });
 
+  // Check frequency (1x per week)
+  const canAddException = () => {
+    const manualTxs = transactions.filter(t => !t.fromBank);
+    if (manualTxs.length === 0) return true;
+    
+    const lastTx = new Date(manualTxs[0].date);
+    const now = new Date();
+    const diffTime = Math.abs(now - lastTx);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays >= 7;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    if (!canAddException()) {
+      toast.error('Limite atingido', 'Exceções são limitadas a 1 uso por semana para manter a precisão da IA.');
+      return;
+    }
+
     if (!formData.amount || !formData.category) {
       toast.warning('Campos incompletos', 'Por favor, preencha o valor e a categoria.');
       return;
     }
     
     try {
-      addTransaction({ ...formData, amount: Number(formData.amount) });
-      toast.success('Lançamento realizado', `${formData.type === 'income' ? 'Recebimento' : 'Gasto'} de R$ ${formData.amount} registrado.`);
+      addTransaction({ ...formData, amount: Number(formData.amount), description: '(Ajuste Manual)' });
+      toast.success('Exceção registrada', `O ajuste de R$ ${formData.amount} foi adicionado à sua análise.`);
       setFormData({ type: 'expense', amount: '', category: '', date: new Date().toISOString().split('T')[0] });
       onClose();
     } catch (err) {
-      toast.error('Erro ao salvar', 'Ocorreu um erro ao tentar registrar a transação.');
+      toast.error('Erro ao salvar', 'Ocorreu um erro ao tentar registrar a exceção.');
     }
   };
 
@@ -34,8 +53,14 @@ export default function AddTransactionModal({ isOpen, onClose }) {
     <BaseModal 
       isOpen={isOpen} 
       onClose={onClose} 
-      title="Novo Registro"
+      title="Adicionar Exceção"
     >
+      <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl">
+        <p className="text-[10px] text-amber-500 font-bold uppercase tracking-widest text-center">
+          Exceções são limitadas para manter a precisão da análise financeira
+        </p>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
         <div className="flex bg-slate-950 p-1.5 rounded-2xl border border-white/5">
           <button
@@ -55,7 +80,7 @@ export default function AddTransactionModal({ isOpen, onClose }) {
         </div>
 
         <div className="space-y-2">
-          <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Valor do Lançamento</label>
+          <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Valor do Ajuste</label>
           <div className="relative group">
             <span className="absolute left-6 top-1/2 -translate-y-1/2 text-brand-green font-black text-xl">R$</span>
             <input
@@ -82,12 +107,9 @@ export default function AddTransactionModal({ isOpen, onClose }) {
                 required
               >
                 <option value="">Selecione</option>
-                <option value="Food">Alimentação</option>
-                <option value="Salary">Salário</option>
-                <option value="Transport">Transporte</option>
-                <option value="Utilities">Contas / Lazer</option>
-                <option value="Shopping">Shopping</option>
-                <option value="Other">Outros</option>
+                {getCategoriesByType(formData.type).map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.label}</option>
+                ))}
               </select>
               <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-600">
                 ▼
@@ -110,7 +132,7 @@ export default function AddTransactionModal({ isOpen, onClose }) {
           type="submit"
           className="w-full bg-neon-gradient text-slate-950 py-5 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-brand-green/10 mt-6"
         >
-          Salvar Registro
+          Confirmar Ajuste
         </button>
       </form>
     </BaseModal>

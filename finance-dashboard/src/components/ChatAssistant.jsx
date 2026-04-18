@@ -1,180 +1,347 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Bot, User, Sparkles, TrendingUp, ShieldCheck } from 'lucide-react';
+import { X, Send, User, TrendingUp, ShieldCheck, Zap, DollarSign } from 'lucide-react';
 import { useFinance } from '../context/FinanceContext';
 import { useUser } from '../context/UserContext';
+import { useNex } from '../context/NexContext';
 import { aiService } from '../services/aiService';
+import nexNeutral  from '../assets/mascot/nex-neutral.png';
+import nexThinking from '../assets/mascot/nex-thinking.png';
+import nexResult   from '../assets/mascot/nex-result.png';
+import nexGuiding  from '../assets/mascot/nex-guiding.png';
 
+// ─── Mapa de estados do Nex ───────────────────────────────────────────────────
+const STATE = {
+  idle:     { src: nexNeutral,  anim: 'nex-breathe'  },
+  thinking: { src: nexThinking, anim: 'nex-thinking' },
+  talking:  { src: nexGuiding,  anim: 'nex-talking'  },
+  success:  { src: nexResult,   anim: 'nex-success'  },
+};
+
+const SUGGESTIONS = [
+  { icon: <TrendingUp size={11} />, text: 'Como está meu perfil?' },
+  { icon: <ShieldCheck size={11} />, text: 'Tenho margem disponível?' },
+  { icon: <DollarSign size={11} />, text: 'Onde posso economizar?' },
+  { icon: <Zap size={11} />, text: 'Dicas de crédito' },
+];
+
+// ─── Mini avatar inline nas mensagens (sem container circular) ────────────────
+function NexInlineAvatar({ state = 'idle' }) {
+  const { src, anim } = STATE[state] || STATE.idle;
+  return (
+    <div className="shrink-0 w-8 self-end" style={{ marginBottom: '-2px' }}>
+      <img
+        src={src}
+        alt="Nex"
+        className={`w-full h-auto ${anim}`}
+        style={{
+          filter: 'drop-shadow(0 0 8px rgba(0,160,255,0.35))',
+        }}
+        draggable={false}
+      />
+    </div>
+  );
+}
+
+// ─── Mensagem do Nex ──────────────────────────────────────────────────────────
+function NexMessage({ children }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      className="flex items-end gap-2 max-w-[90%]"
+    >
+      <NexInlineAvatar />
+      <div
+        className="px-4 py-3 rounded-2xl rounded-bl-sm text-[11.5px] text-slate-300 leading-relaxed"
+        style={{ background: 'rgba(15,20,35,0.8)', border: '1px solid rgba(255,255,255,0.05)' }}
+      >
+        {children}
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Mensagem do usuário ──────────────────────────────────────────────────────
+function UserMessage({ children }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      className="flex items-end gap-2 justify-end max-w-[90%] ml-auto"
+    >
+      <div
+        className="px-4 py-3 rounded-2xl rounded-br-sm text-[11.5px] text-cyan-200 leading-relaxed"
+        style={{ background: 'rgba(0,180,255,0.08)', border: '1px solid rgba(0,180,255,0.18)' }}
+      >
+        {children}
+      </div>
+      <div
+        className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center"
+        style={{ background: 'rgba(0,180,255,0.12)', border: '1px solid rgba(0,180,255,0.22)' }}
+      >
+        <User size={13} className="text-cyan-400" />
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Typing indicator ─────────────────────────────────────────────────────────
+function TypingDots() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      className="flex items-end gap-2 max-w-[90%]"
+    >
+      <NexInlineAvatar state="thinking" />
+      <div
+        className="flex gap-1.5 px-4 py-3 rounded-2xl rounded-bl-sm"
+        style={{ background: 'rgba(15,20,35,0.8)', border: '1px solid rgba(255,255,255,0.05)' }}
+      >
+        <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" />
+        <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce [animation-delay:0.15s]" />
+        <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce [animation-delay:0.3s]" />
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Componente principal ─────────────────────────────────────────────────────
 export default function ChatAssistant() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  
+  const { isOpen, setIsOpen } = useNex();
+
+  const [messages,   setMessages]   = useState([]);
+  const [input,      setInput]      = useState('');
+  const [nexState,   setNexState]   = useState('idle');
+
   const { balance, transactions } = useFinance();
-  const { profile } = useUser();
-  const scrollRef = useRef(null);
+  const { profile }               = useUser();
+  const scrollRef                 = useRef(null);
+  const inputRef                  = useRef(null);
 
+  // Auto-scroll
   useEffect(() => {
-    if (scrollRef.current) {
+    if (scrollRef.current)
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages, isTyping]);
+  }, [messages, nexState]);
 
-  const handleSend = async (e) => {
-    if (e) e.preventDefault();
-    if (!input.trim() || isTyping) return;
+  // Foca no input ao abrir
+  useEffect(() => {
+    if (isOpen && inputRef.current)
+      setTimeout(() => inputRef.current?.focus(), 320);
+  }, [isOpen]);
 
-    const userMsg = input;
+  const handleSend = async (text) => {
+    const msg = text || input;
+    if (!msg.trim() || nexState === 'thinking') return;
+
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
-    setIsTyping(true);
+    setMessages(prev => [...prev, { role: 'user', text: msg }]);
+    setNexState('thinking');
 
-    // Build Context
-    const context = aiService.buildFinancialContext({ balance, transactions }, profile);
-    
-    // Get AI Response (Multi-agent orchestrated)
-    const aiResponse = await aiService.getChatResponse(userMsg, context);
-    
-    setIsTyping(false);
-    setMessages(prev => [...prev, { role: 'assistant', text: aiResponse }]);
+    const context  = aiService.buildFinancialContext({ balance, transactions }, profile);
+    const response = await aiService.getChatResponse(msg, context);
+
+    setNexState('success');
+    setMessages(prev => [...prev, { role: 'assistant', text: response }]);
+    setTimeout(() => setNexState('talking'), 650);
+    setTimeout(() => setNexState('idle'),    2200);
   };
 
+  const isTyping = nexState === 'thinking';
+
   return (
-    <>
-      {/* Floating Entry Button - More subtle on mobile */}
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-14 h-14 sm:w-16 sm:h-16 bg-brand-green text-slate-950 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(163,255,18,0.3)] z-[60] cursor-pointer group"
-      >
-        <div className="absolute inset-0 rounded-full bg-brand-green animate-ping opacity-20 group-hover:opacity-40" />
-        <MessageSquare size={24} className="sm:size-7" />
-      </motion.button>
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0, x: 40, scale: 0.95 }}
+          animate={{ opacity: 1, x: 0,  scale: 1    }}
+          exit={{   opacity: 0, x: 40, scale: 0.95  }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          className="fixed inset-4 sm:inset-auto sm:bottom-4 sm:right-4 sm:w-[390px] sm:h-[640px] z-[100] flex flex-col overflow-hidden rounded-3xl"
+          style={{
+            background: 'rgba(7, 10, 18, 0.97)',
+            backdropFilter: 'blur(24px)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            boxShadow: '0 32px 80px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.05)',
+          }}
+        >
+          {/* Linha de brilho */}
+          <div
+            className="absolute top-0 inset-x-0 h-px pointer-events-none z-10"
+            style={{ background: 'linear-gradient(90deg, transparent, rgba(0,200,255,0.35), transparent)' }}
+          />
 
-      {/* Main Chat Interface - Mobile Height Fixed */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 100 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 100 }}
-            className="fixed inset-4 sm:inset-auto sm:bottom-24 sm:right-6 sm:w-[400px] sm:h-[600px] glass-card overflow-hidden z-[100] flex flex-col border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+          {/* ── Header ── */}
+          <div
+            className="relative flex items-end shrink-0 overflow-visible"
+            style={{ minHeight: 140, padding: '0 16px 12px' }}
           >
-            {/* Header: Multi-Agent Hub Identity */}
-            <div className="p-4 sm:p-6 border-b border-white/5 bg-slate-900/40 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-brand-green/20 flex items-center justify-center text-brand-green">
-                  <Sparkles size={18} />
-                </div>
-                <div>
-                  <h3 className="text-[10px] sm:text-xs font-black text-white uppercase tracking-tight">VYNEX Inteligência</h3>
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse" />
-                    <p className="text-[7px] sm:text-[8px] font-black text-slate-500 uppercase tracking-widest">Agentes Ativos</p>
-                  </div>
-                </div>
-              </div>
-              <button 
-                onClick={() => setIsOpen(false)}
-                className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 text-slate-500 hover:text-white transition-all"
-              >
-                <X size={20} />
-              </button>
-            </div>
+            {/* Gradiente de fundo do header */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{ background: 'linear-gradient(180deg, rgba(0,10,30,0.6) 0%, transparent 100%)' }}
+            />
 
-            {/* Conversation Core */}
-            <div 
-              ref={scrollRef}
-              className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 bg-slate-950/20 no-scrollbar"
+            {/* ── Nex no header: sem container, sem borda ── */}
+            <motion.div
+              key={nexState}
+              initial={{ opacity: 0.7, scale: 0.96 }}
+              animate={{ opacity: 1,   scale: 1    }}
+              transition={{ duration: 0.3 }}
+              className="relative z-10 shrink-0"
+              style={{ width: 110, marginBottom: -14, marginLeft: -8 }}
             >
-              <div className="flex gap-3 max-w-[90%] sm:max-w-[85%]">
-                <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-brand-green shrink-0">
-                  <Bot size={16} />
-                </div>
-                <div className="bg-slate-900 p-4 rounded-2xl rounded-tl-none border border-white/5 space-y-3">
-                  <p className="text-[11px] sm:text-xs text-slate-200 leading-relaxed">
-                    Olá! Analisei sua saúde financeira e identifiquei um Perfil Vynex de alta eficiência. 
-                  </p>
-                  <p className="text-[11px] sm:text-xs text-slate-200 leading-relaxed font-bold">
-                    Como posso te ajudar a otimizar sua organização financeira hoje?
-                  </p>
-                </div>
+              <img
+                src={STATE[nexState]?.src || nexNeutral}
+                alt="Nex"
+                draggable={false}
+                className={`w-full h-auto ${STATE[nexState]?.anim || 'nex-breathe'}`}
+                style={{
+                  filter: [
+                    'drop-shadow(0 0 22px rgba(0,170,255,0.5))',
+                    'drop-shadow(0 0 8px rgba(0,120,220,0.3))',
+                  ].join(' '),
+                }}
+              />
+            </motion.div>
+
+            {/* Info textual */}
+            <div className="relative z-10 flex-1 pb-2 pl-3 min-w-0">
+              <h3 className="text-base font-black text-white tracking-tight">Nex</h3>
+              <p
+                className="text-[9px] font-bold uppercase tracking-widest mt-0.5"
+                style={{ color: 'rgba(100,130,170,0.8)' }}
+              >
+                Inteligência Vynex
+              </p>
+              <div className="flex items-center gap-1.5 mt-2">
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${isTyping ? 'animate-pulse' : ''}`}
+                  style={{ background: isTyping ? '#fbbf24' : '#22d3ee' }}
+                />
+                <span
+                  className="text-[8px] font-bold uppercase tracking-widest"
+                  style={{ color: 'rgba(90,110,140,0.9)' }}
+                >
+                  {isTyping ? 'Analisando...'
+                    : nexState === 'talking'  ? 'Respondendo...'
+                    : nexState === 'success'  ? 'Pronto!'
+                    : 'Online'}
+                </span>
               </div>
-
-              {messages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`flex gap-3 max-w-[90%] sm:max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                      msg.role === 'user' ? 'bg-brand-green text-slate-950 shadow-[0_0_10px_rgba(163,255,18,0.3)]' : 'bg-slate-800 text-brand-green'
-                    }`}>
-                      {msg.role === 'user' ? <User size={16} /> : <Bot size={16} />}
-                    </div>
-                    <div className={`p-4 rounded-2xl border ${
-                      msg.role === 'user' 
-                        ? 'bg-brand-green/10 border-brand-green/20 rounded-tr-none text-brand-green' 
-                        : 'bg-slate-900 border-white/5 rounded-tl-none text-slate-200'
-                    }`}>
-                      <p className="text-[11px] sm:text-xs leading-relaxed">{msg.text}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-
-              {isTyping && (
-                <div className="flex gap-3 pl-10 items-center">
-                  <div className="flex gap-1.5">
-                    <span className="w-1.5 h-1.5 bg-brand-green rounded-full animate-bounce" />
-                    <span className="w-1.5 h-1.5 bg-brand-green rounded-full animate-bounce [animation-delay:0.2s]" />
-                    <span className="w-1.5 h-1.5 bg-brand-green rounded-full animate-bounce [animation-delay:0.4s]" />
-                  </div>
-                  <span className="text-[8px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest">Analisando...</span>
-                </div>
-              )}
             </div>
 
-            {/* Quick Suggestions Layer */}
-            <div className="px-4 sm:px-6 py-3 border-t border-white/5 bg-slate-900/20 flex gap-2 overflow-x-auto no-scrollbar">
-              {[
-                { icon: <TrendingUp size={12}/>, text: 'Ver meu score' },
-                { icon: <ShieldCheck size={12}/>, text: 'Dicas de perfil' }
-              ].map((btn, i) => (
+            {/* Fechar */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-xl transition-all"
+              style={{ color: 'rgba(100,120,150,0.8)' }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            >
+              <X size={17} />
+            </button>
+
+            {/* Linha separadora */}
+            <div
+              className="absolute bottom-0 inset-x-0 h-px"
+              style={{ background: 'rgba(255,255,255,0.05)' }}
+            />
+          </div>
+
+          {/* ── Mensagens ── */}
+          <div
+            ref={scrollRef}
+            className="flex-1 overflow-y-auto px-4 py-5 space-y-4 no-scrollbar"
+          >
+            <NexMessage>
+              Oi. Sou o Nex — sua inteligência financeira na Vynex.
+              <br /><br />
+              Analiso seus dados, identifico oportunidades e te oriento. É só perguntar.
+            </NexMessage>
+
+            {messages.map((m, i) =>
+              m.role === 'assistant'
+                ? <NexMessage key={i}>{m.text}</NexMessage>
+                : <UserMessage key={i}>{m.text}</UserMessage>
+            )}
+
+            <AnimatePresence>
+              {isTyping && <TypingDots />}
+            </AnimatePresence>
+          </div>
+
+          {/* ── Sugestões ── */}
+          {messages.length === 0 && !isTyping && (
+            <div
+              className="px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar shrink-0"
+              style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}
+            >
+              {SUGGESTIONS.map((s, i) => (
                 <button
                   key={i}
-                  onClick={() => {
-                    setInput(btn.text);
-                    // Manual submit logic would go here
+                  onClick={() => handleSend(s.text)}
+                  className="whitespace-nowrap flex items-center gap-1.5 px-3 py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all shrink-0"
+                  style={{
+                    background: 'rgba(255,255,255,0.04)',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    color: 'rgba(150,170,200,0.8)',
                   }}
-                  className="whitespace-nowrap flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full text-[9px] font-black text-slate-400 uppercase tracking-widest hover:bg-brand-green/10 hover:text-brand-green transition-all"
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,180,255,0.08)'; e.currentTarget.style.color = '#22d3ee'; e.currentTarget.style.borderColor = 'rgba(0,180,255,0.2)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'rgba(150,170,200,0.8)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
                 >
-                  {btn.icon} {btn.text}
+                  <span style={{ color: 'rgba(0,180,255,0.6)' }}>{s.icon}</span>
+                  {s.text}
                 </button>
               ))}
             </div>
+          )}
 
-            {/* Conversation Entry */}
-            <form onSubmit={handleSend} className="p-4 sm:p-6 border-t border-white/5 bg-slate-900/40">
-              <div className="relative">
-                <input 
-                  type="text"
-                  placeholder="Pergunte à inteligência..."
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  className="w-full bg-slate-950 border border-white/10 rounded-2xl py-3 sm:py-4 pl-4 pr-14 text-[11px] sm:text-xs text-white focus:border-brand-green focus:outline-none transition-all placeholder:text-slate-700"
-                />
-                <button 
-                  type="submit"
-                  disabled={!input.trim() || isTyping}
-                  className="absolute right-2 top-2 w-8 h-8 sm:w-10 sm:h-10 bg-brand-green text-slate-950 rounded-xl flex items-center justify-center disabled:opacity-30 transition-all hover:scale-105"
-                >
-                  <Send size={16} sm:size={18} />
-                </button>
-              </div>
-            </form>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+          {/* ── Input ── */}
+          <form
+            onSubmit={e => { e.preventDefault(); handleSend(); }}
+            className="p-4 shrink-0"
+            style={{ borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(10,14,24,0.7)' }}
+          >
+            <div className="relative flex items-center">
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Fala com o Nex..."
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                disabled={isTyping}
+                className="w-full rounded-2xl py-3.5 pl-4 pr-14 text-xs text-white placeholder:text-slate-700 outline-none transition-all disabled:opacity-50"
+                style={{
+                  background: 'rgba(10,15,28,0.9)',
+                  border: '1px solid rgba(255,255,255,0.07)',
+                }}
+                onFocus={e  => e.target.style.borderColor = 'rgba(0,180,255,0.3)'}
+                onBlur={e   => e.target.style.borderColor = 'rgba(255,255,255,0.07)'}
+              />
+              <button
+                type="submit"
+                disabled={!input.trim() || isTyping}
+                className="absolute right-2 w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
+                style={{
+                  background: '#06b6d4',
+                  boxShadow: '0 0 14px rgba(6,182,212,0.35)',
+                  color: '#020617',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = '#22d3ee'}
+                onMouseLeave={e => e.currentTarget.style.background = '#06b6d4'}
+              >
+                <Send size={15} />
+              </button>
+            </div>
+          </form>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

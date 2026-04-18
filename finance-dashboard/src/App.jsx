@@ -11,7 +11,7 @@ import FinancialInsights from './components/FinancialInsights';
 import OnlineUsersIndicator from './components/OnlineUsersIndicator';
 import CreditAnalysis from './components/CreditAnalysis';
 import CreditHistory from './components/CreditHistory';
-import DemoControls from './components/DemoControls';
+
 import { UserProvider, useUser } from './context/UserContext';
 import { ToastProvider, useToast } from './context/ToastContext';
 import ChatAssistant from './components/ChatAssistant';
@@ -22,74 +22,112 @@ import EmptyState from './components/EmptyState';
 import AgentGrid from './components/Agents/AgentGrid';
 import SettingsPage from './components/Settings/SettingsPage';
 import AccountPage from './components/Profile/AccountPage';
-import { LayoutDashboard, TrendingUp, History, LogOut, Settings as SettingsIcon, Shield, Users, Crown, Zap } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, History, LogOut, Settings as SettingsIcon, Shield, Users, Crown, Zap, Database, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { NexProvider } from './context/NexContext';
+import NexCharacter from './components/Mascot/NexCharacter';
 
+import ScoreGaugeCard from './components/Intelligence/ScoreGaugeCard';
+import InsightWall from './components/Intelligence/InsightWall';
+import NexDashboardCommentary from './components/Intelligence/NexDashboardCommentary';
+import ManualInboundWizard from './components/ManualInbound/ManualInboundWizard';
+import StatementInboundWizard from './components/StatementInbound/StatementInboundWizard';
 
-function DashboardContent({ onSimulateCredit, setActiveSection }) {
-  const { transactions } = useFinance();
+function DashboardContent({ onSimulateCredit, setActiveSection, onOpenWizard, onOpenStatement }) {
+  const { analytics, normalizedTransactions } = useFinance();
+  const hasData = normalizedTransactions.length > 0;
   
-  console.log("[VYNEX] DashboardContent render - Transactions count:", transactions?.length);
-
   return (
-    <div className="grid grid-cols-1 gap-6 sm:gap-8">
-      <SummaryCards />
-      
-      {/* Strategic Profile CTA Card - Intelligence First */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="glass p-6 sm:p-8 bg-brand-green/10 border-brand-green/20 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden group hover:border-brand-green/40 transition-all cursor-pointer"
-        onClick={onSimulateCredit}
-      >
-        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-green/5 rounded-full blur-3xl -mr-32 -mt-32 group-hover:bg-brand-green/10 transition-colors"></div>
-        <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-center sm:text-left">
-          <div className="w-16 h-16 rounded-2xl bg-brand-green/20 flex items-center justify-center text-brand-green shadow-[0_0_20px_rgba(163,255,18,0.2)]">
-            <TrendingUp size={32} />
-          </div>
-          <div>
-            <h3 className="text-xl font-black text-white uppercase tracking-tight">Otimize seu Perfil</h3>
-            <p className="text-slate-400 text-xs sm:text-sm max-w-md">Sua movimentação indica um perfil de alta eficiência. Descubra como transformar isso em vantagens estratégicas.</p>
-          </div>
-        </div>
-        <button 
-          className="w-full sm:w-auto relative z-10 bg-brand-green text-slate-950 px-8 py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand-green/20 text-xs sm:text-sm"
-        >
-          Analisar meu potencial
-        </button>
-      </motion.div>
-
-      {/* Contextual AI Power-up Banner - Conversion Trigger */}
-      {useUser().currentPlan.id === 'free' && (
+    <div className="space-y-10 sm:space-y-12">
+      {/* 1. Ingestion Strategy Layer */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="glass p-6 border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-r from-blue-600/10 to-purple-600/10"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="glass p-8 border-brand-green/30 bg-brand-green/5 flex flex-col justify-between gap-6 relative overflow-hidden group hover:border-brand-green/50 transition-all cursor-pointer"
+          onClick={onOpenWizard}
         >
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
-              <Zap size={20} />
+          <div className="relative z-10 space-y-4">
+            <div className="w-12 h-12 rounded-xl bg-brand-green/20 flex items-center justify-center text-brand-green">
+              <Zap size={24} />
             </div>
             <div>
-              <p className="text-white font-black text-sm uppercase tracking-tight">Desbloqueie todo o potencial da IA</p>
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Ative múltiplos agentes e conexões ilimitadas no Plano Pro.</p>
+              <h3 className="text-xl font-black text-white uppercase tracking-tight">Análise Manual Inteligente</h3>
+              <p className="text-slate-400 text-xs leading-relaxed max-w-[280px]">Mapeie sua saúde financeira em 2 minutos sem precisar conectar seu banco agora.</p>
             </div>
           </div>
-          <button 
-            onClick={() => setActiveSection('account')}
-            className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] hover:text-white transition-colors"
-          >
-            Ver Planos →
+          <button className="w-fit bg-brand-green text-slate-950 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] hover:scale-105 transition-all">
+            Começar Agora
           </button>
         </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="glass p-8 border-blue-500/30 bg-blue-500/5 flex flex-col justify-between gap-6 relative overflow-hidden group hover:border-blue-500/50 transition-all cursor-pointer"
+          onClick={onOpenStatement}
+        >
+          <div className="relative z-10 space-y-4">
+            <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
+              <Database size={24} />
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-white uppercase tracking-tight">Upload de Extratos</h3>
+              <p className="text-slate-400 text-xs leading-relaxed max-w-[280px]">Importe arquivos CSV ou PDF para uma análise automática e profunda.</p>
+            </div>
+          </div>
+          <button className="w-fit border border-blue-500/30 text-blue-400 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-blue-500/10 transition-all">
+            Importar Arquivo
+          </button>
+        </motion.div>
+      </div>
+
+      {/* 2. Intelligence Diagnosis Layer */}
+      {hasData && (
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <ScoreGaugeCard score={analytics.score} />
+            </div>
+            <div className="lg:col-span-1">
+              <div className="glass p-8 bg-purple-500/5 border-purple-500/20 h-full flex flex-col justify-between">
+                <div className="space-y-4">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400">
+                    <Activity size={20} />
+                  </div>
+                  <h4 className="text-lg font-black text-white uppercase tracking-tight">Risco de Liquidez</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Seu comprometimento com gastos fixos é de <strong>{(analytics.assessment.fixedExpenseRatio * 100).toFixed(0)}%</strong> da renda identificada.
+                  </p>
+                </div>
+                <div className="mt-6 w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.4)]" 
+                    style={{ width: `${analytics.assessment.fixedExpenseRatio * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <NexDashboardCommentary />
+        </div>
       )}
 
-      <FinancialInsights />
+      {/* 3. Insights & Action Layer */}
+      {hasData && <InsightWall insights={analytics.insights} />}
+
+      {/* 4. Numbers & Fundamentals Layer */}
+      <div className="space-y-6">
+        <h3 className="section-title">Fundamentos Financeiros</h3>
+        <SummaryCards />
+      </div>
+
+      {/* 5. Patterns & Behaviors Layer */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         <div className="glass p-4 sm:p-6 h-[300px] sm:h-[350px]">
           <h3 className="text-[10px] sm:text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-green neon-glow"></span>
-            Minha Evolução
+            Evolução Mensal
           </h3>
           <div className="h-[210px] sm:h-[260px]">
             <BalanceChart />
@@ -98,23 +136,30 @@ function DashboardContent({ onSimulateCredit, setActiveSection }) {
         <div className="glass p-4 sm:p-6 h-[300px] sm:h-[350px]">
           <h3 className="text-[10px] sm:text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-green neon-glow"></span>
-            Distribuição de Gastos
+            Categorias de Gasto
           </h3>
           <div className="h-[210px] sm:h-[260px]">
             <ExpenseChart />
           </div>
         </div>
       </div>
-      <TransactionList />
+
+      {/* 6. Transparency Layer */}
+      <div className="space-y-6">
+        <h3 className="section-title">Base de Dados Normalizada</h3>
+        <TransactionList />
+      </div>
     </div>
   );
 }
 
 function MainApp({ user, onLogout }) {
   const { profile, loading: userLoading } = useUser();
-  const { connections, isBankConnected, loading: financeLoading } = useFinance();
+  const { connections, isBankConnected, normalizedTransactions = [], loading: financeLoading } = useFinance();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
+  const [isStatementOpen, setIsStatementOpen] = useState(false);
 
   console.log("[VYNEX] MainApp Check:", { 
     user: user?.email, 
@@ -132,8 +177,6 @@ function MainApp({ user, onLogout }) {
       </div>
     );
   }
-
-
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 lg:py-12 overflow-x-hidden">
@@ -156,7 +199,6 @@ function MainApp({ user, onLogout }) {
             </div>
           </div>
           <div className="sm:hidden flex items-center gap-2">
-             <DemoControls />
           </div>
         </div>
 
@@ -172,15 +214,22 @@ function MainApp({ user, onLogout }) {
              <button 
               onClick={() => setActiveSection('settings')}
               className={`p-2 transition-colors shrink-0 ${activeSection === 'settings' ? 'text-brand-green' : 'text-slate-500 hover:text-white'}`}
+              title="Configurações"
              >
                 <SettingsIcon size={18} />
+             </button>
+             <button 
+              onClick={onLogout}
+              className="p-2 transition-colors shrink-0 text-slate-500 hover:text-rose-500"
+              title="Sair"
+             >
+                <LogOut size={18} />
              </button>
           </div>
           
           <div className="flex items-center gap-2 shrink-0">
             <div className="hidden lg:block h-8 w-px bg-white/5 mx-2" />
             <div className="hidden sm:block">
-               <DemoControls />
             </div>
             <div className="hidden xs:block">
               <BankConnector />
@@ -193,13 +242,7 @@ function MainApp({ user, onLogout }) {
                 <Crown size={12} /> Fazer Upgrade
               </button>
             )}
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="bg-neon-gradient text-slate-950 px-4 py-2.5 sm:px-6 sm:py-3.5 rounded-xl sm:rounded-2xl font-black hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-xl shadow-brand-green/20 shrink-0"
-            >
-               <span className="text-lg sm:text-xl leading-none mt-[-2px]">+</span> 
-               <span className="text-[9px] sm:text-[10px] uppercase tracking-widest font-black">Lançar</span>
-            </button>
+            {/* "Lançar" button removed from global header */}
           </div>
         </div>
       </header>
@@ -225,6 +268,7 @@ function MainApp({ user, onLogout }) {
             >
               {tab.icon}
               {tab.label}
+              {tab.id === 'dashboard' && <span className="ml-1 px-1 bg-brand-green text-slate-950 text-[6px] rounded-full">New</span>}
             </button>
           ))}
         </nav>
@@ -258,12 +302,24 @@ function MainApp({ user, onLogout }) {
             transition={{ duration: 0.2 }}
           >
             {activeSection === 'dashboard' ? (
-              !isBankConnected ? (
-                <EmptyState />
+              !isBankConnected && normalizedTransactions.length === 0 ? (
+                <div className="space-y-8">
+                  <EmptyState />
+                  <div className="max-w-md mx-auto">
+                    <button 
+                      onClick={() => setIsWizardOpen(true)}
+                      className="w-full bg-brand-green text-slate-950 py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-brand-green/20 hover:scale-[1.02] transition-all"
+                    >
+                      Análise Manual Expressa
+                    </button>
+                  </div>
+                </div>
               ) : (
                 <DashboardContent 
                   onSimulateCredit={() => setActiveSection('credit')} 
                   setActiveSection={setActiveSection}
+                  onOpenWizard={() => setIsWizardOpen(true)}
+                  onOpenStatement={() => setIsStatementOpen(true)}
                 />
               )
             ) : activeSection === 'agents' ? (
@@ -273,7 +329,7 @@ function MainApp({ user, onLogout }) {
             ) : activeSection === 'history' ? (
               <CreditHistory />
             ) : activeSection === 'settings' ? (
-              <SettingsPage />
+              <SettingsPage onAddException={() => setIsModalOpen(true)} />
             ) : (
               <AccountPage />
             )}
@@ -281,9 +337,20 @@ function MainApp({ user, onLogout }) {
         </AnimatePresence>
       </main>
 
+      <ManualInboundWizard 
+        isOpen={isWizardOpen}
+        onClose={() => setIsWizardOpen(false)}
+      />
+
+      <StatementInboundWizard
+        isOpen={isStatementOpen}
+        onClose={() => setIsStatementOpen(false)}
+      />
+
       <AddTransactionModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
+        triggerSource={activeSection}
       />
 
       {profile && !profile.onboarding_completed && <Onboarding />}
@@ -374,19 +441,22 @@ function App() {
       <ToastProvider>
         <FinanceProvider user={user}>
           <UserProvider user={user}>
-            <div className="min-h-screen bg-slate-950 text-slate-200">
-              {!user ? (
-                <Login 
-                  onLogin={(u) => setUser(u)} 
-                  initialView={recoveryMode ? 'reset' : 'login'} 
-                />
-              ) : (
-                <>
-                  <MainApp user={user} onLogout={() => supabase.auth.signOut()} />
-                  <ChatAssistant />
-                </>
-              )}
-            </div>
+            <NexProvider>
+              <div className="min-h-screen bg-slate-950 text-slate-200">
+                {!user ? (
+                  <Login 
+                    onLogin={(u) => setUser(u)} 
+                    initialView={recoveryMode ? 'reset' : 'login'} 
+                  />
+                ) : (
+                  <>
+                    <MainApp user={user} onLogout={() => { supabase.auth.signOut(); setUser(null); }} />
+                    <NexCharacter />
+                    <ChatAssistant />
+                  </>
+                )}
+              </div>
+            </NexProvider>
           </UserProvider>
         </FinanceProvider>
       </ToastProvider>
