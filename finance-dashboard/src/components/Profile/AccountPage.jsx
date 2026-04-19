@@ -2,15 +2,15 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '../../context/UserContext';
 import { useFinance } from '../../context/FinanceContext';
-import { User, CreditCard, Shield, Zap, LogOut, Key, Headphones, Check, Crown, Info, Sparkles, Activity } from 'lucide-react';
-import { PLANS } from '../../services/planService';
+import { User, CreditCard, Shield, Zap, LogOut, Key, Headphones, Check, Crown, Info, Sparkles, Activity, Thermometer, ArrowUpRight } from 'lucide-react';
+import { PLANS, planService, openFinanceProgress } from '../../services/planService';
 
 export default function AccountPage() {
   const { profile, currentPlan, activeAgents, updatePlan } = useUser();
   const { connections } = useFinance();
-  const [billingCycle, setBillingCycle] = useState('monthly');
 
   const activeAgentCount = Object.values(activeAgents).filter(Boolean).length;
+  const progressStatus = planService.getOpenFinanceStatus(openFinanceProgress);
 
   const Stat = ({ label, value, limit, icon, color, unit = '' }) => (
     <div className="bg-slate-900/50 p-6 rounded-[2rem] border border-white/5 space-y-3 group hover:border-white/10 transition-all relative overflow-hidden">
@@ -104,77 +104,115 @@ export default function AccountPage() {
         />
       </div>
 
-      {/* Plans Comparison - Polished & Commercial */}
+      {/* Your Access Section - Simplified & Impactful */}
       <div className="space-y-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
-          <div className="space-y-3">
-             <h3 className="text-3xl font-black text-white uppercase tracking-tight">Comparativo de Inteligência</h3>
-             <p className="text-slate-500 text-sm">Escolha o nível de processamento que sua vida financeira exige.</p>
-          </div>
-          
-          <div className="flex p-1.5 bg-slate-900 rounded-2xl border border-white/10 self-start md:self-auto">
-             <button 
-                onClick={() => setBillingCycle('monthly')}
-                className={`px-8 py-3 rounded-xl text-[11px] font-black uppercase transition-all tracking-widest ${billingCycle === 'monthly' ? 'bg-slate-800 text-brand-primary shadow-xl' : 'text-slate-500'}`}
-             >Mensal</button>
-             <button 
-                onClick={() => setBillingCycle('annual')}
-                className={`px-8 py-3 rounded-xl text-[11px] font-black uppercase transition-all tracking-widest ${billingCycle === 'annual' ? 'bg-slate-800 text-brand-primary shadow-xl' : 'text-slate-500'}`}
-             >Anual <span className="ml-1 text-[9px] bg-brand-primary/20 text-brand-primary px-2 py-0.5 rounded-full">-20%</span></button>
-          </div>
+        <div className="border-b border-white/5 pb-8">
+          <h3 className="text-3xl font-black text-white uppercase tracking-tight">Seu acesso</h3>
+          <p className="text-slate-500 text-sm mt-2">
+            {currentPlan.id === 'FREE' 
+              ? 'Você está usando o VYNEX Gratuito' 
+              : 'Você é um assinante VYNEX Pro Pass'}
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {Object.values(PLANS).map((plan) => (
-            <motion.div 
-              key={plan.id}
-              whileHover={{ y: -8 }}
-              className={`glass p-10 relative overflow-hidden flex flex-col group transition-all duration-500 ${
-                currentPlan.id === plan.id.toLowerCase() 
-                ? 'border-brand-primary/40 bg-brand-primary/[0.02] ring-1 ring-brand-primary/20' 
-                : 'border-white/5 hover:border-white/20'
-              }`}
-            >
-              {currentPlan.id === plan.id.toLowerCase() && (
-                <div className="absolute top-6 right-6 bg-brand-primary text-slate-950 text-[9px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-xl shadow-brand-primary/20">
-                  Ativo Agora
-                </div>
-              )}
-              
-              <div className="space-y-8 flex-1 relative z-10">
-                <div className="space-y-2">
-                  <h4 className="text-slate-500 text-[11px] font-black uppercase tracking-[0.3em]">{plan.name}</h4>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-5xl font-black text-white tracking-tighter">R$ {billingCycle === 'monthly' ? plan.price : Math.floor(plan.price * 0.8)}</span>
-                    <span className="text-slate-500 text-sm font-bold">/ mês</span>
-                  </div>
-                </div>
+        <div className="max-w-2xl">
+          {/* Pro Pass Card - Always visible as status or upgrade */}
+          <div className={`relative p-10 rounded-[3rem] border-2 overflow-hidden transition-all duration-500 ${
+            currentPlan.id === 'PRO_PASS' 
+              ? 'bg-brand-primary/[0.03] border-brand-primary shadow-[0_0_50px_rgba(163,255,18,0.1)]' 
+              : 'bg-slate-900/40 border-white/5 hover:border-white/10'
+          }`}>
+            {/* Decoration */}
+            <div className={`absolute top-0 right-0 w-64 h-64 blur-[100px] opacity-20 -mr-32 -mt-32 rounded-full ${
+              currentPlan.id === 'PRO_PASS' ? 'bg-brand-primary' : 'bg-blue-500'
+            }`} />
 
-                <div className="space-y-5 pt-4">
-                  {plan.features.map((feat, i) => (
-                    <div key={i} className="flex items-start gap-3 group/item">
-                      <div className="w-5 h-5 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0 mt-0.5 group-hover/item:scale-110 transition-transform">
-                        <Check size={12} strokeWidth={3} />
-                      </div>
-                      <span className="text-[11px] sm:text-[12px] font-bold text-slate-300 group-hover/item:text-white transition-colors">{feat}</span>
-                    </div>
-                  ))}
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-8">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-brand-primary font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-1">
+                      <Sparkles size={12} /> Pro Pass Early Access
+                    </span>
+                    {currentPlan.id === 'PRO_PASS' && (
+                      <span className="bg-brand-primary text-slate-950 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
+                        Ativo
+                      </span>
+                    )}
+                  </div>
+                  <h4 className="text-4xl font-black text-white tracking-tighter uppercase">VYNEX Pro Pass</h4>
+                  <p className="text-slate-400 font-bold">R$ 29,90 / mês</p>
+                </div>
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
+                  currentPlan.id === 'PRO_PASS' ? 'bg-brand-primary text-slate-950' : 'bg-white/5 text-slate-500'
+                }`}>
+                  <Crown size={32} fill={currentPlan.id === 'PRO_PASS' ? 'currentColor' : 'none'} />
                 </div>
               </div>
 
-              <button 
-                onClick={() => updatePlan(plan.id.toLowerCase())}
-                disabled={currentPlan.id === plan.id.toLowerCase()}
-                className={`w-full mt-10 py-5 rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-[11px] transition-all relative z-10 ${
-                  currentPlan.id === plan.id.toLowerCase() 
-                    ? 'bg-slate-800 text-slate-600 cursor-default grayscale' 
-                    : 'bg-brand-primary text-slate-950 hover:bg-white hover:scale-105 active:scale-95 shadow-xl shadow-brand-primary/10'
-                }`}
-              >
-                {currentPlan.id === plan.id.toLowerCase() ? 'Incluso no seu Plano' : 'Assinar ' + plan.name}
-              </button>
-            </motion.div>
-          ))}
+              <p className="text-slate-400 text-sm mb-8 leading-relaxed max-w-md">
+                {currentPlan.id === 'PRO_PASS' 
+                  ? 'Você garantiu seu lugar na próxima fase do VYNEX. Acompanhe abaixo o aquecimento do Open Finance.'
+                  : 'Ative o Pro Pass e garanta acesso às conexões bancárias reais quando o Open Finance for liberado.'}
+              </p>
+
+              {/* Thermometer Area */}
+              <div className="bg-slate-950/50 border border-white/5 rounded-[2rem] p-6 mb-8">
+                <div className="flex justify-between items-center mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className={`p-2 rounded-xl ${
+                      progressStatus.label === 'Quente' ? 'bg-orange-500/10 text-orange-500' : 
+                      progressStatus.label === 'Morno' ? 'bg-amber-500/10 text-amber-500' : 'bg-blue-500/10 text-blue-500'
+                    }`}>
+                      <Thermometer size={16} />
+                    </div>
+                    <span className="text-xs font-black text-white uppercase tracking-tight">{progressStatus.title}</span>
+                  </div>
+                  <span className="text-sm font-black text-brand-primary">{openFinanceProgress}%</span>
+                </div>
+                
+                <div className="h-4 bg-white/5 rounded-full overflow-hidden mb-3 relative">
+                   <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${openFinanceProgress}%` }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
+                    className={`h-full relative ${
+                      progressStatus.label === 'Quente' ? 'bg-gradient-to-r from-orange-400 to-red-500' : 
+                      progressStatus.label === 'Morno' ? 'bg-gradient-to-r from-amber-400 to-orange-500' : 'bg-gradient-to-r from-blue-400 to-brand-primary'
+                    }`}
+                   >
+                     <div className="absolute inset-0 bg-white/20 animate-pulse" />
+                   </motion.div>
+                </div>
+
+                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em]">
+                  <span className="text-slate-500">{progressStatus.status}</span>
+                  <span className="text-brand-primary/50">Próximo: {progressStatus.next}</span>
+                </div>
+
+                <p className="mt-4 text-[11px] text-slate-500 font-medium leading-relaxed italic">
+                  * Quando chegar no nível máximo, assinantes Pro Pass recebem acesso às conexões bancárias reais.
+                </p>
+                
+                {openFinanceProgress === 100 && currentPlan.id === 'PRO_PASS' && (
+                  <div className="mt-6 pt-6 border-t border-white/5">
+                    <button className="w-full py-4 bg-brand-primary text-slate-950 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-brand-primary/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
+                      Ativar conexões bancárias <Zap size={16} fill="currentColor" />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {currentPlan.id !== 'PRO_PASS' && (
+                <button 
+                  onClick={() => updatePlan('PRO_PASS')}
+                  className="w-full py-6 bg-brand-primary text-slate-950 rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-brand-primary/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+                >
+                  Ativar Pro Pass — R$ 29,90 <ArrowUpRight size={18} />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 

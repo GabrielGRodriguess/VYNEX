@@ -3,61 +3,47 @@
  * Manages tiers, limits and feature availability.
  */
 
+export const openFinanceProgress = 60;
+
 export const PLANS = {
   FREE: {
     id: 'FREE',
-    name: 'Free',
+    name: 'Gratuito',
     price: 0,
-    maxConnections: 1,
-    maxActiveAgents: 2,
+    subtitle: 'Para começar sua organização financeira',
     features: [
-      '1 Conexão bancária',
-      '2 Agentes de IA Ativos',
-      'Dashboard Financeiro básico',
-      'Insights de gastos simples',
-      'Análise de Score básico'
+      'Painel financeiro básico',
+      'Análises simuladas',
+      'Controle manual de informações',
+      'Sem conexão bancária real no momento'
     ]
   },
-  PRO: {
-    id: 'PRO',
-    name: 'Pro',
-    price: 29,
-    maxConnections: 5,
-    maxActiveAgents: Infinity,
+  PRO_PASS: {
+    id: 'PRO_PASS',
+    name: 'VYNEX Pro Pass',
+    price: 29.90,
+    subtitle: 'Seu acesso antecipado ao VYNEX Pro',
+    description: 'Ative o Pro Pass e garanta acesso às conexões bancárias reais quando o Open Finance for liberado.',
     features: [
-      'Até 5 Conexões bancárias',
-      'Todos os Agentes Ativos',
-      'Dashboard Avançado',
-      'Insights comportamentais',
-      'Análise de Crédito precisa',
-      'Suporte prioritário (Email)'
-    ]
-  },
-  PREMIUM: {
-    id: 'PREMIUM',
-    name: 'Premium',
-    price: 49,
-    maxConnections: Infinity,
-    maxActiveAgents: Infinity,
-    features: [
-      'Conexões Ilimitadas',
-      'Todos os Agentes Ativos',
-      'Inteligência Consolidada Multi-banco',
-      'Relatórios de Renda Real',
-      'Vynex Score 2.0 (Deep Data)',
-      'Suporte VIP 24h (WhatsApp)'
+      'Acesso antecipado ao VYNEX Pro',
+      'Direito ao Open Finance quando liberado',
+      'Prioridade nas próximas funções',
+      'Experiência premium do app',
+      'Preço inicial de acesso'
     ]
   }
 };
 
 export const planService = {
   getPlanById(id) {
-    return PLANS[id?.toUpperCase()] || PLANS.FREE;
+    const planId = id?.toUpperCase();
+    if (planId === 'PRO' || planId === 'PREMIUM') return PLANS.PRO_PASS;
+    return PLANS[planId] || PLANS.FREE;
   },
 
   canAddAgent(currentActiveCount, planId, role = 'free') {
-    // Admin and Premium roles always have unlimited access
-    if (role === 'admin' || role === 'premium') return true;
+    // Admin roles always have unlimited access
+    if (role === 'admin') return true;
     
     const plan = this.getPlanById(planId);
     
@@ -66,24 +52,49 @@ export const planService = {
       return currentActiveCount < 2;
     }
 
-    return currentActiveCount < plan.maxActiveAgents;
+    return true; // Pro Pass has unlimited agents for now
   },
 
   canAddConnection(currentCount, planId) {
     const plan = this.getPlanById(planId);
-    return currentCount < plan.maxConnections;
+    if (plan.id === 'FREE') return currentCount < 1;
+    return true; // Pro Pass will eventually have more
   },
 
   hasFeature(planId, featureKey) {
     const plan = this.getPlanById(planId);
-    if (planId === 'PREMIUM') return true;
-    if (planId === 'PRO') {
-      return ['advanced_dash', 'behavioral_insights'].includes(featureKey);
-    }
+    if (plan.id === 'PRO_PASS') return true;
     return false;
   },
 
   getAvailablePlans() {
     return Object.values(PLANS);
+  },
+
+  getOpenFinanceStatus(progress) {
+    if (progress >= 100) return { 
+      status: 'Liberado', 
+      next: 'Open Finance liberado', 
+      label: 'Liberado',
+      title: 'Open Finance liberado para assinantes Pro Pass' 
+    };
+    if (progress >= 75) return { 
+      status: 'Quente', 
+      next: 'Liberado', 
+      label: 'Quente',
+      title: 'Open Finance está aquecendo'
+    };
+    if (progress >= 40) return { 
+      status: 'Morno avançado', 
+      next: 'Quente', 
+      label: 'Morno',
+      title: 'Open Finance está aquecendo'
+    };
+    return { 
+      status: 'Frio', 
+      next: 'Morno', 
+      label: 'Frio',
+      title: 'Open Finance está aquecendo'
+    };
   }
 };

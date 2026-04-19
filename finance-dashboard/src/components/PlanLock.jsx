@@ -4,14 +4,16 @@ import { useUser } from '../context/UserContext';
 import { useToast } from '../context/ToastContext';
 import BaseModal from './Common/BaseModal';
 
-export default function PlanLock({ isOpen, onClose, requiredPlan = 'PRO' }) {
+export default function PlanLock({ isOpen, onClose, requiredPlan = 'PRO_PASS' }) {
   const { updatePlan } = useUser();
   const toast = useToast();
-  const targetPlan = PLANS[requiredPlan];
+  
+  const effectivePlanId = requiredPlan === 'PRO' || requiredPlan === 'PREMIUM' ? 'PRO_PASS' : requiredPlan;
+  const targetPlan = PLANS[effectivePlanId] || PLANS.PRO_PASS;
 
   const handleUpgrade = () => {
     updatePlan(targetPlan.id);
-    toast.success('Assinatura Atualizada', `Você agora tem acesso aos benefícios do Plano ${targetPlan.name}!`);
+    toast.success('Acesso Ativado', `Você agora tem acesso aos benefícios do ${targetPlan.name}!`);
     onClose();
   };
 

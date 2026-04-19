@@ -28,7 +28,7 @@ export default function AgentGrid() {
       if (!planService.canAddAgent(activeCount, currentPlan.id, role)) {
         toast.info(
           'Limite do Plano', 
-          'No plano gratuito você pode ativar até 2 agentes. Faça upgrade para liberar todos.'
+          'No plano gratuito você pode ativar até 2 agentes. Ative o VYNEX Pro Pass para liberar acesso ilimitado.'
         );
         return;
       }

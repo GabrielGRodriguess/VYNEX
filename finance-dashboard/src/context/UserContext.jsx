@@ -153,7 +153,7 @@ export function UserProvider({ user, children }) {
 
   const userRole = profile?.role || 'free';
   const isAdmin = userRole === 'admin';
-  const isPremium = userRole === 'premium' || isAdmin || ['PRO', 'PREMIUM'].includes(profile?.plan_id?.toUpperCase());
+  const isPremium = userRole === 'premium' || isAdmin || ['PRO', 'PREMIUM', 'PRO_PASS'].includes(profile?.plan_id?.toUpperCase());
 
   return (
     <UserContext.Provider value={{
@@ -166,7 +166,7 @@ export function UserProvider({ user, children }) {
       isAdmin,
       isPremium,
       currentPlan: isAdmin 
-        ? planService.getPlanById('PREMIUM') 
+        ? planService.getPlanById('PRO_PASS') 
         : planService.getPlanById(profile?.plan_id || 'free'),
       activeAgents: profile?.preferences?.activeAgents || {}
     }}>
