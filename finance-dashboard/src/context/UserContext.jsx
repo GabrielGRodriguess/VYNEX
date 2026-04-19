@@ -153,13 +153,37 @@ export function UserProvider({ user, children }) {
 
   const userRole = profile?.role || 'free';
   const isAdmin = userRole === 'admin';
-  const isPremium = userRole === 'premium' || isAdmin || ['PRO', 'PREMIUM', 'PRO_PASS'].includes(profile?.plan_id?.toUpperCase());
+  const isPremium = userRole === 'premium' || isAdmin || profile?.subscription_status === 'active' || ['PRO', 'PREMIUM', 'PRO_PASS'].includes(profile?.plan_id?.toUpperCase());
+
+  const handleStartSubscription = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('create-mercado-pago-subscription', {
+        body: { 
+          user_id: user.id, 
+          email: user.email,
+          plan: 'PRO_PASS',
+          origin: window.location.origin
+        }
+      });
+
+      if (error) throw error;
+      if (data?.checkout_url) {
+        window.location.href = data.checkout_url;
+      }
+    } catch (err) {
+      console.error('Error starting subscription:', err);
+      throw err;
+    }
+  };
 
   return (
     <UserContext.Provider value={{
       profile,
       loading,
       updatePlan,
+      handleStartSubscription,
       toggleAgent,
       completeOnboarding,
       role: userRole,

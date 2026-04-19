@@ -8,7 +8,7 @@ import { useToast } from '../context/ToastContext';
 
 export default function Onboarding() {
   const [step, setStep] = useState(1);
-  const { updatePlan, completeOnboarding, profile } = useUser();
+  const { updatePlan, completeOnboarding, profile, handleStartSubscription } = useUser();
   const [selectedPlan, setSelectedPlan] = useState('FREE');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -19,14 +19,18 @@ export default function Onboarding() {
   const handleFinish = async () => {
     setIsSubmitting(true);
     try {
-      updatePlan(selectedPlan);
-      completeOnboarding();
-      setIsVisible(false);
-      toast.success('Bem-vindo!', 'Seu plano foi configurado e sua jornada começou.');
+      if (selectedPlan === 'PRO_PASS') {
+        await handleStartSubscription();
+      } else {
+        updatePlan(selectedPlan);
+        completeOnboarding();
+        setIsVisible(false);
+        toast.success('Bem-vindo!', 'Seu plano foi configurado e sua jornada começou.');
+      }
     } catch (error) {
       console.error('Erro ao finalizar onboarding:', error);
       setIsVisible(false);
-      toast.error('Aviso', 'Entrando no modo de contingência. Suas escolhas serão sincronizadas em breve.');
+      toast.error('Aviso', 'Erro ao processar sua escolha. Entre no app para tentar novamente.');
     } finally {
       setIsSubmitting(false);
     }
