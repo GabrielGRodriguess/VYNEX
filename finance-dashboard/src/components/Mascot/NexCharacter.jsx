@@ -1,19 +1,18 @@
-/**
- * NexCharacter.jsx
- *
- * Personagem flutuante premium — SEM card, SEM borda, SEM fundo.
- * Usa assets com transparência real (canal alpha) para integração perfeita.
- *
- * Animações (todas via CSS + framer-motion):
- * - Respiração clara e fluida
- * - Entrada com fade + slide
- * - Hover: levitação dinâmica
- */
-
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNex } from '../../context/NexContext';
+import { useNex } from '../../context/NexContext.jsx';
 import nexNeutral from '../../assets/mascot/nex-neutral.png';
+import nexThinking from '../../assets/mascot/nex-thinking.png';
+import nexResult   from '../../assets/mascot/nex-result.png';
+import nexGuiding  from '../../assets/mascot/nex-guiding.png';
+
+const MOOD_ASSETS = {
+  idle:     { src: nexNeutral,  anim: 'nex-breathe'  },
+  thinking: { src: nexThinking, anim: 'nex-thinking' },
+  guiding:  { src: nexGuiding,  anim: 'nex-talking'  },
+  result:   { src: nexResult,   anim: 'nex-success'  },
+  neutral:  { src: nexNeutral,  anim: 'nex-breathe'  },
+};
 
 // ─── Falas proativas ──────────────────────────────────────────────────────────
 const PROACTIVE = [
@@ -25,25 +24,11 @@ const PROACTIVE = [
 ];
 
 export default function NexCharacter() {
-  const { isOpen, setIsOpen } = useNex();
-  const [blinking, setBlinking]         = useState(false);
+  const { isOpen, setIsOpen, currentMood } = useNex();
   const [proactiveMsg, setProactiveMsg] = useState(null);
   const [proactiveKey, setProactiveKey] = useState(0);
   const proactiveTimer = useRef(null);
   const lastIdx        = useRef(-1);
-
-  // ── Piscar: overlay sobre os olhos a cada 4–7s ──
-  useEffect(() => {
-    let t;
-    const loop = () => {
-      t = setTimeout(() => {
-        setBlinking(true);
-        setTimeout(() => { setBlinking(false); loop(); }, 150);
-      }, 4000 + Math.random() * 3000);
-    };
-    loop();
-    return () => clearTimeout(t);
-  }, []);
 
   // ── Mensagem proativa (30–50s) ──
   useEffect(() => {
@@ -73,8 +58,10 @@ export default function NexCharacter() {
     }
   };
 
-  // Não renderizar quando chat está aberto
+  // No character when chat is open
   if (isOpen) return null;
+
+  const currentAsset = MOOD_ASSETS[currentMood] || MOOD_ASSETS.idle;
 
   return (
     <>
@@ -144,11 +131,8 @@ export default function NexCharacter() {
           right: 12,
           zIndex: 59,
           cursor: 'pointer',
-          // Tamanho do personagem — busto visível
           width: 150,
-          // Personagem parcialmente fora da tela (corte natural pelo bottom)
           transform: 'translateY(12%)',
-          // NENHUM background, border, padding, box
           background: 'none',
           border: 'none',
           padding: 0,
@@ -160,18 +144,19 @@ export default function NexCharacter() {
         }}
         whileTap={{ scale: 0.96 }}
       >
-        {/* Imagem com transparência REAL (canal alpha) — sem blend-mode, sem mask */}
-        <img
-          src={nexNeutral}
-          alt="Nex — Assistente Vynex"
+        <motion.img
+          key={currentMood}
+          src={currentAsset.src}
+          alt={`Nex - ${currentMood}`}
           draggable={false}
           loading="lazy"
-          className="nex-breathe"
+          className={currentAsset.anim}
+          initial={{ opacity: 0.8 }}
+          animate={{ opacity: 1 }}
           style={{
             display: 'block',
             width: '100%',
             height: 'auto',
-            // Glow que segue o contorno real do personagem (drop-shadow respeita alpha)
             filter: [
               'drop-shadow(0 0 24px rgba(0, 170, 255, 0.5))',
               'drop-shadow(0 0 10px rgba(0, 120, 220, 0.35))',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from './services/supabaseClient';
 import { FinanceProvider, useFinance } from './context/FinanceContext';
 import SummaryCards from './components/SummaryCards';
@@ -22,9 +22,9 @@ import EmptyState from './components/EmptyState';
 import AgentGrid from './components/Agents/AgentGrid';
 import SettingsPage from './components/Settings/SettingsPage';
 import AccountPage from './components/Profile/AccountPage';
-import { LayoutDashboard, TrendingUp, History, LogOut, Settings as SettingsIcon, Shield, Users, Crown, Zap, Database, Activity } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, History, LogOut, Settings as SettingsIcon, Shield, Users, Crown, Zap, Database, Activity, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { NexProvider } from './context/NexContext';
+import { NexProvider, useNex } from './context/NexContext.jsx';
 import NexCharacter from './components/Mascot/NexCharacter';
 
 import ScoreGaugeCard from './components/Intelligence/ScoreGaugeCard';
@@ -32,30 +32,37 @@ import InsightWall from './components/Intelligence/InsightWall';
 import NexDashboardCommentary from './components/Intelligence/NexDashboardCommentary';
 import ManualInboundWizard from './components/ManualInbound/ManualInboundWizard';
 import StatementInboundWizard from './components/StatementInbound/StatementInboundWizard';
+import PaymentModal from './components/PaymentModal';
 
-function DashboardContent({ onSimulateCredit, setActiveSection, onOpenWizard, onOpenStatement }) {
+function DashboardContent({ onSimulateCredit, setActiveSection, onOpenWizard, onOpenStatement, onOpenModal }) {
   const { analytics, normalizedTransactions } = useFinance();
   const hasData = normalizedTransactions.length > 0;
   
   return (
     <div className="space-y-16 sm:space-y-20">
-      {hasData && <NexDashboardCommentary />}
+      {hasData && (
+        <NexDashboardCommentary 
+          onOpenAnalysis={() => setActiveSection('credit')} 
+          onOpenAdjustments={() => onOpenModal()} 
+        />
+      )}
 
-      {/* 1. Ingestion Strategy Layer - Simplified */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* 1. Primary Actions Layer */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="glass flex flex-col justify-between gap-6 relative overflow-hidden group hover:border-blue-300 transition-all cursor-pointer bg-blue-50/20 border-blue-100"
-          onClick={onOpenWizard}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          id="add-transaction-btn"
+          className="glass flex flex-col justify-between gap-6 relative overflow-hidden group hover:border-brand-primary transition-all cursor-pointer bg-brand-primary/5 border-brand-primary/20"
+          onClick={onOpenModal}
         >
           <div className="relative z-10 space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-blue-600/10 flex items-center justify-center text-blue-600">
-              <Zap size={20} />
+            <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary">
+              <Plus size={20} />
             </div>
             <div>
-              <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Análise Manual</h3>
-              <p className="text-slate-500 text-[10px] leading-relaxed max-w-[280px]">Mapeie sua saúde financeira em 2 minutos sem precisar conectar seu banco.</p>
+              <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Adicionar Transação</h3>
+              <p className="text-slate-500 text-[10px] leading-relaxed max-w-[240px]">Registre um novo gasto ou receita manualmente em segundos.</p>
             </div>
           </div>
           <button className="btn-primary w-fit text-[9px] py-3">
@@ -64,22 +71,43 @@ function DashboardContent({ onSimulateCredit, setActiveSection, onOpenWizard, on
         </motion.div>
 
         <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="glass flex flex-col justify-between gap-6 relative overflow-hidden group hover:border-blue-300 transition-all cursor-pointer"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          id="import-statement-btn"
+          className="glass flex flex-col justify-between gap-6 relative overflow-hidden group hover:border-blue-300 transition-all cursor-pointer bg-blue-50/20 border-blue-100"
           onClick={onOpenStatement}
         >
           <div className="relative z-10 space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600">
+            <div className="w-10 h-10 rounded-xl bg-blue-600/10 flex items-center justify-center text-blue-600">
               <Database size={20} />
             </div>
             <div>
               <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Upload de Extratos</h3>
-              <p className="text-slate-500 text-[10px] leading-relaxed max-w-[280px]">Importe arquivos CSV ou PDF para uma análise automática e profunda.</p>
+              <p className="text-slate-500 text-[10px] leading-relaxed max-w-[240px]">Importe arquivos CSV ou PDF para uma análise automática.</p>
             </div>
           </div>
           <button className="w-fit border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[9px] hover:bg-slate-50 transition-all">
             Importar Arquivo
+          </button>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="glass flex flex-col justify-between gap-6 relative overflow-hidden group hover:border-amber-300 transition-all cursor-pointer"
+          onClick={onOpenWizard}
+        >
+          <div className="relative z-10 space-y-4">
+            <div className="w-10 h-10 rounded-xl bg-amber-600/10 flex items-center justify-center text-amber-600">
+              <Zap size={20} />
+            </div>
+            <div>
+              <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Análise Expressa</h3>
+              <p className="text-slate-500 text-[10px] leading-relaxed max-w-[240px]">Mapeie sua saúde financeira sem precisar de banco.</p>
+            </div>
+          </div>
+          <button className="w-fit border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[9px] hover:bg-slate-50 transition-all">
+            Iniciar Wizard
           </button>
         </motion.div>
       </div>
@@ -155,12 +183,29 @@ function DashboardContent({ onSimulateCredit, setActiveSection, onOpenWizard, on
 }
 
 function MainApp({ user, onLogout }) {
-  const { profile, loading: userLoading } = useUser();
+  const { profile, loading: userLoading, paymentModal, setPaymentModal } = useUser();
   const { connections, isBankConnected, normalizedTransactions = [], loading: financeLoading } = useFinance();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [isStatementOpen, setIsStatementOpen] = useState(false);
+  
+  const { setActiveSection: setNexActiveSection, registerActions } = useNex();
+
+  // Sync activeSection with NexContext
+  useEffect(() => {
+    setNexActiveSection(activeSection);
+  }, [activeSection, setNexActiveSection]);
+
+  // Register actions that Nex can execute
+  useEffect(() => {
+    registerActions({
+      setActiveSection: (section) => setActiveSection(section),
+      openManualWizard: () => setIsWizardOpen(true),
+      openStatementWizard: () => setIsStatementOpen(true),
+      openAddTransactionModal: () => setIsModalOpen(true),
+    });
+  }, [registerActions]);
 
   console.log("[VYNEX] MainApp Check:", { 
     user: user?.email, 
@@ -306,19 +351,12 @@ function MainApp({ user, onLogout }) {
               !isBankConnected && normalizedTransactions.length === 0 ? (
                 <div className="space-y-8">
                   <EmptyState />
-                  <div className="max-w-md mx-auto">
-                    <button 
-                      onClick={() => setIsWizardOpen(true)}
-                      className="w-full bg-brand-primary text-slate-950 py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-brand-primary/20 hover:scale-[1.02] transition-all"
-                    >
-                      Análise Manual Expressa
-                    </button>
-                  </div>
                 </div>
               ) : (
                 <DashboardContent 
                   onSimulateCredit={() => setActiveSection('credit')} 
                   setActiveSection={setActiveSection}
+                  onOpenModal={() => setIsModalOpen(true)}
                   onOpenWizard={() => setIsWizardOpen(true)}
                   onOpenStatement={() => setIsStatementOpen(true)}
                 />
@@ -330,7 +368,7 @@ function MainApp({ user, onLogout }) {
             ) : activeSection === 'history' ? (
               <CreditHistory />
             ) : activeSection === 'settings' ? (
-              <SettingsPage onAddException={() => setIsModalOpen(true)} />
+              <SettingsPage onAddTransaction={() => setIsModalOpen(true)} />
             ) : (
               <AccountPage />
             )}
@@ -355,12 +393,18 @@ function MainApp({ user, onLogout }) {
       />
 
       {profile && !profile.onboarding_completed && <Onboarding />}
+
+      <PaymentModal 
+        isOpen={paymentModal.isOpen} 
+        onClose={() => setPaymentModal({ isOpen: false, url: '' })} 
+        checkoutUrl={paymentModal.url}
+      />
     </div>
   );
 }
 
 // simple Error Boundary
-class ErrorBoundary extends Component {
+class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false, error: null };

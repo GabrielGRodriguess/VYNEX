@@ -12,24 +12,24 @@ export const PLANS = {
     price: 0,
     subtitle: 'Para começar sua organização financeira',
     features: [
-      'Painel financeiro básico',
-      'Análises simuladas',
-      'Controle manual de informações',
-      'Sem conexão bancária real no momento'
+      'Painel financeiro inteligente',
+      'Lançamentos manuais ilimitados',
+      'Importação de extratos (PDF/OFX)',
+      'Conexão Bancária Real (Fase Beta)'
     ]
   },
   PRO_PASS: {
     id: 'PRO_PASS',
     name: 'VYNEX Pro Pass',
     price: 29.90,
-    subtitle: 'Seu acesso antecipado ao VYNEX Pro',
-    description: 'Ative o Pro Pass e garanta acesso às conexões bancárias reais quando o Open Finance for liberado.',
+    subtitle: 'Acesso Pro Antecipado',
+    description: 'Garanta sua vaga no ecossistema Pro e tenha prioridade máxima na liberação das conexões automáticas estáveis.',
     features: [
-      'Acesso antecipado ao VYNEX Pro',
-      'Direito ao Open Finance quando liberado',
-      'Prioridade nas próximas funções',
-      'Experiência premium do app',
-      'Preço inicial de acesso'
+      'Acesso Prioritário ao Open Finance',
+      'Análises de Crédito Avançadas',
+      'Suporte Prioritário do Nex',
+      'Experiência Sem Anúncios',
+      'Selo de Membro Fundador'
     ]
   }
 };

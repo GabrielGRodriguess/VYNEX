@@ -18,28 +18,6 @@ export function FinanceProvider({ user, children }) {
 
   // --- DERIVED INTELLIGENCE LAYER ---
   
-  // 1. MANUAL ADJUSTMENT LIMIT STATUS
-  const manualAdjustmentStatus = useMemo(() => {
-    const manualTxs = normalizedTransactions.filter(t => t.source === SOURCE_TYPES.MANUAL || !t.fromBank);
-    if (manualTxs.length === 0) return { canAdd: true, daysRemaining: 0 };
-
-    const sorted = [...manualTxs].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    const lastTx = new Date(sorted[0].createdAt);
-    const now = new Date();
-    
-    // Normalize to midnight for accurate day counting
-    const lastDate = new Date(lastTx.getFullYear(), lastTx.getMonth(), lastTx.getDate());
-    const currentDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    
-    const diffTime = currentDate - lastDate;
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    
-    return {
-      canAdd: diffDays >= 7,
-      daysRemaining: Math.max(0, 7 - diffDays),
-      lastDate: sorted[0].createdAt
-    };
-  }, [normalizedTransactions]);
 
   const analysisReport = useMemo(() => {
     try {
@@ -193,9 +171,6 @@ export function FinanceProvider({ user, children }) {
   const addTransaction = async (transaction) => {
     if (!user) return;
 
-    if (!manualAdjustmentStatus.canAdd) {
-      throw new Error(`Limite de 1 exceção por semana atingido. Disponível em ${manualAdjustmentStatus.daysRemaining} dias.`);
-    }
 
     setLoading(true);
     try {
@@ -207,7 +182,7 @@ export function FinanceProvider({ user, children }) {
           amount: Number(transaction.amount),
           category: transaction.category,
           date: transaction.date || new Date().toISOString().split('T')[0],
-          description: transaction.description || '(Ajuste Manual)',
+          description: transaction.description || '(Lançamento Manual)',
           from_bank: false
         }])
         .select();
@@ -246,7 +221,6 @@ export function FinanceProvider({ user, children }) {
       analysisReport,
       activeSources,
       processing,
-      manualAdjustmentStatus,
       
       // Compatibility State
       transactions: normalizedTransactions, // Aliased

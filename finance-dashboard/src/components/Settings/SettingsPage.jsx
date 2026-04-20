@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 import { Settings, Bell, Palette, Globe, Monitor, Volume2, Smartphone, Database, AlertCircle, Clock } from 'lucide-react';
 import { useFinance } from '../../context/FinanceContext';
 
-export default function SettingsPage({ onAddException }) {
-  const { manualAdjustmentStatus } = useFinance();
+export default function SettingsPage({ onAddTransaction }) {
   const [prefs, setPrefs] = useState({
     defaultPage: 'dashboard',
     theme: 'dark',
@@ -110,36 +109,25 @@ export default function SettingsPage({ onAddException }) {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/30 p-6 rounded-2xl border border-white/5">
               <div>
-                <p className="text-xs font-bold text-slate-200">Ajuste Manual (Exceção)</p>
+                <p className="text-xs font-bold text-slate-200">Adicionar Transação</p>
                 <div className="flex items-center gap-2 mt-1">
                   <p className="text-[10px] text-slate-500 max-w-sm">
-                    O VYNEX é 100% automatizado. Use exceções apenas se um dado bancário não puder ser sincronizado. 
+                    Registre suas movimentações manualmente para manter seu painel sempre atualizado. 
                   </p>
                 </div>
                 <div className="flex items-center gap-2 mt-3">
-                  {manualAdjustmentStatus.canAdd ? (
-                    <span className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-brand-primary/10 text-brand-primary text-[9px] font-black uppercase tracking-widest border border-brand-primary/20">
-                      <AlertCircle size={10} /> Disponível Agora
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-rose-500/10 text-rose-500 text-[9px] font-black uppercase tracking-widest border border-rose-500/20">
-                      <Clock size={10} /> Liberado em {manualAdjustmentStatus.daysRemaining} dias
-                    </span>
-                  )}
-                  <span className="text-[9px] text-slate-600 font-bold uppercase tracking-widest">Limite: 1x / Semana</span>
+                  <span className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-brand-primary/10 text-brand-primary text-[9px] font-black uppercase tracking-widest border border-brand-primary/20">
+                    <AlertCircle size={10} /> Disponível
+                  </span>
+                  <span className="text-[9px] text-slate-600 font-bold uppercase tracking-widest">Acesso Ilimitado</span>
                 </div>
               </div>
               <button
-                onClick={onAddException}
-                disabled={!manualAdjustmentStatus.canAdd}
-                className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ${
-                  manualAdjustmentStatus.canAdd 
-                    ? 'bg-white/5 hover:bg-white/10 border border-white/10 text-white' 
-                    : 'bg-slate-900/50 border border-white/5 text-slate-600 cursor-not-allowed'
-                }`}
+                onClick={onAddTransaction}
+                className="flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 bg-white/5 hover:bg-white/10 border border-white/10 text-white"
               >
-                <AlertCircle size={14} className={manualAdjustmentStatus.canAdd ? 'text-brand-primary' : 'text-slate-700'} />
-                Adicionar Exceção
+                <AlertCircle size={14} className="text-brand-primary" />
+                Nova Transação
               </button>
             </div>
           </div>

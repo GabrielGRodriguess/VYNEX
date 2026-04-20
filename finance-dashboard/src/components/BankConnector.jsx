@@ -103,8 +103,13 @@ export default function BankConnector() {
           <Plus size={14} className={`${limitReached ? 'text-amber-500' : 'text-brand-primary'} shrink-0 sm:size-4`} />
         )}
         <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest truncate">
-          {isConnecting ? 'Inicializando...' : (connections.length === 0 ? 'Conectar meus bancos' : (limitReached ? 'Aumentar Limite' : 'Novo Banco'))}
+          {isConnecting ? 'Inicializando...' : (connections.length === 0 ? 'Conectar Banco (Beta)' : (limitReached ? 'Aumentar Limite' : 'Novo Banco'))}
         </span>
+        {connections.length === 0 && !isConnecting && (
+          <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[7px] font-black px-2 py-0.5 rounded-full shadow-lg animate-pulse">
+            BETA
+          </span>
+        )}
       </button>
 
       {connectToken && (

@@ -11,21 +11,28 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // CORS check
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    const { user_id, email, plan, origin } = await req.json()
+    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!)
+    
+    // 1. Verify Authentication
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) throw new Error('Missing Authorization header')
+    
+    const { data: { user }, error: authError } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''))
+    if (authError || !user) throw new Error('Unauthorized')
+
+    const { email, plan, origin } = await req.json()
+    const user_id = user.id
     const baseUrl = origin || 'https://vynex.vercel.app'
 
-    if (!user_id || !email) {
-      throw new Error('User ID and Email are required')
-    }
+    console.log(`[MP-SUB] Creating subscription for user: ${user_id} (${email})`)
 
-    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!)
-
-    // 1. Create Subscription directly
+    // 2. Create Subscription in Mercado Pago
     const mpResponse = await fetch('https://api.mercadopago.com/preapproval', {
       method: 'POST',
       headers: {
@@ -40,7 +47,7 @@ serve(async (req) => {
           transaction_amount: 29.90,
           currency_id: "BRL"
         },
-        back_url: `${baseUrl}/?status=success`,
+        back_url: `${baseUrl}/account?status=success`,
         payer_email: email,
         external_reference: user_id,
         status: "pending"
@@ -50,22 +57,34 @@ serve(async (req) => {
     const mpData = await mpResponse.json()
 
     if (!mpResponse.ok) {
-      console.error('Mercado Pago Error:', mpData)
+      console.error('[MP-SUB] Mercado Pago Error:', mpData)
       throw new Error(mpData.message || 'Error creating MP subscription')
     }
 
-    // 2. Save subscription info in Supabase
+    console.log(`[MP-SUB] MP Subscription created: ${mpData.id}`)
+
+    // 3. Save initial state in Supabase
     const { error: dbError } = await supabase
       .from('subscriptions')
       .upsert({
         user_id,
-        gateway_subscription_id: mpData.id,
-        status: 'pending',
+        plan_name: 'PRO_PASS',
+        status: 'pending', // Legacy column
+        subscription_status: 'pending', // New column
         amount: 29.90,
-        gateway: 'mercado_pago'
-      })
+        currency: 'BRL',
+        gateway: 'mercado_pago', // Legacy column
+        gateway_provider: 'mercado_pago', // New column
+        gateway_subscription_id: mpData.id,
+        mercado_pago_preapproval_id: mpData.id,
+        mercado_pago_payer_email: email,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' })
 
-    if (dbError) throw dbError
+    if (dbError) {
+      console.error('[MP-SUB] DB Error:', dbError)
+      throw dbError
+    }
 
     return new Response(
       JSON.stringify({ checkout_url: mpData.init_point }),
@@ -76,6 +95,7 @@ serve(async (req) => {
     )
 
   } catch (error) {
+    console.error('[MP-SUB] Critical Error:', error.message)
     return new Response(
       JSON.stringify({ error: error.message }),
       { 

@@ -40,12 +40,26 @@ export default function EmptyState() {
             <span className="text-brand-primary">vida financeira</span>
           </h1>
           <p className="text-slate-500 text-lg max-w-2xl mx-auto">
-            Conecte suas contas para que nossos agentes IA possam organizar seus gastos, identificar padrões e sugerir caminhos inteligentes para o seu patrimônio.
+            Enquanto a conexão automática com bancos está em fase de liberação (Beta), você pode usar o VYNEX normalmente adicionando transações ou importando seu extrato.
           </p>
         </div>
 
-        <div className="flex justify-center">
-          <BankConnector />
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <button 
+            onClick={() => document.getElementById('add-transaction-btn')?.click()}
+            className="w-full sm:w-auto bg-brand-primary text-slate-950 px-8 py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-brand-primary/20 hover:scale-[1.02] transition-all"
+          >
+            + Adicionar Transação
+          </button>
+          <div className="flex gap-4 w-full sm:w-auto">
+            <button 
+              onClick={() => document.getElementById('import-statement-btn')?.click()}
+              className="flex-1 sm:flex-none border border-slate-700 text-slate-400 px-6 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-white/5 transition-all"
+            >
+              Importar Extrato
+            </button>
+            <BankConnector />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-12">

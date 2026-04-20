@@ -3,13 +3,34 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '../../context/UserContext';
 import { useFinance } from '../../context/FinanceContext';
 import { useToast } from '../../context/ToastContext';
-import { User, CreditCard, Shield, Zap, LogOut, Key, Headphones, Check, Crown, Info, Sparkles, Activity, Thermometer, ArrowUpRight } from 'lucide-react';
+import { User, CreditCard, Shield, Zap, LogOut, Key, Headphones, Check, Crown, Info, Sparkles, Activity, Thermometer, ArrowUpRight, ExternalLink } from 'lucide-react';
 import { PLANS, planService, openFinanceProgress } from '../../services/planService';
 
 export default function AccountPage() {
-  const { profile, currentPlan, activeAgents, updatePlan, handleStartSubscription } = useUser();
+  const { profile, currentPlan, activeAgents, updatePlan, handleStartSubscription, refreshProfile, isPremium } = useUser();
   const { connections } = useFinance();
   const toast = useToast();
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [subError, setSubError] = useState(false);
+
+  const onStartSubscription = async () => {
+    console.log("[VYNEX] Clique em Assinar Pro");
+    setIsSubscribing(true);
+    setSubError(false);
+    
+    try {
+      await handleStartSubscription();
+    } catch (err) {
+      console.error("[VYNEX] Erro no checkout automático:", err);
+      setSubError(true);
+      toast.error(
+        'Erro no Checkout', 
+        'Não conseguimos abrir o checkout automático. Tente novamente ou use o link manual abaixo.'
+      );
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -17,13 +38,14 @@ export default function AccountPage() {
     
     if (status === 'success') {
       toast.success('Pagamento Recebido', 'Pagamento recebido. Estamos confirmando sua assinatura.');
-      // Clean up URL
+      refreshProfile(); // Get latest status from DB
       window.history.replaceState({}, document.title, window.location.pathname);
     } else if (status === 'failure') {
       toast.error('Erro no Pagamento', 'Não foi possível processar sua assinatura. Tente novamente.');
       window.history.replaceState({}, document.title, window.location.pathname);
     } else if (status === 'pending') {
       toast.info('Pagamento Pendente', 'Seu pagamento está sendo processado pelo Mercado Pago.');
+      refreshProfile();
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
@@ -83,8 +105,18 @@ export default function AccountPage() {
                 <Activity size={32} />
              </div>
              <div className="text-center">
-                <p className="text-[10px] font-black text-[#CBD5E1] uppercase tracking-widest">Status da Conta</p>
-                <p className="text-xl font-black text-white uppercase">Verificado</p>
+                <p className="text-[10px] font-black text-[#CBD5E1] uppercase tracking-widest">Status da Assinatura</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <div className={`w-2 h-2 rounded-full animate-pulse ${
+                    profile?.subscription_status === 'active' ? 'bg-emerald-400' : 
+                    profile?.subscription_status === 'pending' ? 'bg-amber-400' : 'bg-slate-400'
+                  }`} />
+                  <p className="text-xl font-black text-white uppercase">
+                    {profile?.subscription_status === 'active' ? 'Ativa' : 
+                     profile?.subscription_status === 'pending' ? 'Pendente' : 
+                     profile?.subscription_status === 'paused' ? 'Pausada' : 'Inativa'}
+                  </p>
+                </div>
              </div>
           </div>
         </div>
@@ -217,13 +249,48 @@ export default function AccountPage() {
                 )}
               </div>
 
-              {currentPlan.id !== 'PRO_PASS' && (
-                <button 
-                  onClick={handleStartSubscription}
-                  className="w-full py-6 bg-[linear-gradient(135deg,#2563EB,#7C3AED)] text-white rounded-[1.2rem] font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-blue-500/30 hover:translate-y-[-2px] hover:shadow-blue-500/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                >
-                  Ativar Pro Pass — R$ 29,90 <ArrowUpRight size={18} />
-                </button>
+              {!isPremium && (
+                <div className="space-y-4">
+                  <button 
+                    onClick={onStartSubscription}
+                    disabled={isSubscribing}
+                    className={`w-full py-6 bg-[linear-gradient(135deg,#2563EB,#7C3AED)] text-white rounded-[1.2rem] font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-blue-500/30 hover:translate-y-[-2px] hover:shadow-blue-500/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2 ${
+                      isSubscribing ? 'opacity-70 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    {isSubscribing ? (
+                      <>Gerando checkout seguro... <Activity className="animate-spin" size={18} /></>
+                    ) : (
+                      <>Ativar Pro Pass — R$ 29,90 <ArrowUpRight size={18} /></>
+                    )}
+                  </button>
+
+                  {subError && (
+                    <div className="p-4 bg-red-50 border border-red-100 rounded-2xl">
+                      <p className="text-[10px] text-red-600 font-bold text-center">
+                        Ocorreu um problema técnico. Use o link manual abaixo para garantir sua vaga.
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="pt-6 border-t border-slate-100 mt-6">
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center mb-4">Ou assine via link direto</p>
+                    <a 
+                      href="https://mpago.la/1R1Cbrq" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="w-full py-4 border-2 border-slate-200 text-slate-600 rounded-[1.2rem] font-black uppercase tracking-[0.2em] text-[10px] hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+                    >
+                      Assinar Manualmente <ExternalLink size={14} />
+                    </a>
+                    <div className="mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                      <p className="text-[9px] text-slate-500 font-bold leading-relaxed">
+                        * Após o pagamento, sua assinatura será ativada após confirmação manual. 
+                        Use o mesmo e-mail cadastrado no VYNEX para facilitar a liberação.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
           </div>

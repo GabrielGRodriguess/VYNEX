@@ -7,6 +7,7 @@ export const UserContext = createContext();
 export function UserProvider({ user, children }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [paymentModal, setPaymentModal] = useState({ isOpen: false, url: '' });
 
   useEffect(() => {
     async function loadProfile() {
@@ -93,6 +94,11 @@ export function UserProvider({ user, children }) {
     } catch (err) {
       console.error('[VYNEX] Critical error in updatePlan:', err);
     }
+
+    // NEW: If selecting PRO_PASS and not premium, trigger checkout
+    if (planId?.toUpperCase() === 'PRO_PASS' && !isPremium) {
+      handleStartSubscription();
+    }
   };
 
   const toggleAgent = async (agentId) => {
@@ -153,7 +159,15 @@ export function UserProvider({ user, children }) {
 
   const userRole = profile?.role || 'free';
   const isAdmin = userRole === 'admin';
-  const isPremium = userRole === 'premium' || isAdmin || profile?.subscription_status === 'active' || ['PRO', 'PREMIUM', 'PRO_PASS'].includes(profile?.plan_id?.toUpperCase());
+  const subStatus = profile?.subscription_status || 'inactive';
+  const planId = profile?.plan_id?.toUpperCase() || 'FREE';
+
+  const currentPlan = isAdmin 
+    ? planService.getPlanById('PRO_PASS') 
+    : planService.getPlanById(profile?.plan_id || 'free');
+
+  // Strict Premium Check: Must be PRO_PASS AND status must be active (or be an admin)
+  const isPremium = isAdmin || (currentPlan?.id === 'PRO_PASS' && subStatus === 'active');
 
   const handleStartSubscription = async () => {
     if (!user) return;
@@ -170,11 +184,31 @@ export function UserProvider({ user, children }) {
 
       if (error) throw error;
       if (data?.checkout_url) {
-        window.location.href = data.checkout_url;
+        setPaymentModal({ isOpen: true, url: data.checkout_url });
       }
     } catch (err) {
       console.error('Error starting subscription:', err);
+      // Fallback: Use manual link inside modal
+      setPaymentModal({ isOpen: true, url: 'https://mpago.la/1R1Cbrq' });
       throw err;
+    }
+  };
+
+  const refreshProfile = async () => {
+    if (!user) return;
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (!error && data) {
+        setProfile(data);
+        localStorage.setItem(`vynex_profile_${user.id}`, JSON.stringify(data));
+      }
+    } catch (err) {
+      console.error('[VYNEX] Error refreshing profile:', err);
     }
   };
 
@@ -186,12 +220,13 @@ export function UserProvider({ user, children }) {
       handleStartSubscription,
       toggleAgent,
       completeOnboarding,
+      refreshProfile,
       role: userRole,
       isAdmin,
       isPremium,
-      currentPlan: isAdmin 
-        ? planService.getPlanById('PRO_PASS') 
-        : planService.getPlanById(profile?.plan_id || 'free'),
+      currentPlan,
+      paymentModal,
+      setPaymentModal,
       activeAgents: profile?.preferences?.activeAgents || {}
     }}>
       {children}

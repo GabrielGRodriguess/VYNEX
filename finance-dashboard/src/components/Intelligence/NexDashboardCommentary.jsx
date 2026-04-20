@@ -10,7 +10,7 @@ import { useUser } from '../../context/UserContext';
 import { MessageSquare, ArrowRight, Sparkles, ExternalLink, Activity, PieChart, PlusCircle } from 'lucide-react';
 import nexNeutral from '../../assets/mascot/nex-neutral.png';
 
-export default function NexDashboardCommentary() {
+export default function NexDashboardCommentary({ onOpenAnalysis, onOpenAdjustments }) {
   const { analytics } = useFinance();
   const { user } = useUser();
   
@@ -89,13 +89,13 @@ export default function NexDashboardCommentary() {
           {/* Actions Bar */}
           <div className="flex flex-wrap gap-2 pt-1">
             <button 
-              onClick={() => {}} // Ver análise
+              onClick={onOpenAnalysis}
               className="btn-primary flex items-center gap-2 px-4 py-3"
             >
               <PieChart size={14} /> <span className="hidden xs:inline">Ver Análise</span>
             </button>
             <button 
-              onClick={() => {}} // Ajustar gastos
+              onClick={onOpenAdjustments}
               className="bg-white border border-[#E2E8F0] text-slate-600 px-4 py-3 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-50 transition-all flex items-center gap-2"
             >
               <Activity size={14} className="text-blue-500" /> <span className="hidden xs:inline">Ajustar Gastos</span>
