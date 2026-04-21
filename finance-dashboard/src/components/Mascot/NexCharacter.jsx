@@ -1,20 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNex } from '../../context/NexContext.jsx';
-import nexNeutral from '../../assets/mascot/nex-neutral.png';
-import nexThinking from '../../assets/mascot/nex-thinking.png';
-import nexResult   from '../../assets/mascot/nex-result.png';
-import nexGuiding  from '../../assets/mascot/nex-guiding.png';
+import { MessageCircle, X } from 'lucide-react';
+import NexMascot from '../NexMascot';
 
-const MOOD_ASSETS = {
-  idle:     { src: nexNeutral,  anim: 'nex-breathe'  },
-  thinking: { src: nexThinking, anim: 'nex-thinking' },
-  guiding:  { src: nexGuiding,  anim: 'nex-talking'  },
-  result:   { src: nexResult,   anim: 'nex-success'  },
-  neutral:  { src: nexNeutral,  anim: 'nex-breathe'  },
-};
-
-// ─── Falas proativas ──────────────────────────────────────────────────────────
 const PROACTIVE = [
   'Quer que eu analise sua margem?',
   'Encontrei algo interessante no seu perfil.',
@@ -28,9 +17,9 @@ export default function NexCharacter() {
   const [proactiveMsg, setProactiveMsg] = useState(null);
   const [proactiveKey, setProactiveKey] = useState(0);
   const proactiveTimer = useRef(null);
-  const lastIdx        = useRef(-1);
+  const lastIdx = useRef(-1);
 
-  // ── Mensagem proativa (30–50s) ──
+  // Proactive message every 30-50s
   useEffect(() => {
     const schedule = () => {
       clearTimeout(proactiveTimer.current);
@@ -52,62 +41,51 @@ export default function NexCharacter() {
   }, [isOpen]);
 
   const handleClick = () => {
-    if (!isOpen) {
-      setIsOpen(true);
-      setProactiveMsg(null);
-    }
+    setIsOpen(!isOpen);
+    setProactiveMsg(null);
   };
 
-  // No character when chat is open
-  if (isOpen) return null;
-
-  const currentAsset = MOOD_ASSETS[currentMood] || MOOD_ASSETS.idle;
+  // Map mood → NexMascot variant
+  const nexMood = currentMood === 'thinking' ? 'thinking'
+    : currentMood === 'result' ? 'happy'
+    : currentMood === 'guiding' ? 'guiding'
+    : 'neutral';
 
   return (
     <>
-      {/* ── Speech bubble proativa ── */}
+      {/* Proactive speech bubble */}
       <AnimatePresence>
-        {proactiveMsg && (
+        {proactiveMsg && !isOpen && (
           <motion.div
             key={proactiveKey}
-            initial={{ opacity: 0, y: 12, scale: 0.92 }}
+            initial={{ opacity: 0, y: 10, scale: 0.92 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.95 }}
-            transition={{ duration: 0.25 }}
+            exit={{ opacity: 0, y: 6, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
             style={{
               position: 'fixed',
-              bottom: 200,
+              bottom: 92,
               right: 24,
-              maxWidth: 190,
+              maxWidth: 200,
               zIndex: 58,
               pointerEvents: 'none',
             }}
           >
             <div
-              style={{
-                position: 'relative',
-                padding: '12px 16px',
-                borderRadius: '16px 16px 4px 16px',
-                fontSize: 11,
-                lineHeight: 1.5,
-                color: '#cbd5e1',
-                background: 'rgba(10, 15, 28, 0.94)',
-                border: '1px solid rgba(255,255,255,0.07)',
-                backdropFilter: 'blur(14px)',
-                boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
-              }}
+              className="bg-white border border-slate-200 shadow-xl rounded-2xl rounded-br-sm px-4 py-3"
+              style={{ fontSize: 12, lineHeight: 1.5, color: '#334155' }}
             >
               {proactiveMsg}
-              {/* Seta que aponta pro Nex */}
+              {/* Caret */}
               <div
                 style={{
                   position: 'absolute',
-                  bottom: -6,
-                  right: 20,
-                  width: 12,
-                  height: 12,
-                  background: 'rgba(10, 15, 28, 0.94)',
-                  border: '1px solid rgba(255,255,255,0.07)',
+                  bottom: -5,
+                  right: 18,
+                  width: 10,
+                  height: 10,
+                  background: '#fff',
+                  border: '1px solid #e2e8f0',
                   borderTop: 'none',
                   borderLeft: 'none',
                   transform: 'rotate(45deg)',
@@ -118,55 +96,63 @@ export default function NexCharacter() {
         )}
       </AnimatePresence>
 
-      {/* ── PERSONAGEM FLUTUANTE ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 60 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: 'spring', stiffness: 120, damping: 18, delay: 0.8 }}
+      {/* Chat Trigger Button – clean, small, never covering content */}
+      <motion.button
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 1 }}
         onClick={handleClick}
-        title="Falar com o Nex"
+        aria-label="Falar com o NEX"
+        title="Falar com o NEX"
         style={{
           position: 'fixed',
-          bottom: 0,
-          right: 12,
+          bottom: 24,
+          right: 24,
           zIndex: 59,
+          width: 56,
+          height: 56,
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
+          boxShadow: '0 8px 24px rgba(37,99,235,0.35)',
+          border: '2px solid rgba(255,255,255,0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           cursor: 'pointer',
-          width: 150,
-          transform: 'translateY(12%)',
-          background: 'none',
-          border: 'none',
-          padding: 0,
           outline: 'none',
         }}
-        whileHover={{
-          y: -14,
-          transition: { type: 'spring', stiffness: 200, damping: 15 },
-        }}
-        whileTap={{ scale: 0.96 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
       >
-        <motion.img
-          key={currentMood}
-          src={currentAsset.src}
-          alt={`Nex - ${currentMood}`}
-          draggable={false}
-          loading="lazy"
-          className={currentAsset.anim}
-          initial={{ opacity: 0.8 }}
-          animate={{ opacity: 1 }}
-          style={{
-            display: 'block',
-            width: '100%',
-            height: 'auto',
-            filter: [
-              'drop-shadow(0 0 24px rgba(0, 170, 255, 0.5))',
-              'drop-shadow(0 0 10px rgba(0, 120, 220, 0.35))',
-              'drop-shadow(0 20px 30px rgba(0, 0, 0, 0.5))',
-            ].join(' '),
-            userSelect: 'none',
-            pointerEvents: 'auto',
-          }}
-        />
-      </motion.div>
+        <AnimatePresence mode="wait">
+          {isOpen ? (
+            <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}>
+              <X size={22} color="white" />
+            </motion.div>
+          ) : (
+            <motion.div key="chat" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.15 }}>
+              <MessageCircle size={22} color="white" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        {/* Mood indicator dot */}
+        {!isOpen && (
+          <motion.span
+            animate={{ scale: [1, 1.3, 1] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            style={{
+              position: 'absolute',
+              top: 2,
+              right: 2,
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              background: nexMood === 'thinking' ? '#f59e0b' : nexMood === 'happy' ? '#22c55e' : '#60a5fa',
+              border: '2px solid white',
+            }}
+          />
+        )}
+      </motion.button>
     </>
   );
 }

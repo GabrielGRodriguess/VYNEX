@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './services/supabaseClient';
 import { FinanceProvider, useFinance } from './context/FinanceContext';
-import SummaryCards from './components/SummaryCards';
 import ExpenseChart from './components/ExpenseChart';
 import BalanceChart from './components/BalanceChart';
 import TransactionList from './components/TransactionList';
 import AddTransactionModal from './components/AddTransactionModal';
 import BankConnector from './components/BankConnector';
-import FinancialInsights from './components/FinancialInsights';
 import OnlineUsersIndicator from './components/OnlineUsersIndicator';
 import CreditAnalysis from './components/CreditAnalysis';
 import CreditHistory from './components/CreditHistory';
@@ -17,187 +15,160 @@ import { ToastProvider, useToast } from './context/ToastContext';
 import ChatAssistant from './components/ChatAssistant';
 import Onboarding from './components/Onboarding';
 import logo from './assets/vynex-logo.png';
+import VynexLogo from './components/VynexLogo';
 import Login from './components/Login';
 import EmptyState from './components/EmptyState';
 import AgentGrid from './components/Agents/AgentGrid';
 import SettingsPage from './components/Settings/SettingsPage';
 import AccountPage from './components/Profile/AccountPage';
-import { LayoutDashboard, TrendingUp, History, LogOut, Settings as SettingsIcon, Shield, Users, Crown, Zap, Database, Activity, Plus } from 'lucide-react';
+import {
+  LayoutDashboard, TrendingUp, History, LogOut,
+  Settings as SettingsIcon, Shield, Users, Crown, Zap,
+  Database, Activity, Menu, X, Home, User
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NexProvider, useNex } from './context/NexContext.jsx';
 import NexCharacter from './components/Mascot/NexCharacter';
 
-import ScoreGaugeCard from './components/Intelligence/ScoreGaugeCard';
+import FinancialHealthCard from './components/FinancialHealthCard';
+import LiquidityRiskCard from './components/LiquidityRiskCard';
 import InsightWall from './components/Intelligence/InsightWall';
-import NexDashboardCommentary from './components/Intelligence/NexDashboardCommentary';
+import NexAssistantCard from './components/NexAssistantCard';
+import QuickActions from './components/QuickActions';
+import SummaryCards from './components/SummaryCards';
+import CreditSimulation from './components/CreditSimulation';
 import ManualInboundWizard from './components/ManualInbound/ManualInboundWizard';
 import StatementInboundWizard from './components/StatementInbound/StatementInboundWizard';
 import PaymentModal from './components/PaymentModal';
 
-function DashboardContent({ onSimulateCredit, setActiveSection, onOpenWizard, onOpenStatement, onOpenModal }) {
+// ─── NAV CONFIG ──────────────────────────────────────────────────────────────
+const NAV_TABS = [
+  { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', badge: 'New' },
+  { id: 'agents',   icon: Users,           label: 'Agentes IA' },
+  { id: 'credit',   icon: Shield,          label: 'Inteligência' },
+  { id: 'account',  icon: Crown,           label: 'Planos' },
+  { id: 'history',  icon: History,         label: 'Histórico' },
+];
+
+const MOBILE_NAV = [
+  { id: 'dashboard', icon: Home,     label: 'Início' },
+  { id: 'credit',    icon: Zap,      label: 'NEX AI' },
+  { id: 'history',   icon: History,  label: 'Extrato' },
+  { id: 'account',   icon: User,     label: 'Perfil' },
+];
+
+// ─── DASHBOARD CONTENT ────────────────────────────────────────────────────────
+function DashboardContent({ setActiveSection, onOpenModal, onOpenWizard, onOpenStatement }) {
   const { analytics, normalizedTransactions } = useFinance();
   const hasData = normalizedTransactions.length > 0;
-  
+
   return (
-    <div className="space-y-16 sm:space-y-20">
-      {hasData && (
-        <NexDashboardCommentary 
-          onOpenAnalysis={() => setActiveSection('credit')} 
-          onOpenAdjustments={() => onOpenModal()} 
+    <div className="space-y-16 pb-20 sm:pb-32">
+
+      {/* 1 · NEX Hero Card (Primary Focus) */}
+      <section className="section !mb-0">
+        <NexAssistantCard
+          onOpenAnalysis={() => setActiveSection('credit')}
+          onOpenSimulation={() => {
+            const el = document.getElementById('credit-simulation');
+            el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }}
         />
-      )}
+      </section>
 
-      {/* 1. Primary Actions Layer */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          id="add-transaction-btn"
-          className="glass flex flex-col justify-between gap-6 relative overflow-hidden group hover:border-brand-primary transition-all cursor-pointer bg-brand-primary/5 border-brand-primary/20"
-          onClick={onOpenModal}
-        >
-          <div className="relative z-10 space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary">
-              <Plus size={20} />
-            </div>
-            <div>
-              <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Adicionar Transação</h3>
-              <p className="text-slate-500 text-[10px] leading-relaxed max-w-[240px]">Registre um novo gasto ou receita manualmente em segundos.</p>
-            </div>
+      {/* 2 · Quick Actions */}
+      <section className="section !mb-0">
+        <QuickActions
+          onAddTransaction={onOpenModal}
+          onImportStatement={onOpenStatement}
+          onWizard={onOpenWizard}
+          onSimulateCredit={() => {
+            const el = document.getElementById('credit-simulation');
+            el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }}
+        />
+      </section>
+
+      {/* 3 · Credit Simulation (The Opportunity) */}
+      <section id="credit-simulation" className="section !mb-0 pt-8">
+        <CreditSimulation />
+      </section>
+
+      {/* 4 · Intelligence Diagnosis */}
+      <section className="section !mb-0 pt-8">
+        <h3 className="section-title">Diagnóstico de Inteligência</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <FinancialHealthCard score={analytics.score} />
           </div>
-          <button className="btn-primary w-fit text-[9px] py-3">
-            Começar Agora
-          </button>
-        </motion.div>
-
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          id="import-statement-btn"
-          className="glass flex flex-col justify-between gap-6 relative overflow-hidden group hover:border-blue-300 transition-all cursor-pointer bg-blue-50/20 border-blue-100"
-          onClick={onOpenStatement}
-        >
-          <div className="relative z-10 space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-blue-600/10 flex items-center justify-center text-blue-600">
-              <Database size={20} />
-            </div>
-            <div>
-              <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Upload de Extratos</h3>
-              <p className="text-slate-500 text-[10px] leading-relaxed max-w-[240px]">Importe arquivos CSV ou PDF para uma análise automática.</p>
-            </div>
+          <div className="lg:col-span-1">
+            <LiquidityRiskCard fixedExpenseRatio={analytics.assessment.fixedExpenseRatio} />
           </div>
-          <button className="w-fit border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[9px] hover:bg-slate-50 transition-all">
-            Importar Arquivo
-          </button>
-        </motion.div>
+        </div>
+      </section>
 
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="glass flex flex-col justify-between gap-6 relative overflow-hidden group hover:border-amber-300 transition-all cursor-pointer"
-          onClick={onOpenWizard}
-        >
-          <div className="relative z-10 space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-amber-600/10 flex items-center justify-center text-amber-600">
-              <Zap size={20} />
-            </div>
-            <div>
-              <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Análise Expressa</h3>
-              <p className="text-slate-500 text-[10px] leading-relaxed max-w-[240px]">Mapeie sua saúde financeira sem precisar de banco.</p>
-            </div>
-          </div>
-          <button className="w-fit border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[9px] hover:bg-slate-50 transition-all">
-            Iniciar Wizard
-          </button>
-        </motion.div>
-      </div>
-
-      {/* 2. Intelligence Diagnosis Layer */}
+      {/* 5 · Insights (Principais Achados) */}
       {hasData && (
-        <div className="space-y-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <ScoreGaugeCard score={analytics.score} />
-            </div>
-            <div className="lg:col-span-1">
-              <div className="glass h-full flex flex-col justify-between">
-                <div className="space-y-4">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
-                    <Activity size={20} />
-                  </div>
-                  <h4 className="text-lg font-black text-slate-900 uppercase tracking-tight">Risco de Liquidez</h4>
-                  <p className="text-[10px] text-slate-500 leading-relaxed">
-                    Seu comprometimento com gastos fixos é de <strong>{(analytics.assessment.fixedExpenseRatio * 100).toFixed(0)}%</strong> da renda identificada.
-                  </p>
-                </div>
-                <div className="mt-6 w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-blue-600 shadow-sm" 
-                    style={{ width: `${analytics.assessment.fixedExpenseRatio * 100}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <section className="section !mb-0">
+          <InsightWall insights={analytics.insights} />
+        </section>
       )}
 
-      {/* 3. Insights & Action Layer */}
-      {hasData && <InsightWall insights={analytics.insights} />}
-
-      {/* 4. Numbers & Fundamentals Layer */}
-      <div className="space-y-6">
-        <h3 className="section-title">Fundamentos Financeiros</h3>
+      {/* 6 · Financial Fundamentals */}
+      <section className="section !mb-0">
+        <h3 className="section-title">Indicadores Financeiros</h3>
         <SummaryCards />
-      </div>
+      </section>
 
-      {/* 5. Patterns & Behaviors Layer */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-        <div className="glass p-4 sm:p-6 h-[300px] sm:h-[350px]">
-          <h3 className="text-[10px] sm:text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-primary neon-glow"></span>
-            Evolução Mensal
-          </h3>
-          <div className="h-[210px] sm:h-[260px]">
-            <BalanceChart />
+      {/* 7 · Charts & Data */}
+      <section className="section !mb-0">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="glass p-8 min-h-[400px] flex flex-col">
+            <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-8 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+              Evolução Patrimonial
+            </h3>
+            <div className="flex-1 min-h-[280px]">
+              <BalanceChart />
+            </div>
+          </div>
+          <div className="glass p-8 min-h-[400px] flex flex-col">
+            <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-8 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-violet-600" />
+              Distribuição de Gastos
+            </h3>
+            <div className="flex-1 min-h-[280px]">
+              <ExpenseChart />
+            </div>
           </div>
         </div>
-        <div className="glass p-4 sm:p-6 h-[300px] sm:h-[350px]">
-          <h3 className="text-[10px] sm:text-sm font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-primary neon-glow"></span>
-            Categorias de Gasto
-          </h3>
-          <div className="h-[210px] sm:h-[260px]">
-            <ExpenseChart />
-          </div>
-        </div>
-      </div>
+      </section>
 
-      {/* 6. Transparency Layer */}
-      <div className="space-y-6">
-        <h3 className="section-title">Base de Dados Normalizada</h3>
+      {/* 8 · Transactions History */}
+      <section className="section !mb-0 pb-10">
+        <h3 className="section-title">Movimentações Recentes</h3>
         <TransactionList />
-      </div>
+      </section>
     </div>
   );
 }
 
+// ─── MAIN APP ─────────────────────────────────────────────────────────────────
 function MainApp({ user, onLogout }) {
   const { profile, loading: userLoading, paymentModal, setPaymentModal } = useUser();
-  const { connections, isBankConnected, normalizedTransactions = [], loading: financeLoading } = useFinance();
+  const { isBankConnected, normalizedTransactions = [], loading: financeLoading } = useFinance();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [isStatementOpen, setIsStatementOpen] = useState(false);
-  
-  const { setActiveSection: setNexActiveSection, registerActions } = useNex();
 
-  // Sync activeSection with NexContext
+  const { setActiveSection: setNexActiveSection, registerActions } = useNex();
+  const { currentPlan } = useUser();
+
   useEffect(() => {
     setNexActiveSection(activeSection);
   }, [activeSection, setNexActiveSection]);
 
-  // Register actions that Nex can execute
   useEffect(() => {
     registerActions({
       setActiveSection: (section) => setActiveSection(section),
@@ -207,235 +178,217 @@ function MainApp({ user, onLogout }) {
     });
   }, [registerActions]);
 
-  console.log("[VYNEX] MainApp Check:", { 
-    user: user?.email, 
-    userLoading, 
-    financeLoading, 
-    hasProfile: !!profile,
-    connections: connections?.length,
-    activeSection
-  });
-
   if (financeLoading || userLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary"></div>
+      <div className="app-shell flex items-center justify-center">
+        <div className="flex flex-col items-center gap-6">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-blue-600/20 rounded-full" />
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          </div>
+          <p className="text-sm text-slate-400 font-bold uppercase tracking-widest">Sincronizando Inteligência…</p>
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 lg:py-12 overflow-x-hidden">
-      {/* Responsive Header */}
-      <header className="flex flex-col sm:flex-row items-center justify-between mb-8 sm:mb-12 gap-4 sm:gap-6">
-        <div className="flex items-center justify-between w-full sm:w-auto gap-4">
-          <div className="flex items-center gap-3 sm:gap-6">
-            <img 
-              src={logo} 
-              alt="VYNEX Logo" 
-              className="h-7 sm:h-9 md:h-12 w-auto object-contain flex-shrink-0 drop-shadow-[0_0_12px_rgba(37,99,235,0.1)]" 
-            />
-            <div className="hidden xs:flex flex-col border-l border-white/10 pl-3 sm:pl-6 leading-none">
-              <p className="text-slate-500 font-black text-[8px] sm:text-[10px] uppercase tracking-widest">
-                Inteligência
-              </p>
-               <p className="text-slate-500 font-black text-[8px] sm:text-[10px] uppercase tracking-widest">
-                Financeira
-              </p>
-            </div>
-          </div>
-          <div className="sm:hidden flex items-center gap-2">
-          </div>
-        </div>
+  const handleNavClick = (id) => {
+    setActiveSection(id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-        <div className="flex items-center justify-between w-full sm:w-auto gap-3 sm:gap-4 overflow-hidden">
-          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-             <button 
-              onClick={() => setActiveSection('account')}
-              className={`text-right group p-2 rounded-2xl transition-all flex flex-col items-end min-w-0 max-w-[100px] xs:max-w-[140px] sm:max-w-[180px] ${activeSection === 'account' ? 'bg-blue-50' : 'hover:bg-slate-100'}`}
-            >
-                <p className={`text-[10px] font-black uppercase tracking-tighter leading-none truncate w-full ${activeSection === 'account' ? 'text-brand-primary' : 'text-slate-900'}`}>{user?.email?.split('@')[0]}</p>
-                <p className="text-[7px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-300">Perfil</p>
-             </button>
-             <button 
-              onClick={() => setActiveSection('settings')}
-              className={`p-2 transition-colors shrink-0 ${activeSection === 'settings' ? 'text-brand-primary' : 'text-slate-400 hover:text-slate-900'}`}
-              title="Configurações"
-             >
-                <SettingsIcon size={18} />
-             </button>
-             <button 
-              onClick={onLogout}
-              className="p-2 transition-colors shrink-0 text-slate-500 hover:text-rose-500"
-              title="Sair"
-             >
-                <LogOut size={18} />
-             </button>
-          </div>
-          
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="hidden lg:block h-8 w-px bg-white/5 mx-2" />
-            <div className="hidden sm:block">
+  const userName = profile?.name?.split(' ')[0] || user?.email?.split('@')[0] || 'Usuário';
+
+  return (
+    <div className="app-shell">
+      <div className="page-container py-6 sm:py-10">
+        
+        {/* ── HEADER ── */}
+        <header className="flex items-center justify-between mb-8 sm:mb-16 gap-4">
+          {/* Logo */}
+          <div className="flex items-center gap-4">
+            <VynexLogo className="h-10 sm:h-12" />
+            <div className="hidden lg:flex flex-col border-l border-slate-200 pl-4 leading-none gap-1">
+              <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">Inteligência</p>
+              <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">Financeira</p>
             </div>
-            <div className="hidden xs:block">
+          </div>
+
+          {/* Right side Actions */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="hidden xl:flex items-center gap-6 mr-4">
+              <OnlineUsersIndicator />
+              <div className="w-px h-6 bg-slate-200" />
               <BankConnector />
             </div>
-            {useUser().currentPlan.id !== 'premium' && (
-              <button 
+
+            {currentPlan?.id !== 'premium' && (
+              <button
                 onClick={() => setActiveSection('account')}
-                className="hidden md:flex items-center gap-2 bg-blue-50 text-brand-primary border border-blue-100 px-4 py-2 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:bg-blue-100 transition-all"
+                className="hidden sm:flex items-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/20 active:scale-95"
               >
-                <Crown size={12} /> Fazer Upgrade
+                <Crown size={14} /> <span className="hidden md:inline">Virar Pro</span>
               </button>
             )}
-            {/* "Lançar" button removed from global header */}
-          </div>
-        </div>
-      </header>
 
-      {/* Navigation Tabs - Refined for mobile scroll */}
-      <div className="mb-8 sm:mb-12">
-        <nav className="flex items-center gap-1 p-1 bg-white rounded-[1.25rem] w-full sm:w-fit border border-slate-200 overflow-x-auto no-scrollbar shadow-sm">
-          {[
-            { id: 'dashboard', icon: <LayoutDashboard size={14} />, label: 'Dashboard' },
-            { id: 'agents', icon: <Users size={14} />, label: 'Agentes IA' },
-            { id: 'credit', icon: <Shield size={14} />, label: 'Inteligência' },
-            { id: 'account', icon: <Crown size={14} />, label: 'Planos' },
-            { id: 'history', icon: <History size={14} />, label: 'Histórico' }
-          ].map((tab) => (
             <button
-              key={tab.id}
-              onClick={() => setActiveSection(tab.id)}
-              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 sm:px-8 py-3.5 sm:py-4 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 ${
-                activeSection === tab.id 
-                ? 'bg-blue-50 text-brand-primary shadow-sm border border-blue-100' 
-                : 'text-slate-400 hover:text-slate-600'
+              onClick={() => handleNavClick('account')}
+              className={`flex items-center gap-2 sm:gap-4 px-2 sm:px-4 py-2.5 rounded-2xl transition-all ${
+                activeSection === 'account' ? 'bg-blue-50' : 'hover:bg-slate-50'
               }`}
             >
-              {tab.icon}
-              {tab.label}
-              {tab.id === 'dashboard' && <span className="ml-1 px-1 bg-brand-primary text-white text-[6px] rounded-full">New</span>}
+              <div className="text-right hidden sm:block">
+                <p className="text-[14px] font-black text-slate-900 leading-none">{userName}</p>
+                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1.5">Perfil VYNEX</p>
+              </div>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-blue-500/20">
+                {userName[0]}
+              </div>
             </button>
-          ))}
+
+            <button
+              onClick={() => handleNavClick('settings')}
+              className={`p-3 rounded-2xl transition-all ${
+                activeSection === 'settings' ? 'bg-blue-50 text-blue-600' : 'text-slate-400 hover:bg-slate-50'
+              }`}
+            >
+              <SettingsIcon size={22} />
+            </button>
+
+            <button
+              onClick={onLogout}
+              className="hidden xs:flex p-3 rounded-2xl text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-all"
+            >
+              <LogOut size={22} />
+            </button>
+          </div>
+        </header>
+
+        {/* ── DESKTOP NAVIGATION ── */}
+        <nav className="hidden sm:flex items-center gap-3 mb-16 p-2 bg-white border border-slate-200 rounded-[1.5rem] w-fit shadow-sm">
+          {NAV_TABS.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeSection === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => handleNavClick(tab.id)}
+                className={`flex items-center gap-3 px-8 py-4 rounded-[1.125rem] text-[11px] font-black uppercase tracking-widest transition-all ${
+                  isActive 
+                    ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/30' 
+                    : 'text-slate-400 hover:text-slate-800 hover:bg-slate-50'
+                }`}
+              >
+                <Icon size={18} />
+                <span>{tab.label}</span>
+                {tab.badge && !isActive && (
+                  <span className="bg-blue-100 text-blue-600 text-[9px] px-2 py-0.5 rounded-full ml-1">
+                    {tab.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* ── MAIN CONTENT AREA ── */}
+        <main className="relative">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSection}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+              {activeSection === 'dashboard' ? (
+                !isBankConnected && normalizedTransactions.length === 0 ? (
+                  <EmptyState />
+                ) : (
+                  <DashboardContent
+                    setActiveSection={setActiveSection}
+                    onOpenModal={() => setIsModalOpen(true)}
+                    onOpenWizard={() => setIsWizardOpen(true)}
+                    onOpenStatement={() => setIsStatementOpen(true)}
+                  />
+                )
+              ) : activeSection === 'agents' ? (
+                <AgentGrid />
+              ) : activeSection === 'credit' ? (
+                <CreditAnalysis user={user} />
+              ) : activeSection === 'history' ? (
+                <CreditHistory />
+              ) : activeSection === 'settings' ? (
+                <SettingsPage onAddTransaction={() => setIsModalOpen(true)} />
+              ) : (
+                <AccountPage />
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </div>
+
+      {/* ── MOBILE BOTTOM NAVIGATION ── */}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-[60] bg-white/95 backdrop-blur-2xl border-t border-slate-200 px-8 pt-4 pb-10">
+        <nav className="flex items-center justify-between max-w-md mx-auto">
+          {MOBILE_NAV.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeSection === tab.id || (tab.id === 'dashboard' && activeSection === 'agents');
+            return (
+              <button
+                key={tab.id}
+                onClick={() => handleNavClick(tab.id)}
+                className={`flex flex-col items-center gap-2 transition-all ${
+                  isActive ? 'text-blue-600' : 'text-slate-400'
+                }`}
+              >
+                <div className={`p-2.5 rounded-2xl transition-all ${isActive ? 'bg-blue-50' : ''}`}>
+                  <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest">{tab.label}</span>
+              </button>
+            );
+          })}
         </nav>
       </div>
 
-      {/* Mobile-only tools - Responsive Visibility */}
-      <div className="sm:hidden flex flex-col gap-4 mb-8">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex-1 bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-center shadow-sm">
-            <OnlineUsersIndicator />
-          </div>
-          <div className="flex-1 bg-white p-2 rounded-2xl border border-slate-200 flex items-center justify-center shadow-sm">
-            <BankConnector />
-          </div>
-        </div>
-      </div>
-
-      <div className="hidden lg:block mb-8">
-        <OnlineUsersIndicator />
-      </div>
-
-
-      {/* Content Area */}
-      <main className="min-h-[60vh]">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeSection}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 10 }}
-            transition={{ duration: 0.2 }}
-          >
-            {activeSection === 'dashboard' ? (
-              !isBankConnected && normalizedTransactions.length === 0 ? (
-                <div className="space-y-8">
-                  <EmptyState />
-                </div>
-              ) : (
-                <DashboardContent 
-                  onSimulateCredit={() => setActiveSection('credit')} 
-                  setActiveSection={setActiveSection}
-                  onOpenModal={() => setIsModalOpen(true)}
-                  onOpenWizard={() => setIsWizardOpen(true)}
-                  onOpenStatement={() => setIsStatementOpen(true)}
-                />
-              )
-            ) : activeSection === 'agents' ? (
-              <AgentGrid />
-            ) : activeSection === 'credit' ? (
-              <CreditAnalysis user={user} />
-            ) : activeSection === 'history' ? (
-              <CreditHistory />
-            ) : activeSection === 'settings' ? (
-              <SettingsPage onAddTransaction={() => setIsModalOpen(true)} />
-            ) : (
-              <AccountPage />
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </main>
-
-      <ManualInboundWizard 
-        isOpen={isWizardOpen}
-        onClose={() => setIsWizardOpen(false)}
-      />
-
-      <StatementInboundWizard
-        isOpen={isStatementOpen}
-        onClose={() => setIsStatementOpen(false)}
-      />
-
-      <AddTransactionModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        triggerSource={activeSection}
-      />
-
+      {/* ── UTILITY COMPONENTS ── */}
+      <ManualInboundWizard isOpen={isWizardOpen} onClose={() => setIsWizardOpen(false)} />
+      <StatementInboundWizard isOpen={isStatementOpen} onClose={() => setIsStatementOpen(false)} />
+      <AddTransactionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} triggerSource={activeSection} />
       {profile && !profile.onboarding_completed && <Onboarding />}
-
-      <PaymentModal 
-        isOpen={paymentModal.isOpen} 
-        onClose={() => setPaymentModal({ isOpen: false, url: '' })} 
+      <PaymentModal
+        isOpen={paymentModal.isOpen}
+        onClose={() => setPaymentModal({ isOpen: false, url: '' })}
         checkoutUrl={paymentModal.url}
       />
     </div>
   );
 }
 
-// simple Error Boundary
+// ─── ROOT LEVEL ──────────────────────────────────────────────────────────────
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false, error: null };
   }
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error("[VYNEX FATAL ERROR]", error, errorInfo);
-  }
-
+  static getDerivedStateFromError(error) { return { hasError: true, error }; }
+  componentDidCatch(error, errorInfo) { console.error('[VYNEX FATAL]', error, errorInfo); }
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-8 text-center text-slate-900">
-          <div className="w-20 h-20 rounded-3xl bg-rose-500/20 flex items-center justify-center text-rose-500 mb-8 border border-rose-500/30">
-            <Shield size={40} />
+        <div className="app-shell flex flex-col items-center justify-center p-8 text-center">
+          <div className="w-24 h-24 rounded-[2.5rem] bg-rose-50 flex items-center justify-center text-rose-500 mb-8 border border-rose-100 shadow-2xl shadow-rose-500/10">
+            <Shield size={48} />
           </div>
-          <h1 className="text-3xl font-black uppercase tracking-tighter mb-4">Opa! Algo deu errado.</h1>
-          <p className="text-slate-400 max-w-md mb-8 italic">Pode ser um problema temporário de conexão ou de processamento de dados.</p>
-          <button 
+          <h1 className="text-3xl font-black mb-4 tracking-tight">Sistema em Manutenção</h1>
+          <p className="text-slate-500 max-w-sm mb-10 font-medium">Não se preocupe, seus dados estão seguros. Estamos realizando um polimento final no sistema.</p>
+          <button
             onClick={() => window.location.reload()}
-            className="bg-brand-primary text-slate-950 px-8 py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-brand-primary/20"
+            className="btn-primary w-full max-w-xs h-14"
           >
-            Tentar Novamente
+            Reiniciar VYNEX
           </button>
-          <div className="mt-12 p-4 bg-black/40 rounded-2xl border border-white/5 max-w-2xl w-full text-left overflow-auto">
-             <p className="text-[10px] font-mono text-slate-500 break-all">{this.state.error?.toString()}</p>
-          </div>
         </div>
       );
     }
@@ -449,25 +402,14 @@ function App() {
   const [recoveryMode, setRecoveryMode] = useState(false);
 
   useEffect(() => {
-    // Check active sessions and sets the user
-    setLoading(true);
-
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("[VYNEX] Auth Session:", session?.user?.email || "No session");
       setUser(session?.user ?? null);
       setLoading(false);
-    }).catch(err => {
-      console.error("[VYNEX] Auth Error:", err);
-      setLoading(false);
-    });
+    }).catch(() => setLoading(false));
 
-    // Listen for changes on auth state (logged in, signed out, etc.)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("[VYNEX] Auth Event:", event);
       setUser(session?.user ?? null);
-      if (event === 'PASSWORD_RECOVERY') {
-        setRecoveryMode(true);
-      }
+      if (event === 'PASSWORD_RECOVERY') setRecoveryMode(true);
     });
 
     return () => subscription.unsubscribe();
@@ -475,8 +417,12 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-brand-primary border-t-transparent rounded-full animate-spin" />
+      <div className="app-shell flex items-center justify-center">
+        <div className="flex flex-col items-center gap-6">
+          <div className="w-16 h-16 border-4 border-blue-600/20 rounded-full" />
+          <div className="absolute w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Iniciando VYNEX…</p>
+        </div>
       </div>
     );
   }
@@ -487,20 +433,15 @@ function App() {
         <FinanceProvider user={user}>
           <UserProvider user={user}>
             <NexProvider>
-              <div className="min-h-screen bg-transparent">
-                {!user ? (
-                  <Login 
-                    onLogin={(u) => setUser(u)} 
-                    initialView={recoveryMode ? 'reset' : 'login'} 
-                  />
-                ) : (
-                  <>
-                    <MainApp user={user} onLogout={() => { supabase.auth.signOut(); setUser(null); }} />
-                    <NexCharacter />
-                    <ChatAssistant />
-                  </>
-                )}
-              </div>
+              {!user ? (
+                <Login onLogin={setUser} initialView={recoveryMode ? 'reset' : 'login'} />
+              ) : (
+                <>
+                  <MainApp user={user} onLogout={() => { supabase.auth.signOut(); setUser(null); }} />
+                  <NexCharacter />
+                  <ChatAssistant />
+                </>
+              )}
             </NexProvider>
           </UserProvider>
         </FinanceProvider>

@@ -1,85 +1,104 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ShieldCheck, Zap, LayoutDashboard, UserCheck, Plus } from 'lucide-react';
-import BankConnector from './BankConnector';
+import { ShieldCheck, Zap, LayoutDashboard, UserCheck } from 'lucide-react';
+import NexMascot from './NexMascot';
+
+const cards = [
+  {
+    icon: ShieldCheck,
+    color: 'blue',
+    title: 'Segurança nível bancário',
+    desc: 'Seus dados são protegidos com o mesmo padrão dos grandes bancos.',
+  },
+  {
+    icon: Zap,
+    color: 'violet',
+    title: 'Inteligência 24h',
+    desc: 'Nossos agentes analisam seu dinheiro enquanto você dorme.',
+  },
+  {
+    icon: LayoutDashboard,
+    color: 'indigo',
+    title: 'Dashboard inteligente',
+    desc: 'Uma visão consolidada de todo o seu patrimônio em um só lugar.',
+  },
+  {
+    icon: UserCheck,
+    color: 'amber',
+    title: 'Você no controle',
+    desc: 'Decisões baseadas em dados reais, não em palpites.',
+  },
+];
+
+const colorMap = {
+  blue:   { bg: 'bg-blue-50',   icon: 'text-blue-600',   border: 'border-blue-100'  },
+  violet: { bg: 'bg-violet-50', icon: 'text-violet-600', border: 'border-violet-100' },
+  indigo: { bg: 'bg-indigo-50', icon: 'text-indigo-600', border: 'border-indigo-100' },
+  amber:  { bg: 'bg-amber-50',  icon: 'text-amber-600',  border: 'border-amber-100' },
+};
 
 export default function EmptyState() {
-  const cards = [
-    {
-      icon: <ShieldCheck className="text-brand-primary" />,
-      title: "Segurança nível bancário",
-      desc: "Seus dados são criptografados com o mesmo padrão dos grandes bancos."
-    },
-    {
-      icon: <Zap className="text-blue-400" />,
-      title: "Inteligência 24h",
-      desc: "Nossos agentes analisam seu dinheiro enquanto você dorme."
-    },
-    {
-      icon: <LayoutDashboard className="text-purple-400" />,
-      title: "Dashboard inteligente",
-      desc: "Uma visão consolidada de todo o seu patrimônio em um só lugar."
-    },
-    {
-      icon: <UserCheck className="text-amber-500" />,
-      title: "Você no controle",
-      desc: "Decisões baseadas em dados reais, não em palpites."
-    }
-  ];
-
   return (
-    <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
+    <div className="flex flex-col items-center justify-center py-12 px-4">
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-4xl space-y-12"
+        transition={{ duration: 0.4 }}
+        className="max-w-4xl w-full space-y-10"
       >
-        <div className="space-y-4">
-          <h1 className="text-4xl sm:text-5xl font-black text-white uppercase tracking-tighter">
-            Traga clareza para sua <br/>
-            <span className="text-brand-primary">vida financeira</span>
-          </h1>
-          <p className="text-slate-500 text-lg max-w-2xl mx-auto">
-            Enquanto a conexão automática com bancos está em fase de liberação (Beta), você pode usar o VYNEX normalmente adicionando transações ou importando seu extrato.
-          </p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button 
-            onClick={() => document.getElementById('add-transaction-btn')?.click()}
-            className="w-full sm:w-auto bg-brand-primary text-slate-950 px-8 py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-brand-primary/20 hover:scale-[1.02] transition-all"
-          >
-            + Adicionar Transação
-          </button>
-          <div className="flex gap-4 w-full sm:w-auto">
-            <button 
-              onClick={() => document.getElementById('import-statement-btn')?.click()}
-              className="flex-1 sm:flex-none border border-slate-700 text-slate-400 px-6 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-white/5 transition-all"
-            >
-              Importar Extrato
-            </button>
-            <BankConnector />
+        {/* Hero */}
+        <div className="flex flex-col items-center text-center gap-6">
+          <NexMascot mood="happy" size={100} />
+          <div className="space-y-3">
+            <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+              Traga clareza para sua{' '}
+              <span className="text-blue-600">vida financeira</span>
+            </h1>
+            <p className="text-slate-500 text-base max-w-xl mx-auto leading-relaxed">
+              Enquanto a conexão automática com bancos está em fase de liberação, você pode usar o VYNEX normalmente adicionando transações ou importando seu extrato.
+            </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-12">
-          {cards.map((card, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: idx * 0.1 }}
-              className="glass p-6 text-left space-y-4 border-white/5 hover:border-brand-primary/20 transition-all group"
-            >
-              <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-brand-primary/10 transition-colors">
-                {card.icon}
-              </div>
-              <div>
-                <h4 className="font-black text-white uppercase tracking-tight text-sm">{card.title}</h4>
-                <p className="text-[11px] text-slate-500 font-medium leading-relaxed mt-1">{card.desc}</p>
-              </div>
-            </motion.div>
-          ))}
+        {/* CTAs */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button
+            onClick={() => document.getElementById('add-transaction-btn')?.click()}
+            className="w-full sm:w-auto bg-blue-600 text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg shadow-blue-500/25 hover:bg-blue-700 active:scale-95 transition-all"
+          >
+            + Adicionar transação
+          </button>
+          <button
+            onClick={() => document.getElementById('import-statement-btn')?.click()}
+            className="w-full sm:w-auto border-2 border-slate-200 text-slate-700 px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:border-blue-300 hover:text-blue-700 transition-all"
+          >
+            Importar extrato
+          </button>
+        </div>
+
+        {/* Feature Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {cards.map((card, idx) => {
+            const c = colorMap[card.color];
+            const Icon = card.icon;
+            return (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.08 }}
+                className={`p-5 rounded-2xl border ${c.border} ${c.bg} space-y-3`}
+              >
+                <div className={`w-10 h-10 rounded-xl bg-white flex items-center justify-center border ${c.border} ${c.icon}`}>
+                  <Icon size={18} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-slate-800 text-sm">{card.title}</h4>
+                  <p className="text-[12px] text-slate-500 leading-relaxed mt-1">{card.desc}</p>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </motion.div>
     </div>

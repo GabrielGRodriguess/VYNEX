@@ -12,24 +12,24 @@ const BaseModal = ({ isOpen, onClose, title, children, showClose = true, maxWidt
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0"
+            className="absolute inset-0 cursor-pointer"
           />
           
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ type: 'spring', damping: 30, stiffness: 400 }}
             className={`modal-container ${maxWidth}`}
           >
-            {/* Background design elements */}
-            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-40 h-40 bg-brand-primary/10 rounded-full blur-3xl pointer-events-none" />
+            {/* Soft decorative glow */}
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-50/50 rounded-full blur-[80px] pointer-events-none" />
             
             <div className="relative z-10">
-              <div className="flex justify-between items-center mb-6 sm:mb-8">
+              <div className="flex justify-between items-center mb-8">
                 {title && (
-                  <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-3">
-                    <span className="w-1.5 sm:w-2 h-5 sm:h-6 bg-brand-primary rounded-full shadow-[0_0_10px_rgba(163,255,18,0.5)]"></span>
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-3">
+                    <span className="w-1.5 h-6 bg-blue-600 rounded-full"></span>
                     {title}
                   </h2>
                 )}
@@ -37,9 +37,9 @@ const BaseModal = ({ isOpen, onClose, title, children, showClose = true, maxWidt
                 {showClose && (
                   <button 
                     onClick={onClose} 
-                    className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-2xl bg-white/5 text-slate-500 hover:text-white transition-all border border-white/5 hover:border-white/10 group active:scale-95"
+                    className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-all border border-slate-100 group active:scale-95"
                   >
-                    <X size={20} className="group-hover:rotate-90 transition-transform duration-300" />
+                    <X size={18} className="group-hover:rotate-90 transition-transform duration-300" />
                   </button>
                 )}
               </div>

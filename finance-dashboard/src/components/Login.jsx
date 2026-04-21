@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Mail, Lock, ArrowRight, ShieldAlert, UserPlus, RefreshCw, KeyRound, Check } from 'lucide-react';
 import logo from '../assets/vynex-logo.png';
+import VynexLogo from './VynexLogo';
 import { supabase } from '../services/supabaseClient';
 
 export default function Login({ onLogin, initialView = 'login' }) {
@@ -67,54 +68,46 @@ export default function Login({ onLogin, initialView = 'login' }) {
 
   const getViewTitle = () => {
     switch(view) {
-      case 'signup': return 'Criar Nova Conta';
+      case 'signup': return 'Criar Conta';
       case 'forgot': return 'Recuperar Acesso';
       case 'reset': return 'Nova Senha';
-      default: return 'Seja bem-vindo';
+      default: return 'Bem-vindo ao VYNEX';
     }
   };
 
   const getButtonText = () => {
     if (loading) return 'Processando...';
     switch(view) {
-      case 'signup': return 'Cadastrar Agora';
-      case 'forgot': return 'Enviar Link';
-      case 'reset': return 'Salvar Senha';
-      default: return 'Acessar Plataforma';
+      case 'signup': return 'Criar conta';
+      case 'forgot': return 'Enviar link';
+      case 'reset': return 'Salvar senha';
+      default: return 'Acessar plataforma';
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4 relative overflow-hidden">
-      {/* Background Glows */}
-      <div className="absolute top-[-10%] left-[-10%] w-72 h-72 bg-brand-primary/5 rounded-full blur-[100px] animate-pulse" />
-      <div className="absolute bottom-[0%] right-[-5%] w-96 h-96 bg-brand-primary/5 rounded-full blur-[120px]" />
+    <div className="min-h-screen flex items-center justify-center bg-[#F8FAFF] p-4 relative overflow-hidden">
+      {/* Background Decorative Elements */}
+      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-100/30 rounded-full blur-[120px]" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-indigo-100/30 rounded-full blur-[120px]" />
 
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-[440px] relative z-10"
       >
         <div className="flex flex-col items-center mb-10">
-          <motion.img 
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            src={logo} 
-            alt="VYNEX Logo" 
-            className="h-16 w-auto mb-4 drop-shadow-[0_0_15px_rgba(37,99,235,0.1)]"
-          />
-          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter text-center">
+          <VynexLogo className="h-12" />
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight text-center mt-4">
             {getViewTitle()}
           </h1>
-          <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-2 mt-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-primary"></span>
-            Inteligência Financeira
-          </p>
+          <div className="flex items-center gap-2 mt-3 px-3 py-1 bg-white border border-slate-200 rounded-full shadow-sm">
+             <div className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
+             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Inteligência Financeira</span>
+          </div>
         </div>
 
-        <div className="glass p-8 sm:p-10 relative overflow-hidden bg-white border border-slate-100 rounded-[2rem] shadow-xl">
-          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-brand-primary/10 to-transparent" />
-
+        <div className="bg-white p-8 sm:p-12 rounded-[2.5rem] shadow-[0_20px_50px_rgba(37,99,235,0.06)] border border-slate-100">
           <form onSubmit={handleSubmit} className="space-y-6">
             <AnimatePresence mode="wait">
               <motion.div
@@ -122,19 +115,19 @@ export default function Login({ onLogin, initialView = 'login' }) {
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: 0.15 }}
                 className="space-y-6"
               >
                 {view !== 'reset' && (
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Seu E-mail</label>
-                    <div className="relative flex items-center">
-                      <Mail className="absolute left-4 text-slate-400" size={18} />
+                    <label className="label-style ml-1">Seu e-mail</label>
+                    <div className="relative group">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors" size={18} />
                       <input 
                         type="email" 
                         required
                         placeholder="seu@email.com"
-                        className="input-style pl-12 h-14 w-full bg-slate-50 border-slate-200 rounded-2xl text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
+                        className="w-full pl-12 pr-6 py-4.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-300 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all h-14"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                       />
@@ -145,26 +138,26 @@ export default function Login({ onLogin, initialView = 'login' }) {
                 {(view === 'login' || view === 'signup' || view === 'reset') && (
                   <div className="space-y-2">
                     <div className="flex justify-between items-center px-1">
-                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                        {view === 'reset' ? 'Nova Senha' : 'Senha de Acesso'}
+                      <label className="label-style">
+                        {view === 'reset' ? 'Nova Senha' : 'Sua senha'}
                       </label>
                       {view === 'login' && (
                         <button 
                           type="button"
                           onClick={() => setView('forgot')}
-                          className="text-[9px] font-black text-brand-primary uppercase tracking-widest hover:underline"
+                          className="text-[9px] font-black text-blue-600 uppercase tracking-widest hover:underline"
                         >
-                          Esqueceu a senha?
+                          Esqueceu?
                         </button>
                       )}
                     </div>
-                    <div className="relative flex items-center">
-                      <Lock className="absolute left-4 text-slate-400" size={18} />
+                    <div className="relative group">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors" size={18} />
                       <input 
                         type="password" 
                         required
                         placeholder="••••••••"
-                        className="input-style pl-12 h-14 w-full bg-slate-50 border-slate-200 rounded-2xl text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
+                        className="w-full pl-12 pr-6 py-4.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-300 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all h-14"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                       />
@@ -174,14 +167,14 @@ export default function Login({ onLogin, initialView = 'login' }) {
 
                 {(view === 'signup') && (
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Confirmar Senha</label>
-                    <div className="relative flex items-center">
-                      <KeyRound className="absolute left-4 text-slate-400" size={18} />
+                    <label className="label-style ml-1">Confirmar senha</label>
+                    <div className="relative group">
+                      <KeyRound className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors" size={18} />
                       <input 
                         type="password" 
                         required
                         placeholder="••••••••"
-                        className="input-style pl-12 h-14 w-full bg-slate-50 border-slate-200 rounded-2xl text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
+                        className="w-full pl-12 pr-6 py-4.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-300 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all h-14"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                       />
@@ -192,7 +185,7 @@ export default function Login({ onLogin, initialView = 'login' }) {
             </AnimatePresence>
 
             {error && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-red-500 bg-red-50 p-3 rounded-xl border border-red-100">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-rose-600 bg-rose-50 p-3 rounded-xl border border-rose-100">
                 <ShieldAlert size={16} />
                 <span className="text-[10px] font-black uppercase tracking-widest">{error}</span>
               </motion.div>
@@ -208,40 +201,41 @@ export default function Login({ onLogin, initialView = 'login' }) {
             <button
               disabled={loading}
               type="submit"
-              className="w-full h-16 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-slate-800 transition-all disabled:opacity-50"
+              className="w-full h-15 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 shadow-lg shadow-blue-500/20"
             >
               {loading ? (
-                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
                   {getButtonText()}
-                  <ArrowRight size={20} />
+                  <ArrowRight size={18} />
                 </>
               )}
             </button>
           </form>
 
-          <div className="mt-8 flex flex-col items-center gap-4">
+          <div className="mt-8 pt-8 border-t border-slate-50 flex flex-col items-center gap-4">
             {view === 'login' ? (
-              <button onClick={() => setView('signup')} className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-slate-900 flex items-center gap-2">
-                <UserPlus size={14} /> Criar conta agora
+              <button onClick={() => setView('signup')} className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-blue-600 flex items-center gap-2 transition-colors">
+                <UserPlus size={14} /> Não tem conta? Cadastre-se
               </button>
             ) : (
-              <button onClick={() => setView('login')} className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-slate-900 flex items-center gap-2">
-                <RefreshCw size={14} /> Voltar para o Login
+              <button onClick={() => setView('login')} className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-blue-600 flex items-center gap-2 transition-colors">
+                <RefreshCw size={14} /> Já tem conta? Entre aqui
               </button>
             )}
-            
-            <div className="flex items-center justify-center gap-2 text-slate-700">
-              <ShieldCheck size={12} />
-              <span className="text-[8px] font-black uppercase tracking-widest">Acesso Seguro VYNEX Intel</span>
-            </div>
           </div>
         </div>
 
-        <p className="text-center text-slate-600 text-[10px] font-medium mt-8 uppercase tracking-widest px-10 leading-relaxed">
-          O VYNEX utiliza criptografia de ponta a ponta para proteger seus dados financeiros institucionais.
-        </p>
+        <div className="mt-10 flex flex-col items-center gap-2">
+           <div className="flex items-center gap-2 text-slate-400">
+              <ShieldCheck size={14} />
+              <span className="text-[9px] font-black uppercase tracking-[0.2em]">Acesso Seguro Institucional</span>
+           </div>
+           <p className="text-center text-slate-400 text-[9px] font-medium uppercase tracking-widest px-10 leading-relaxed opacity-60">
+             Criptografia de ponta a ponta padrão bancário.
+           </p>
+        </div>
       </motion.div>
     </div>
   );

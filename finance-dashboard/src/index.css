@@ -1,90 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer utilities {
-  .glass {
-    @apply bg-white rounded-2xl border border-[#E2E8F0] transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.05)] min-w-0 p-4;
-  }
-  
-  .glass-card {
-    @apply bg-white rounded-2xl border border-[#E2E8F0] shadow-[0_4px_12px_rgba(0,0,0,0.05)] min-w-0 p-4;
-  }
-
-  .neon-glow {
-    filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.3));
-  }
-  
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  
-  .text-brand {
-    @apply text-[#2563EB];
-  }
-
-  .bg-brand-gradient {
-    background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
-  }
-}
-
-@layer components {
-  .label-style {
-    @apply text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2 block;
-  }
-
-  .input-style {
-    @apply w-full bg-slate-50 border border-[#E2E8F0] rounded-xl px-5 py-4 text-sm text-slate-900 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]/20 outline-none transition-all duration-300 placeholder:text-slate-400 h-14 box-border appearance-none;
-  }
-
-  select.input-style {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1.25rem center;
-    background-size: 1.25rem;
-    padding-right: 3rem;
-  }
-
-  .btn-primary {
-    @apply bg-[#2563EB] text-white px-6 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs hover:bg-[#1E40AF] transition-all shadow-lg shadow-blue-500/10 active:scale-95;
-  }
-
-  .error-text {
-    @apply text-[10px] font-black text-rose-500 uppercase tracking-tighter mt-1;
-  }
-
-  .vynex-checkbox {
-    @apply appearance-none w-5 h-5 rounded-lg border border-[#E2E8F0] bg-slate-50 cursor-pointer relative transition-all checked:bg-[#2563EB] checked:border-[#2563EB] outline-none;
-  }
-
-  .vynex-checkbox:checked::after {
-    content: '✓';
-    @apply absolute inset-0 flex items-center justify-center text-white font-black text-xs;
-  }
-}
-
+/* ──────────────────────────────────────────────────────────
+   1 · DESIGN TOKENS & SYSTEM
+────────────────────────────────────────────────────────── */
 :root {
-  --brand-primary: #2563EB;
-  --brand-secondary: #1D4ED8;
-  --bg-main: #F8FAFF;
-  --text-main: #0B1220;
-  --border-main: #E2E8F0;
+  /* Brand Palette - Modern Fintech */
+  --brand-primary:    #2563EB;
+  --brand-primary-light: #EFF6FF;
+  --brand-secondary:  #1D4ED8;
+  --brand-accent:     #60A5FA;
+  
+  /* Semantic Colors */
+  --bg-main:          #F8FAFF;
+  --bg-card:          #FFFFFF;
+  --text-main:        #0F172A;
+  --text-secondary:   #64748B;
+  --border-main:      #E2E8F0;
+  --border-premium:   rgba(37, 99, 235, 0.1);
+  
+  /* Elevation & Depth */
+  --shadow-sm:        0 2px 8px rgba(37, 99, 235, 0.04);
+  --shadow-md:        0 8px 24px rgba(37, 99, 235, 0.08);
+  --shadow-lg:        0 16px 48px rgba(37, 99, 235, 0.12);
+  --shadow-premium:   0 24px 64px rgba(37, 99, 235, 0.15);
+  
+  /* Shape */
+  --radius-sm:        0.75rem;   /* 12px */
+  --radius-md:        1.25rem;   /* 20px */
+  --radius-lg:        2rem;      /* 32px */
+  --radius-pill:      9999px;
+
+  /* Layout */
+  --container-max:    1240px;
+  --space-mobile:     1.25rem;
+  --space-tablet:     2rem;
+  --space-desktop:    3rem;
+  
+  /* Motion */
+  --transition-fast:   150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow:   500ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-* {
-  box-sizing: border-box;
+/* ──────────────────────────────────────────────────────────
+   2 · BASE & RESET
+────────────────────────────────────────────────────────── */
+*, *::before, *::after { 
+  box-sizing: border-box; 
+  -webkit-tap-highlight-color: transparent;
 }
 
-html, body, #root {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-  margin: 0;
-  padding: 0;
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -92,65 +64,129 @@ body {
   background-color: var(--bg-main);
   color: var(--text-main);
   min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
 }
 
-/* ── Nex Character Animations (Keep but adapt) ── */
-@keyframes nex-breathe {
-  0%, 100% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(-5px) scale(1.02); }
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-.nex-breathe { animation: nex-breathe 4s ease-in-out infinite; }
+/* ──────────────────────────────────────────────────────────
+   3 · LAYOUT SYSTEM
+────────────────────────────────────────────────────────── */
+@layer components {
+  .app-shell {
+    @apply flex flex-col min-h-screen bg-[#F8FAFF];
+  }
 
-/* Custom Scrollbar (Light) */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg-main);
-}
-::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
-  border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--brand-primary);
+  .page-container {
+    @apply w-full mx-auto px-[var(--space-mobile)] 
+           sm:px-[var(--space-tablet)] 
+           max-w-[var(--container-max)];
+  }
+
+  .section {
+    @apply mb-12 sm:mb-20;
+  }
+
+  .card-grid {
+    @apply grid gap-6 sm:gap-8;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  }
 }
 
-.glass:hover {
-  border-color: var(--brand-primary);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.08);
+/* ──────────────────────────────────────────────────────────
+   4 · TYPOGRAPHY
+────────────────────────────────────────────────────────── */
+@layer base {
+  h1 { @apply text-3xl sm:text-5xl lg:text-6xl font-[900] tracking-tight leading-[1.1] text-slate-900; }
+  h2 { @apply text-2xl sm:text-4xl lg:text-5xl font-[900] tracking-tight leading-[1.2] text-slate-900; }
+  h3 { @apply text-xl sm:text-3xl font-black tracking-tight text-slate-900; }
+  p  { @apply text-[15px] sm:text-[17px] text-slate-600 font-medium; }
 }
 
 .section-title {
-  @apply text-[10px] sm:text-xs font-black text-slate-400 uppercase tracking-[0.3em] mb-6 flex items-center gap-3;
+  @apply text-[11px] font-black text-blue-600 uppercase tracking-[0.4em] mb-6 flex items-center gap-4;
 }
-
-.section-title::before {
+.section-title::after {
   content: '';
-  @apply w-1.5 h-1.5 rounded-full;
-  background-color: var(--brand-primary);
+  @apply h-px flex-1 bg-gradient-to-r from-blue-100 to-transparent;
 }
 
-/* Modals & Overlays (Light) */
-.modal-overlay {
-  @apply fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm;
+/* ──────────────────────────────────────────────────────────
+   5 · PREMIUM COMPONENTS
+────────────────────────────────────────────────────────── */
+@layer utilities {
+  .glass {
+    @apply bg-white rounded-[2rem] border border-[#F1F5F9] p-6 sm:p-10 transition-all duration-300;
+    box-shadow: var(--shadow-md);
+  }
+  .glass:hover {
+    @apply border-blue-200 -translate-y-1;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .glass-card {
+    @apply bg-white rounded-[2rem] border border-[#F1F5F9] p-6 sm:p-10;
+    box-shadow: var(--shadow-md);
+  }
 }
 
-.modal-container {
-  @apply bg-white border border-[#E2E8F0] rounded-[2rem] shadow-2xl w-full max-w-md p-8 sm:p-10 relative overflow-hidden;
+@layer components {
+  .btn-primary {
+    @apply bg-blue-600 text-white px-8 py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-[12px]
+           hover:bg-blue-700 active:scale-95 transition-all shadow-xl shadow-blue-500/30
+           flex items-center justify-center gap-3 min-h-[56px] cursor-pointer;
+  }
+
+  .input-style {
+    @apply w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-[16px] text-slate-900 font-bold
+           focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 outline-none
+           transition-all duration-200 placeholder:text-slate-400 placeholder:font-normal h-14 sm:h-16 box-border appearance-none;
+  }
+
+  .label-style {
+    @apply text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mb-3 block ml-1;
+  }
 }
 
-.toast-item {
-  @apply pointer-events-auto bg-white border border-[#E2E8F0] p-5 rounded-2xl shadow-xl flex items-center gap-4 min-w-[300px] transition-all duration-300;
+/* ──────────────────────────────────────────────────────────
+   6 · ANIMATIONS
+────────────────────────────────────────────────────────── */
+@keyframes nex-breathe {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50%       { transform: translateY(-8px) scale(1.02); }
 }
 
-.alert-box {
-  @apply p-4 rounded-2xl border flex items-center gap-4 transition-all duration-300;
+.nex-breathe { 
+  animation: nex-breathe 4s ease-in-out infinite; 
 }
 
-.alert-success { @apply bg-blue-50 border-blue-100 text-blue-700; }
-.alert-error { @apply bg-rose-50 border-rose-100 text-rose-700; }
-.alert-warning { @apply bg-amber-50 border-amber-100 text-amber-700; }
-.alert-info { @apply bg-blue-50 border-blue-100 text-blue-700; }
+/* ──────────────────────────────────────────────────────────
+   7 · SCROLLBAR & SELECTION
+────────────────────────────────────────────────────────── */
+::selection { @apply bg-blue-600 text-white; }
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-main); }
+::-webkit-scrollbar-thumb { 
+  @apply bg-slate-200 rounded-full border-4 border-transparent bg-clip-padding hover:bg-slate-300;
+}
+
+/* ──────────────────────────────────────────────────────────
+   8 · UTILS
+────────────────────────────────────────────────────────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-blue-600 to-indigo-600;
+}

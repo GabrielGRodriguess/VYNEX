@@ -1,78 +1,106 @@
 import { useFinance } from '../context/FinanceContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getCategoryById } from '../constants/categories';
+import { Trash2, ArrowUpRight, ArrowDownLeft, Search, Filter } from 'lucide-react';
 
 export default function TransactionList() {
   const { transactions, deleteTransaction } = useFinance();
 
   return (
     <div className="glass">
-      <div className="flex items-center justify-between mb-8">
-        <h3 className="text-xl font-black text-slate-900 flex items-center gap-3">
-          <span className="w-2 h-8 bg-blue-600 rounded-full"></span>
-          Histórico de Movimentações
-        </h3>
-        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
-          {transactions.length} Registros
-        </span>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+        <div>
+          <h3 className="text-xl font-black text-slate-900 flex items-center gap-3">
+            Histórico de movimentações
+          </h3>
+          <p className="text-sm text-slate-400 font-medium mt-1">Veja todos os seus registros financeiros</p>
+        </div>
+        
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="relative flex-1 sm:flex-none">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+            <input 
+              type="text" 
+              placeholder="Buscar..." 
+              className="w-full sm:w-48 bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs font-bold focus:border-blue-300 outline-none transition-all"
+            />
+          </div>
+          <button className="p-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-400 hover:text-slate-600 transition-all">
+            <Filter size={16} />
+          </button>
+        </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100">
-              <th className="pb-6">Data</th>
-              <th className="pb-6">Categoria</th>
-              <th className="pb-6 text-right">Valor</th>
-              <th className="pb-6 text-right">Ação</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-50">
-            <AnimatePresence mode="popLayout">
-              {transactions.map((t) => (
-                <motion.tr 
-                  layout
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  key={t.id} 
-                  className="text-sm group hover:bg-slate-50/50 transition-colors"
-                >
-                  <td className="py-6 text-slate-400 font-medium">{t.date}</td>
-                  <td className="py-6">
-                    <span 
-                      className={`px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors ${getCategoryById(t.category).isRisk ? 'text-rose-600 border-rose-100 bg-rose-50' : 'text-blue-600 border-blue-100 bg-blue-50'}`}
-                    >
-                      {getCategoryById(t.category).label}
-                    </span>
-                  </td>
-                  <td className={`py-6 text-right font-black text-lg ${t.type === 'income' ? 'text-blue-600' : 'text-rose-500'}`}>
-                    {t.type === 'income' ? '+' : '-'} {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount)}
-                  </td>
-                  <td className="py-6 text-right">
-                    <button 
-                      onClick={() => deleteTransaction(t.id)}
-                      className="opacity-0 group-hover:opacity-100 p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
-                      title="Excluir"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </td>
-                </motion.tr>
-              ))}
-            </AnimatePresence>
-            {transactions.length === 0 && (
-              <tr>
-                <td colSpan="4" className="py-16 text-center text-slate-400 font-medium italic">
-                  Nenhuma movimentação encontrada ainda.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      <div className="space-y-3">
+        <AnimatePresence mode="popLayout">
+          {transactions.map((t, idx) => {
+            const category = getCategoryById(t.category);
+            const isIncome = t.type === 'income';
+            
+            return (
+              <motion.div 
+                layout
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                key={t.id}
+                transition={{ delay: Math.min(idx * 0.05, 0.5) }}
+                className="group flex items-center justify-between p-4 rounded-2xl border border-slate-100 hover:border-blue-100 hover:bg-blue-50/20 transition-all cursor-default"
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${isIncome ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                    {isIncome ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />}
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm font-bold text-slate-800">{category.label}</p>
+                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-0.5">
+                      {new Date(t.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <div className="text-right">
+                    <p className={`text-base font-black ${isIncome ? 'text-blue-600' : 'text-slate-800'}`}>
+                      {isIncome ? '+' : '-'} {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount)}
+                    </p>
+                    <p className={`text-[9px] font-black uppercase tracking-widest ${category.isRisk ? 'text-rose-500' : 'text-slate-400'}`}>
+                      {category.isRisk ? 'Alto Risco' : 'Operacional'}
+                    </p>
+                  </div>
+
+                  <button 
+                    onClick={() => deleteTransaction(t.id)}
+                    className="opacity-0 group-hover:opacity-100 p-2.5 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
+                    title="Excluir"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+
+        {transactions.length === 0 && (
+          <div className="py-16 text-center">
+            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+              <Search size={32} />
+            </div>
+            <p className="text-slate-400 font-bold text-sm">Nenhuma movimentação encontrada.</p>
+            <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Seus registros aparecerão aqui.</p>
+          </div>
+        )}
       </div>
+
+      {transactions.length > 0 && (
+        <div className="mt-8 pt-6 border-t border-slate-50 flex justify-center">
+          <button className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline">
+            Ver extrato completo
+          </button>
+        </div>
+      )}
     </div>
   );
 }
