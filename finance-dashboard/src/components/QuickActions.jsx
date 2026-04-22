@@ -80,6 +80,7 @@ export default function QuickActions({ onAddTransaction, onImportStatement, onWi
               </div>
               <button
                 onClick={handlers[action.id]}
+                data-action={action.id}
                 className={`w-full h-[48px] sm:h-[52px] rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all active:scale-95 ${c.btn} shadow-md`}
               >
                 {action.cta}

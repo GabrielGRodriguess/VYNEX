@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Sparkles, PieChart, Activity, ArrowRight, Zap, Target } from 'lucide-react';
 import { useFinance } from '../context/FinanceContext';
 import { useUser } from '../context/UserContext';
+import { useNex } from '../context/NexContext';
 import NexMascot from './NexMascot';
 
 /**
@@ -12,6 +13,7 @@ import NexMascot from './NexMascot';
 export default function NexAssistantCard({ onOpenAnalysis, onOpenSimulation }) {
   const { analytics, transactions } = useFinance();
   const { user, profile } = useUser();
+  const { actions: nexActions } = useNex();
 
   const firstName = profile?.name?.split(' ')[0] || user?.email?.split('@')[0] || 'você';
 
@@ -19,25 +21,30 @@ export default function NexAssistantCard({ onOpenAnalysis, onOpenSimulation }) {
   const diagnostic = useMemo(() => {
     if (transactions.length === 0) {
       return {
-        text: `Olá ${firstName}! Analisei sua conta e ainda não encontrei movimentações. Vamos conectar seu banco ou adicionar dados manuais para eu calcular seu score?`,
-        mood: 'thinking',
-        cta: 'Configurar Dashboard'
+        title: "Faça o Raio-X do seu Nubank com IA",
+        text: "Envie seu extrato Nubank e receba uma análise do seu perfil financeiro, pontos de risco e oportunidades para melhorar sua chance de crédito.",
+        mood: 'happy',
+        isHero: true
       };
     }
     
     // If score is good, offer credit
     if (analytics.score > 600) {
       return {
-        text: `Olá ${firstName}. Analisei seu perfil financeiro e encontrei uma excelente oportunidade de crédito estimada para você. Posso te ajudar a entender se vale a pena seguir.`,
+        title: `Olá ${firstName}!`,
+        text: `Analisei seu perfil financeiro e encontrei uma excelente oportunidade de crédito estimada para você. Posso te ajudar a entender se vale a pena seguir.`,
         mood: 'happy',
-        cta: 'Simular Crédito'
+        cta: 'Simular Crédito',
+        isHero: false
       };
     }
 
     return {
-      text: `Olá ${firstName}. Identifiquei alguns pontos de atenção na sua saúde financeira este mês. Recomendo darmos uma olhada na sua liquidez antes de novas decisões.`,
+      title: `Olá ${firstName}!`,
+      text: `Identifiquei alguns pontos de atenção na sua saúde financeira este mês. Recomendo darmos uma olhada na sua liquidez antes de novas decisões.`,
       mood: 'neutral',
-      cta: 'Ver Diagnóstico'
+      cta: 'Ver Diagnóstico',
+      isHero: false
     };
   }, [analytics, transactions, firstName]);
 
@@ -75,16 +82,24 @@ export default function NexAssistantCard({ onOpenAnalysis, onOpenSimulation }) {
             </span>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">IA Financeira Ativa</p>
           </div>
+          
+          {diagnostic.isHero && (
+            <div className="mt-6 p-4 bg-blue-50 rounded-2xl border border-blue-100 hidden lg:block max-w-[180px]">
+              <p className="text-[10px] text-blue-700 font-medium leading-relaxed text-center">
+                "Eu sou o NEX. Vou te ajudar a entender seu extrato e transformar seus dados em um diagnóstico simples."
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Content & High-Fidelity Speech Bubble */}
-        <div className="flex-1 w-full space-y-10 text-center lg:text-left">
+        <div className="flex-1 w-full space-y-8 text-center lg:text-left">
           <div className="space-y-6">
             <div className="flex flex-col lg:flex-row lg:items-center justify-center lg:justify-between gap-4">
               <p className="text-[12px] font-black text-blue-500 uppercase tracking-[0.3em] flex items-center justify-center lg:justify-start gap-3">
-                <Zap size={16} fill="currentColor" /> Recomendação Personalizada
+                <Zap size={16} fill="currentColor" /> {diagnostic.isHero ? 'Estratégia VYNEX' : 'Recomendação Personalizada'}
               </p>
-              {analytics.score > 0 && (
+              {analytics.score > 0 && !diagnostic.isHero && (
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-2xl border border-blue-100 mx-auto lg:mx-0">
                   <Target size={14} className="text-blue-600" />
                   <span className="text-xs font-black text-blue-700 uppercase tracking-widest">Score: {analytics.score}</span>
@@ -93,40 +108,64 @@ export default function NexAssistantCard({ onOpenAnalysis, onOpenSimulation }) {
             </div>
             
             <div className="relative">
-              {/* Desktop Decorative Arrow */}
-              <div className="hidden lg:block absolute left-[-15px] top-8 w-0 h-0 border-t-[15px] border-t-transparent border-b-[15px] border-b-transparent border-right-[15px] border-r-blue-50/90" />
-              
-              <div className="bg-blue-50/90 border border-blue-100 rounded-[2.5rem] lg:rounded-tl-none px-8 py-8 sm:px-10 sm:py-9">
-                <h2 className="text-xl sm:text-2xl lg:text-3xl leading-tight font-[900] text-slate-900 tracking-tight">
-                  "{diagnostic.text}"
-                </h2>
+              <div className="bg-blue-50/90 border border-blue-100 rounded-[2.5rem] px-8 py-8 sm:px-10 sm:py-9">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl leading-tight font-[900] text-slate-900 tracking-tight mb-4">
+                  {diagnostic.title}
+                </h1>
+                <p className="text-base sm:text-lg text-slate-600 font-medium leading-relaxed">
+                  {diagnostic.text}
+                </p>
               </div>
             </div>
           </div>
 
           {/* Core Action Buttons */}
-          <div className="flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-4 sm:gap-5">
-            <button
-              onClick={onOpenSimulation}
-              className="btn-primary min-w-[220px] shadow-2xl shadow-blue-500/40 transform hover:-translate-y-1"
-            >
-              <PieChart size={20} />
-              <span>Simular Crédito</span>
-            </button>
+          <div className="flex flex-col space-y-4">
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-4 sm:gap-5">
+              {diagnostic.isHero ? (
+                <>
+                  <button
+                    onClick={() => nexActions.openStatementWizard({ step: 'upload', bank: 'nubank' })}
+                    className="btn-primary min-w-[220px] shadow-2xl shadow-blue-500/40 transform hover:-translate-y-1"
+                  >
+                    <Zap size={20} />
+                    <span>Analisar meu Nubank</span>
+                  </button>
 
-            <button
-              onClick={onOpenAnalysis}
-              className="flex items-center justify-center gap-3 bg-white border border-slate-200 text-slate-800 px-8 py-4 rounded-[1.25rem] font-black text-[12px] uppercase tracking-[0.15em] hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95 shadow-lg shadow-slate-200/50 min-w-[220px] min-h-[56px]"
-            >
-              <Activity size={20} className="text-blue-600" />
-              <span>Ver Diagnóstico</span>
-            </button>
+                  <button
+                    onClick={() => nexActions.openStatementWizard({ step: 'instructions', bank: 'nubank' })}
+                    className="flex items-center justify-center gap-3 bg-white border border-slate-200 text-slate-800 px-8 py-4 rounded-[1.25rem] font-black text-[12px] uppercase tracking-[0.15em] hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95 shadow-lg shadow-slate-200/50 min-w-[220px]"
+                  >
+                    <ArrowRight size={20} className="text-blue-600" />
+                    <span>Ver passo a passo</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={onOpenSimulation}
+                    className="btn-primary min-w-[220px] shadow-2xl shadow-blue-500/40 transform hover:-translate-y-1"
+                  >
+                    <PieChart size={20} />
+                    <span>{diagnostic.cta}</span>
+                  </button>
 
-            <button
-              className="hidden xl:flex items-center justify-center gap-2 text-slate-400 hover:text-blue-600 font-black text-[11px] uppercase tracking-widest transition-all p-4"
-            >
-              Ver Recomendações <ArrowRight size={16} />
-            </button>
+                  <button
+                    onClick={onOpenAnalysis}
+                    className="flex items-center justify-center gap-3 bg-white border border-slate-200 text-slate-800 px-8 py-4 rounded-[1.25rem] font-black text-[12px] uppercase tracking-[0.15em] hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95 shadow-lg shadow-slate-200/50 min-w-[220px]"
+                  >
+                    <Activity size={20} className="text-blue-600" />
+                    <span>Ver Diagnóstico</span>
+                  </button>
+                </>
+              )}
+            </div>
+
+            {diagnostic.isHero && (
+              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider text-center lg:text-left pl-2">
+                Usa outro banco? Você também pode enviar seu extrato, mas o passo a passo guiado atual é para Nubank.
+              </p>
+            )}
           </div>
         </div>
       </div>

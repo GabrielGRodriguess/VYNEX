@@ -273,82 +273,159 @@ export default function CreditAnalysis({ user }) {
 
   // ── STEP 5 (Result) ───────────────────────────────────────────────────────
   const renderStep5 = () => (
-    <motion.div initial={{ scale: 0.96, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col items-center gap-3 text-center">
-        <NexMascot mood="happy" size={80} animate={false} />
-        <div>
-          <h2 className="text-2xl font-black text-slate-900">Análise Concluída!</h2>
-          <p className="text-slate-500 text-sm mt-1">{result.status_analise}</p>
-        </div>
-      </div>
-
-      {/* Scores */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="p-5 rounded-2xl bg-blue-50 border border-blue-100 space-y-1">
-          <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Score VYNEX</p>
-          <p className="text-5xl font-black text-blue-700 tracking-tight">
-            <AnimatedNumber value={result.score_vynex} />
+    <motion.div initial={{ scale: 0.96, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-8">
+      {/* Header with NEX */}
+      <div className="flex items-center gap-6 p-6 bg-blue-50 rounded-[2rem] border border-blue-100">
+        <NexMascot mood="happy" size={80} />
+        <div className="space-y-1">
+          <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">NEX diz:</p>
+          <p className="text-sm text-slate-700 font-medium leading-relaxed">
+            "Pronto. Aqui está o que encontrei no seu perfil financeiro. Organize essas áreas para melhorar sua saúde de crédito."
           </p>
         </div>
-        <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Valor estimado</p>
-          <p className="text-lg font-black text-slate-800 leading-tight pt-1">{result.faixa_credito}</p>
-          <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Estimativa IA</p>
-        </div>
       </div>
 
-      {/* Behavioral breakdown */}
-      {result.behavioral_breakdown?.length > 0 && (
-        <div className="space-y-3">
-          <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.25em]">Comportamento analisado</p>
-          <div className="space-y-2">
-            {result.behavioral_breakdown.map((item, i) => (
-              <div key={i} className={`flex items-center justify-between p-3.5 rounded-2xl border ${
-                item.type === 'positive'
-                  ? 'bg-emerald-50 border-emerald-100 text-emerald-700'
-                  : 'bg-rose-50 border-rose-100 text-rose-700'
-              }`}>
-                <div className="flex items-center gap-2">
-                  {item.type === 'positive' ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
-                  <span className="text-[11px] font-bold">{item.label}</span>
-                </div>
-                <span className="text-[9px] font-black uppercase opacity-60">
-                  {item.type === 'positive' ? 'Vantagem' : 'Atenção'}
-                </span>
-              </div>
-            ))}
+      {/* 1. Resumo Financeiro */}
+      <section className="space-y-4">
+        <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-blue-600" /> Resumo Financeiro
+        </h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="p-5 rounded-2xl bg-white border border-slate-100 shadow-sm">
+            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Saldo Médio</p>
+            <p className="text-xl font-black text-slate-900">
+              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(balance)}
+            </p>
+          </div>
+          <div className="p-5 rounded-2xl bg-white border border-slate-100 shadow-sm">
+            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Renda Recorrente</p>
+            <p className="text-xl font-black text-slate-900">
+              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(formData.renda)}
+            </p>
+          </div>
+          <div className="col-span-2 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-between">
+            <div>
+              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Estabilidade</p>
+              <p className="text-sm font-bold text-slate-900">Fluxo de caixa constante</p>
+            </div>
+            <div className="flex gap-1">
+              {[1, 2, 3, 4, 5].map(i => (
+                <div key={i} className={`w-2 h-2 rounded-full ${i <= 4 ? 'bg-emerald-500' : 'bg-slate-200'}`} />
+              ))}
+            </div>
           </div>
         </div>
-      )}
+      </section>
 
-      {/* NEX suggestion */}
-      <div className="p-5 bg-blue-50 rounded-2xl border border-blue-100 space-y-2">
-        <div className="flex items-center gap-2 text-blue-600">
-          <Zap size={16} />
-          <span className="text-[11px] font-black uppercase tracking-widest">Sugestão: {result.produto_recomendado}</span>
+      {/* 2. Perfil de Crédito */}
+      <section className="space-y-4">
+        <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-indigo-600" /> Perfil de Crédito
+        </h3>
+        <div className="p-6 rounded-[2.5rem] bg-gradient-to-br from-indigo-600 to-blue-700 text-white shadow-xl shadow-indigo-500/20">
+          <div className="flex items-center justify-between mb-6">
+            <span className="text-[10px] font-black uppercase tracking-widest opacity-80">Classificação NEX</span>
+            <div className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">
+              {result.score_vynex > 700 ? 'Perfil Saudável' : result.score_vynex > 500 ? 'Perfil em Atenção' : 'Perfil em Construção'}
+            </div>
+          </div>
+          <div className="flex items-baseline gap-2 mb-2">
+            <span className="text-5xl font-black tracking-tight"><AnimatedNumber value={result.score_vynex} /></span>
+            <span className="text-lg font-bold opacity-60">/ 1000</span>
+          </div>
+          <p className="text-xs font-medium opacity-80 leading-relaxed">
+            Seu score reflete seu comportamento nos últimos 90 dias.
+          </p>
         </div>
-        <p className="text-sm text-slate-700 leading-relaxed font-medium">"{result.mensagem_front}"</p>
+      </section>
+
+      {/* 3. Pontos Positivos & Atenção */}
+      <div className="grid grid-cols-1 gap-6">
+        <section className="space-y-3">
+          <h3 className="text-[11px] font-black text-emerald-600 uppercase tracking-[0.2em] flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Pontos Positivos
+          </h3>
+          <div className="space-y-2">
+            {result.behavioral_breakdown?.filter(i => i.type === 'positive').map((item, i) => (
+              <div key={i} className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl">
+                <CheckCircle size={16} className="text-emerald-600 shrink-0" />
+                <span className="text-xs font-bold text-emerald-800">{item.label}</span>
+              </div>
+            ))}
+            {!result.behavioral_breakdown?.some(i => i.type === 'positive') && (
+              <div className="p-4 border border-dashed border-slate-200 rounded-2xl text-center">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">Nenhum ponto de destaque</span>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="space-y-3">
+          <h3 className="text-[11px] font-black text-rose-600 uppercase tracking-[0.2em] flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-rose-500" /> Pontos de Atenção
+          </h3>
+          <div className="space-y-2">
+            {result.behavioral_breakdown?.filter(i => i.type === 'attention').map((item, i) => (
+              <div key={i} className="flex items-center gap-3 p-4 bg-rose-50 border border-rose-100 rounded-2xl">
+                <AlertCircle size={16} className="text-rose-600 shrink-0" />
+                <span className="text-xs font-bold text-rose-800">{item.label}</span>
+              </div>
+            ))}
+            {!result.behavioral_breakdown?.some(i => i.type === 'attention') && (
+              <div className="p-4 border border-dashed border-slate-200 rounded-2xl text-center">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">Perfil estável</span>
+              </div>
+            )}
+          </div>
+        </section>
       </div>
 
+      {/* 4. Plano de Ação */}
+      <section className="space-y-4">
+        <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-amber-500" /> Plano de Ação Personalizado
+        </h3>
+        <div className="space-y-3">
+          {[
+            { day: '7 dias', title: 'Organização Imediata', desc: 'Centralize seus gastos recorrentes no Nubank para aumentar a previsibilidade.' },
+            { day: '15 dias', title: 'Redução de Risco', desc: 'Evite o uso do limite emergencial e mantenha um saldo mínimo reserva.' },
+            { day: '30 dias', title: 'Consolidação de Perfil', desc: 'Mantenha movimentação constante para estabilizar sua média mensal.' }
+          ].map((step, i) => (
+            <div key={i} className="flex gap-4 p-5 bg-white border border-slate-100 rounded-2xl shadow-sm relative overflow-hidden group">
+              <div className="absolute top-0 left-0 w-1 h-full bg-blue-600" />
+              <div className="shrink-0 w-12 h-12 bg-slate-50 rounded-xl flex flex-col items-center justify-center border border-slate-100">
+                <span className="text-[14px] font-black text-slate-900 leading-none">{step.day.split(' ')[0]}</span>
+                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">{step.day.split(' ')[1]}</span>
+              </div>
+              <div>
+                <h4 className="text-sm font-black text-slate-900 mb-1">{step.title}</h4>
+                <p className="text-xs text-slate-500 font-medium leading-relaxed">{step.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Disclaimer */}
-      <p className="text-[11px] text-slate-400 leading-relaxed text-center">
-        ⚠️ Esta é uma estimativa. Valores reais podem variar conforme análise da instituição financeira.
-      </p>
+      <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+        <p className="text-[10px] text-slate-400 font-medium leading-relaxed text-center">
+          ⚠️ Esta é uma análise comportamental baseada em dados históricos. O VYNEX ajuda você a entender e preparar seu perfil, mas não garante aprovação de crédito em instituições financeiras.
+        </p>
+      </div>
 
       {/* CTAs */}
       <div className="flex flex-col sm:flex-row gap-3">
         <button
           onClick={handleWhatsApp}
-          className="flex-1 h-[52px] bg-blue-600 text-white rounded-2xl font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-3 hover:bg-blue-700 active:scale-95 transition-all shadow-lg shadow-blue-500/20"
+          className="flex-1 h-[56px] bg-blue-600 text-white rounded-2xl font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-3 hover:bg-blue-700 active:scale-95 transition-all shadow-xl shadow-blue-500/20"
         >
-          <MessageSquare size={18} /> Ver simulação
+          <MessageSquare size={18} /> Ver Plano Completo
         </button>
         <button
-          onClick={handleWhatsApp}
-          className="w-full sm:w-16 h-[52px] bg-slate-100 text-slate-600 border border-slate-200 rounded-2xl font-black flex items-center justify-center hover:bg-slate-200 transition-all"
+          onClick={() => window.print()}
+          className="w-full sm:w-16 h-[56px] bg-white text-slate-400 border border-slate-200 rounded-2xl font-black flex items-center justify-center hover:bg-slate-50 transition-all"
         >
-          <UserCheck size={20} />
+          <Info size={20} />
         </button>
       </div>
     </motion.div>

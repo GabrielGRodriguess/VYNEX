@@ -161,6 +161,7 @@ function MainApp({ user, onLogout }) {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [isStatementOpen, setIsStatementOpen] = useState(false);
+  const [statementConfig, setStatementConfig] = useState({ step: 'bank-selection', bank: null });
 
   const { setActiveSection: setNexActiveSection, registerActions } = useNex();
   const { currentPlan } = useUser();
@@ -173,7 +174,11 @@ function MainApp({ user, onLogout }) {
     registerActions({
       setActiveSection: (section) => setActiveSection(section),
       openManualWizard: () => setIsWizardOpen(true),
-      openStatementWizard: () => setIsStatementOpen(true),
+      openStatementWizard: (config) => {
+        if (config) setStatementConfig(config);
+        else setStatementConfig({ step: 'bank-selection', bank: null });
+        setIsStatementOpen(true);
+      },
       openAddTransactionModal: () => setIsModalOpen(true),
     });
   }, [registerActions]);
@@ -354,7 +359,12 @@ function MainApp({ user, onLogout }) {
 
       {/* ── UTILITY COMPONENTS ── */}
       <ManualInboundWizard isOpen={isWizardOpen} onClose={() => setIsWizardOpen(false)} />
-      <StatementInboundWizard isOpen={isStatementOpen} onClose={() => setIsStatementOpen(false)} />
+      <StatementInboundWizard 
+        isOpen={isStatementOpen} 
+        onClose={() => setIsStatementOpen(false)} 
+        initialStep={statementConfig.step}
+        initialBank={statementConfig.bank}
+      />
       <AddTransactionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} triggerSource={activeSection} />
       {profile && !profile.onboarding_completed && <Onboarding />}
       <PaymentModal
